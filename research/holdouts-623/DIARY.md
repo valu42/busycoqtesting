@@ -48,6 +48,38 @@ coqchk -silent -bytecode-compiler yes -Q verify BusyCoq BusyCoq.ResearchBellFron
 
 The module is a reproducible research checkpoint. No novelty or solved-holdout claim is made for these local transformations.
 
+## 2026-10-24 — Counter phase acceleration and broader decider searches
+
+**Outcome: two additional general phase transformations are proved; no new complete holdout classification or equivalence.**
+
+[ResearchCounterBatch.v](../../verify/ResearchCounterBatch.v) contains a generalized version of the existing `P0_n` rule from [CounterClass3v1.v](../../verify/CounterClass3v1.v), two whole-phase rules (`frontier` and `back_sweep`), and a strict-progress corollary for a nonempty forward phase. All four theorems quantify over an arbitrary D0 transition and arbitrary untouched tape tails. The phases avoid D0, which lets the same acceleration apply to multiple variants. The original core induction and BusyCoq execution/shift tactics remain credited to the repository authors.
+
+The forward rule replaces a whole counter phase by a repeated three-cell output block. The backward rule consumes repeated left-hand blocks and transfers their counts into two right-hand blocks. Neither establishes an invariant covering every configuration of a blank run. All four statements compile in Coq 8.20.1, pass an independent `coqchk`, and report `Closed under the global context` with `Print Assumptions`.
+
+```sh
+coqc -native-compiler no -Q verify BusyCoq verify/ResearchCounterBatch.v
+coqchk -silent -bytecode-compiler yes -Q verify BusyCoq BusyCoq.ResearchCounterBatch
+```
+
+Exploratory implementation and measurements:
+
+- A native simulator first applied the core counter rule and constant-symbol sweeps. Three related starts each reached 100 million accelerated iterations without a halt.
+- Packing runs of three-cell words reduced a representative tape from more than two million stored runs to a few dozen. Each start then reached one billion iterations with the original acceleration schedule.
+- The two new phase rules skip entire phases, so their iteration counts are not comparable to the earlier schedule. Small-case comparisons against ordinary simulation passed 912 macro cases. An independent Python implementation using unbounded integers matched the complete native configuration after one million iterations on one start.
+- With the new schedule, all three starts completed at least 20 million iterations without a halt. The largest recorded counter used 74 bits. These are exploratory executions, not Rocq-certified lower bounds on blank-run runtime; the simulator itself has not been verified.
+- For two starts with a common transition table, a further orbit comparison sampled 470,280 frontier configurations across ten million iterations per start. It found no shared configuration hash. This supplies no proof of inequivalence.
+
+The automatic search also broadened beyond the earlier checks:
+
+- A run-length/block decider sweep tested all 623 inputs at widths 3, 4, 5, 6, 8, 10, 12, and 16: 4,984 bounded runs, no certificate. Transition memoization helped some benchmarks and slowed others, so the small-block runs retained the uncached implementation.
+- Native extraction of the repository's `RWL_mod_FAR`, `CPS_LRU_FAR`, and `RNGS_mod_QSym_FAR` deciders was checked against 29 existing positive examples. Across three searches, 85,153 bounded attempts produced no certificate. The largest parameter sweep included reflection and completed 102 full parameter/orientation settings over all 623 inputs before its budget was stopped; a separate larger-budget sweep had 1,103 timeouts. These counts include overlapping settings.
+- A targeted follow-up on the 88 informally unknown inputs tried block widths 7, 9, and 11, allowing up to 20 million iterations and two seconds per run. All 264 runs reached their time limit without a certificate.
+- An attempt to prove equivalence by avoiding the single differing transition was abandoned: all 176 candidate pairs actually reached that transition within the tested prefix. This only rejects that particular strategy.
+
+The upstream open-PR audit was refreshed: #39 remains a result to exclude from duplicate claims; #3 and #4 concern assumption audits. No complete result PR was opened. The counter rules above are a partial proof checkpoint in this owner's repository.
+
+The next useful counter work is to characterize the remaining nested tape patterns and derive a closed recurrence or invariant. Further simulation alone would not establish nonhalting.
+
 ## Proof status
 
 No new halting, nonhalting, equivalence, or explicit raw-step-bound theorem has been established in this work. Search failures are not proofs of nonhalting or inequivalence.
