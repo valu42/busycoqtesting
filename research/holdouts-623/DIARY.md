@@ -80,6 +80,42 @@ The upstream open-PR audit was refreshed: #39 remains a result to exclude from d
 
 The next useful counter work is to characterize the remaining nested tape patterns and derive a closed recurrence or invariant. Further simulation alone would not establish nonhalting.
 
+## 2026-10-24 — Fourth pass: return rules, falsification, and induction search
+
+**Outcome: thirteen further local theorems checked; no new complete holdout classification or equivalence.**
+
+[ResearchCounterRecurrence.v](../../verify/ResearchCounterRecurrence.v) complements the previous phase rules. It adds five general positive-progress rules and a general halting-pattern rule, two D0-specific return rules, three bridges from blank starting configurations, and two checked counterexamples. The general rules preserve arbitrary untouched tape tails and allow an arbitrary D0 transition. The specialized rules cover the `1LF` and `1LB` choices for D0.
+
+For the `1LF` choice, the bridges include blank A to an A/0 configuration with one right-hand block of four ones, and blank F to A/0 with blocks of lengths 12 and 5 separated by a zero. These are entry points for a future invariant; they do not establish one.
+
+The counterexamples explain why two tempting arguments cannot be used:
+
+- A/0 on a blank left side with right-hand blocks of lengths 2 and 2 halts, regardless of the untouched suffix after the next separator. Merely requiring positive or at-least-two block sizes does not prove nonhalting.
+- A/0 with one block of length 19 returns to A/0 with block lengths 7, 15, and 5. Consequently, decreasing block lengths are not preserved at every such return. Weaker order conditions, including a separate leading marker case, also failed exploratory checks.
+
+All thirteen statements compile in Coq 8.20.1, pass a separate `coqchk`, and report `Closed under the global context`. No `Admitted`, new axiom, native-computation axiom, blank-run classification, or explicit raw-step bound is introduced. After building the normal dependencies and `ResearchCounterBatch.v`:
+
+```sh
+coqc -native-compiler no -Q verify BusyCoq verify/ResearchCounterRecurrence.v
+coqchk -silent -bytecode-compiler yes -Q verify BusyCoq BusyCoq.ResearchCounterRecurrence
+```
+
+The exploratory simulator now uses these return rules as well as the earlier batches. New-rule comparisons against ordinary execution passed 9,931 applicable cases, in addition to the earlier 912 batch cases. Independent native and unbounded-integer Python implementations matched their complete configurations after 100,000 iterations on one start. A scheduling experiment also found that applying a short return rule too early could bypass a much stronger P0 batch; the final schedule preserves that opportunity.
+
+The companion [counter_explore.py](counter_explore.py) makes this exploration reproducible without any input attachment. It contains the public parameterized table, a small-case `--selftest`, time/iteration budgets, and JSON checkpoint/resume support. Its standalone return-rule self-test passed 990 applicable cases. It is deliberately labeled as an unverified explorer, not a certificate generator.
+
+With the revised schedule and unbounded integers, all three counter starts completed 50 million accelerated iterations without a halt. Each run took about two minutes; the largest sampled stored run counts used 81–84 bits. These iteration counts are specific to the revised schedule. The simulator is exploratory, and these measurements are not Rocq-certified runtime bounds or nonhalting proofs.
+
+Other directions were deliberately tested rather than repeatedly increasing the same decider budgets:
+
+- Extracted the repository's inductive decider, including arithmetic-sequence and exponential-loop configurations. An existing positive example succeeded. A targeted grid of 84 bounded runs over 28 candidates produced 54 unknown results and 30 timeouts, with no certificate.
+- Tried adapting individual proofs for one Skelet-class candidate and two cubic candidates. Necessary transition lemmas failed, so none of those adaptations was accepted.
+- Revisited pairs whose observed executions rejoin after their differing transition. A common-model attempt exposed an uncovered three-one pattern. Backward searches for the required guards on 14 pairs, both directly and with pattern subsumption, exhausted their budgets without a certificate. Observed rejoining is not being promoted to equivalence.
+
+The upstream open-PR audit was refreshed again. Upstream #39 remains excluded from new-result claims; #3 and #4 concern assumption audits. This checkpoint updates only the owner's research PR.
+
+The next mathematical task is to characterize the nested counter tape language strongly enough to prove closure and continued progress, or to derive a shared process for a pair with all exceptional cases covered. The checked counterexamples rule out using a simple sorted-block condition as that invariant.
+
 ## Proof status
 
 No new halting, nonhalting, equivalence, or explicit raw-step-bound theorem has been established in this work. Search failures are not proofs of nonhalting or inequivalence.
