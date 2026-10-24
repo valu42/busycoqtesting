@@ -116,9 +116,83 @@ The upstream open-PR audit was refreshed again. Upstream #39 remains excluded fr
 
 The next mathematical task is to characterize the nested counter tape language strongly enough to prove closure and continued progress, or to derive a shared process for a pair with all exceptional cases covered. The checked counterexamples rule out using a simple sorted-block condition as that invariant.
 
+## 2026-10-24 — Fifth pass: total fractal recurrence and modular automata
+
+**Outcome: a complete halting reduction to a word recurrence and general block-transfer rules; no new blank-run classification.** These directions differ from the counter extensions, local-window automata, and block-equivalence searches in the earlier passes. No priority claim over other researchers' work is intended.
+
+The individual target is the public chaotic-fractal table
+`1RB1LE_0RC1RC_0RD0RB_1RE0RF_1LA0LE_---1RB`
+(entry 7 in the supplied 623-machine ordering).
+[ResearchFractalSweep.v](../../verify/ResearchFractalSweep.v) defines one complete right-and-left sweep on **every** pair of finite binary words. Missing cells are zero, words are nearest-cell first, and the right word includes the scanned cell. The right scan consumes a prefix code; the left scan consumes its finite left word. Both functions terminate structurally, without a simulation budget or an assumed tape grammar.
+
+`turn_spec` proves that every successful recurrence step makes positive TM progress, and every failed step reaches a halt. `halts_iff_turns` proves the two-way halting equivalence for any finite starting pair. `blank_halts_iff_turns` includes the blank-start bridge to `([1], [])`. This covers all exceptional patterns and the finite-word boundaries; the remaining problem is to classify the orbit of that initial pair.
+
+[ResearchFractalTransfer.v](../../verify/ResearchFractalTransfer.v) supplies an arithmetic acceleration inside that recurrence. At B, for a left run of length A following a zero and a right prefix `10 1^(2B) 0 1^(2C) 00 1^M`, one transfer changes the four run lengths by
+
+```text
+(A, 2B, 2C, M) -> (A+2, 2B-2, 2C+2, M-2),  A >= 1, B >= 1, M >= 2.
+```
+
+The theorem preserves arbitrary untouched tails. `transfers` proves arbitrary repetition, and `reset` covers a boundary case when the first right-hand run is exhausted. These do not yet form a closed invariant for the blank orbit.
+
+Two checked counterexamples narrow the next invariant search:
+
+- Starting at B with left word `1` and right word `10011` halts. The first sweep produces right word `1011001`, so excluding isolated ones after the leading cell is not preserved.
+- The analogous transfer-family configuration with left word `1` and right word `1011010011` halts. Its middle run is odd; the block layout alone is insufficient as a nonhalting invariant.
+
+The sweep and transfer statements compile with Coq 8.20.1, pass a separate `coqchk`, and report closed assumptions. No axiom or admitted proof was introduced. After building the usual dependencies, from the repository root:
+
+```sh
+coqc -native-compiler no -Q verify BusyCoq verify/ResearchFractalSweep.v
+coqc -native-compiler no -Q verify BusyCoq verify/ResearchFractalTransfer.v
+coqchk -silent -bytecode-compiler yes -Q verify BusyCoq BusyCoq.ResearchFractalSweep BusyCoq.ResearchFractalTransfer
+```
+
+[fractal_sweep.py](fractal_sweep.py) implements the recurrence and optional transfers with unbounded integers. It is explicitly unverified. Its independent coordinate-tape interpreter checked 6,096 sweep cases and 448 batch cases, comparing the entire tape and state. A split 500+500-iteration checkpoint run matched an uninterrupted 1,000-iteration run. A 25-second exploratory run completed 145,239 calls, including 73 batches, with no halt; the final left/right words used 127,803/237,971 bits. Calls mix sweeps and batches and are **not** raw-step counts or certified runtime bounds. Time and space budgets are checked between calls.
+
+```sh
+python3 research/holdouts-623/fractal_sweep.py --selftest
+python3 research/holdouts-623/fractal_sweep.py --iterations 1000000 --seconds 25 --max-bits 1000000 --output /path/to/checkpoint.json
+python3 research/holdouts-623/fractal_sweep.py --resume /path/to/checkpoint.json --seconds 25
+```
+
+The second direction changes the information retained by the existing FAR procedure. [ResearchAlgebraicFAR.v](../../verify/ResearchAlgebraicFAR.v) records a polynomial residue of the entire scanned word together with a short suffix. A bit `b` updates the residue to `(multiplier * residue + b) mod modulus`, and shifts `b` into the suffix. This can distinguish words with the same recent suffix but different earlier contents. The arbitrary-generator soundness theorem comes from the existing FAR engine; no numerical interpretation of the TM tape is assumed.
+
+The bounded grid used moduli `{3,5,7,11,31,127}`, distinct multipliers `{1,2,modulus-1}`, and suffix widths `{0,4,8}`. There are 51 distinct settings. Each used both orientations of all 623 inputs, capacity 8,192, event budgets 100,000, and 0.10 seconds per case: **63,546 attempts, 61,641 unknown results, 1,905 timeouts, zero positive candidates**. The grid used four worker processes; timeout counts depend on the host and scheduling. Separate controls (two nonhalting and two halting machines, both orientations) returned the expected four positives and four unknowns. A pilot at modulus 3, multiplier 2, suffix width 3 also returned no candidate in 1,246 attempts; it is excluded from the grid total.
+
+The new wrapper introduces no axiom, but **its soundness theorem does not have closed assumptions**: it inherits FAR's primitive integer/array specifications and `LibTactics.inj_pair2`. This is separate from the closed fractal proofs above. Native extraction is used only for candidate search; any future positive must be replayed inside Coq and its assumptions audited before claiming a result.
+
+The extraction entry point and native driver are included. With the usual Coq/OCaml dependencies installed, from `verify/`:
+
+```sh
+coqc -native-compiler no -Q . BusyCoq ResearchAlgebraicFAR.v
+coqchk -silent -bytecode-compiler yes -Q . BusyCoq BusyCoq.ResearchAlgebraicFAR
+coqc -native-compiler no -Q . BusyCoq ../research/holdouts-623/ExtractAlgebraicFAR.v
+ocamlfind ocamlopt -w -a -O2 -package coq-core.kernel,unix -linkpkg algebraic_far.mli algebraic_far.ml ../research/holdouts-623/algebraic_far_driver.ml -o algebraic_far
+```
+
+The driver accepts `INPUT MODULUS MULTIPLIER SUFFIX_BITS EVENTS SECONDS`, checks both orientations, and prints JSON summaries. The following reproduces the grid's parameter set; the input file remains external:
+
+```sh
+python3 - ./algebraic_far /path/to/BB6_holdouts_623.txt <<'PY'
+import subprocess, sys
+from concurrent.futures import ThreadPoolExecutor
+jobs = [(p, m, k) for p in (3, 5, 7, 11, 31, 127)
+        for m in sorted({1, 2, p-1}) for k in (0, 4, 8)]
+def run(job):
+    return subprocess.run([sys.argv[1], sys.argv[2], *map(str, job), '100000', '0.10'],
+                          check=True, text=True, capture_output=True).stdout
+with ThreadPoolExecutor(max_workers=4) as pool:
+    for result in pool.map(run, jobs):
+        print(result, end='')
+PY
+```
+
+The upstream open-PR audit was refreshed: #39 remains excluded from new-result claims; #3 and #4 concern assumptions. The next focused mathematical task is a recursive description of the reachable words at reset boundaries, proved closed under the total recurrence. Merely extending the simulation or dropping parity guards would not settle it.
+
 ## Proof status
 
-No new halting, nonhalting, equivalence, or explicit raw-step-bound theorem has been established in this work. Search failures are not proofs of nonhalting or inequivalence.
+No new complete blank-run halting/nonhalting classification, machine-to-machine equivalence, or explicit raw-step bound has been established in this work. The fractal machine's halting equivalence to its total recurrence is proved; classification of the initial recurrence orbit remains open. Search failures are not proofs of nonhalting or inequivalence.
 
 A result will be submitted only after the exact theorem is checked by Rocq and the current PRs are checked again for duplication. Research and proof PRs from this work target this repository, not upstream.
 
