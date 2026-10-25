@@ -7,10 +7,12 @@ Makefile.coq.conf
 *.d
 *.aux
 *.cache
+__pycache__/
 *.ml
 *.mli
 !verify/main.ml
 !verify/skelet1_main.ml
+!research/holdouts-623/algebraic_far_driver.ml
 *.o
 *.cmx
 *.cmi

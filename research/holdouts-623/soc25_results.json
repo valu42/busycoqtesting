@@ -1,0 +1,130 @@
+{
+  "source_commit": "069dc1eb72df69dfa595f491b5c315c3ce424ac6",
+  "scope": "Unverified SOC25Iter.F reset-round counts; no raw TM step count or classification.",
+  "validation": {
+    "status": "passed",
+    "round_cases": 18056,
+    "halting_cases": 6033,
+    "python_orbits": 3,
+    "python_rounds_per_orbit": 10000,
+    "arithmetic": {
+      "arithmetic_selftest": "passed",
+      "operations": 100000
+    },
+    "compiled_comparisons": [
+      {
+        "start": 1,
+        "rounds": 100000,
+        "bigint_seconds": 6.799078962,
+        "deque_seconds": 0.014887498,
+        "L": 860055,
+        "speed_ratio": 456.6972208493328
+      },
+      {
+        "start": 2,
+        "rounds": 100000,
+        "bigint_seconds": 6.668230883,
+        "deque_seconds": 0.015203959,
+        "L": 856535,
+        "speed_ratio": 438.58516607417846
+      },
+      {
+        "start": 3,
+        "rounds": 100000,
+        "bigint_seconds": 6.292705679,
+        "deque_seconds": 0.015158089,
+        "L": 849581,
+        "speed_ratio": 415.1384570310941
+      }
+    ]
+  },
+  "ubsan_validation": {
+    "status": "passed",
+    "round_cases": 18056,
+    "halting_cases": 6033,
+    "python_orbits": 3,
+    "python_rounds_per_orbit": 10000,
+    "arithmetic": {
+      "arithmetic_selftest": "passed",
+      "operations": 100000
+    },
+    "compiled_comparisons": []
+  },
+  "runs": [
+    {
+      "verified": false,
+      "status": "round_limit",
+      "start": 1,
+      "rounds": 1000000000,
+      "L": 8559339705,
+      "bits": 8559339706,
+      "stored_words": 133739683,
+      "fnv1a64": "4bfb7caece8d623f",
+      "seconds": 153.811377641
+    },
+    {
+      "verified": false,
+      "status": "round_limit",
+      "start": 2,
+      "rounds": 1000000000,
+      "L": 8558855765,
+      "bits": 8558855766,
+      "stored_words": 133732122,
+      "fnv1a64": "c63e0c7fa0aa2034",
+      "seconds": 156.501917998
+    },
+    {
+      "verified": false,
+      "status": "round_limit",
+      "start": 3,
+      "rounds": 1000000000,
+      "L": 8558814606,
+      "bits": 8558814607,
+      "stored_words": 133731479,
+      "fnv1a64": "97d15be482fbeb1f",
+      "seconds": 153.762577812
+    }
+  ],
+  "supplied_input_coverage": [
+    {
+      "entry": 535,
+      "start": 2,
+      "initial": [
+        2,
+        4
+      ],
+      "existing_model": "Eqv_WordPairs.TM93.tm'"
+    },
+    {
+      "entry": 572,
+      "start": 3,
+      "initial": [
+        1,
+        3
+      ],
+      "existing_model": "Eqv_WordPairs.TM97.tm'"
+    },
+    {
+      "entry": 573,
+      "start": 1,
+      "initial": [
+        1,
+        2
+      ],
+      "existing_model": "reflection of Eqv_WordPairs.TM90.tm'"
+    }
+  ],
+  "coverage_proof": "verify/ResearchSOC25Coverage.v: three closed assumption reports, compiled and kernel-checked with Coq 8.20.1",
+  "shared_header_regression": {
+    "status": "passed",
+    "round_cases": 18056,
+    "halting_cases": 6033,
+    "python_orbits": 3,
+    "python_rounds_per_orbit": 10000,
+    "arithmetic": {
+      "arithmetic_selftest": "passed",
+      "operations": 100000
+    },
+    "compiled_comparisons": []
+  }
+}

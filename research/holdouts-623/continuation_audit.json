@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-25",
+  "scope": "Continuation targets only. Graph matches would require theorem inspection; absence of literal-table matches is not a universal classification audit.",
+  "input_entries": [
+    26,
+    35,
+    138,
+    269,
+    405,
+    409,
+    482,
+    494,
+    535,
+    572,
+    573
+  ],
+  "branch_base": "cfa10a0be34ed9404dadc59b95cc5737a423807d",
+  "upstream_bb6_tip": "0bd6d3890fa9cdf502904847a42c1004d1291db4",
+  "upstream_commits_ahead": 6,
+  "changed_proof_files": [
+    {
+      "path": "verify/LongAccv1.v",
+      "tables": 31,
+      "matches": [],
+      "references": []
+    },
+    {
+      "path": "verify/Others_v2.v",
+      "tables": 1,
+      "matches": [],
+      "references": []
+    },
+    {
+      "path": "verify/Others_v3.v",
+      "tables": 4,
+      "matches": [],
+      "references": []
+    },
+    {
+      "path": "verify/Others_v4.v",
+      "tables": 1,
+      "matches": [],
+      "references": []
+    },
+    {
+      "path": "verify/PR_SOMDC23Halt.v",
+      "tables": 5,
+      "matches": [],
+      "references": []
+    },
+    {
+      "path": "verify/SOBCv13.v",
+      "tables": 2,
+      "matches": [],
+      "references": []
+    },
+    {
+      "path": "verify/SOBCv14.v",
+      "tables": 1,
+      "matches": [],
+      "references": []
+    },
+    {
+      "path": "verify/SOMDCv10.v",
+      "tables": 4,
+      "matches": [],
+      "references": []
+    }
+  ],
+  "excluded_existing_results": [
+    "valu42/busycoqtesting#1",
+    "ccz181078/busycoq#38",
+    "ccz181078/busycoq#39"
+  ],
+  "credited_soc25_pr40_head": "069dc1eb72df69dfa595f491b5c315c3ce424ac6",
+  "graph_comparison": "All state renamings, including moved initial state, and both tape orientations; 49 distinct-per-file literal six-state tables inspected, no target match."
+}
