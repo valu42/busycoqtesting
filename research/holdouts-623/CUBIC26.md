@@ -143,7 +143,7 @@ For the first billion recurrence iterations, both backends ended at `(990401271,
 
 The ratio is 13.05. These are measurements on this host, not a comparison against the speed of Bricks' implementation. Later block-width tests favored `k=11`. Bigger flat tables, composed eight-bit tables for longer words, and two reciprocal-estimate implementations were tested; they were slower and are not retained. The final implementation uses ordinary exact division.
 
-The first trillion iterations completed in 628.657 cumulative simulation seconds. Two trillion completed in 1202.745 seconds. The final run reached **four trillion recurrence iterations**, at `(7354046713435,6645952891241)`, without a halt. Cumulative simulation time was 2348.694 seconds, about 39 minutes. This is five times the wiki's reported `8e11` recurrence iterations, but has not established eventual halting or nonhalting.
+The first trillion iterations completed in 628.657 cumulative simulation seconds. Two trillion completed in 1202.745 seconds. The continued run reached **five trillion recurrence iterations**, at `(2009061144720,15490938245740)`, without a halt. Cumulative simulation time was 2936.623 seconds, about 49 minutes. This is 6.25 times the wiki's reported `8e11` recurrence iterations, but has not established eventual halting or nonhalting.
 
 [cubic26.checkpoint](cubic26.checkpoint) preserves the final counter state for `--resume`; [cubic26_results.json](cubic26_results.json) records the benchmarks, milestones, and validation summaries. The checkpoint is a native experimental result, not a Coq certificate.
 

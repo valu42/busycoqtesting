@@ -1,0 +1,563 @@
+{
+  "verified": false,
+  "scope": "Complete boundary rounds and logical packet events, not raw TM steps or classifications. Native checkpoints are unverified.",
+  "runs": [
+    {
+      "entry": 405,
+      "final": {
+        "verified": false,
+        "entry": 405,
+        "status": "round_limit",
+        "rounds": 500000,
+        "prefix_skip": true,
+        "counter_fallbacks": 0,
+        "sparse_counter": true,
+        "window_bits": 16,
+        "new_rounds": 100000,
+        "events": 221856371270,
+        "word_bits": 3106341,
+        "seconds": 565.112611073
+      },
+      "segments": [
+        {
+          "verified": false,
+          "entry": 405,
+          "status": "round_limit",
+          "rounds": 100000,
+          "window_bits": 16,
+          "new_rounds": 100000,
+          "events": 8868247002,
+          "word_bits": 620866,
+          "seconds": 202.065516941
+        },
+        {
+          "verified": false,
+          "entry": 405,
+          "status": "unknown_packet",
+          "rounds": 161210,
+          "window_bits": 16,
+          "new_rounds": 61210,
+          "events": 23051643115,
+          "word_bits": 1001248,
+          "seconds": 517.904725438
+        },
+        {
+          "verified": false,
+          "entry": 405,
+          "status": "round_limit",
+          "rounds": 161211,
+          "counter_fallbacks": 0,
+          "sparse_counter": true,
+          "window_bits": 16,
+          "new_rounds": 1,
+          "events": 23051929187,
+          "word_bits": 1001253,
+          "seconds": 0.003234642
+        },
+        {
+          "verified": false,
+          "entry": 405,
+          "status": "round_limit",
+          "rounds": 300000,
+          "counter_fallbacks": 0,
+          "sparse_counter": true,
+          "window_bits": 16,
+          "new_rounds": 138789,
+          "events": 79857910594,
+          "word_bits": 1863727,
+          "seconds": 492.535298711
+        },
+        {
+          "verified": false,
+          "entry": 405,
+          "status": "round_limit",
+          "rounds": 400000,
+          "counter_fallbacks": 0,
+          "sparse_counter": true,
+          "window_bits": 16,
+          "new_rounds": 100000,
+          "events": 141981809121,
+          "word_bits": 2485117,
+          "seconds": 556.524292735
+        },
+        {
+          "verified": false,
+          "entry": 405,
+          "status": "round_limit",
+          "rounds": 500000,
+          "prefix_skip": true,
+          "counter_fallbacks": 0,
+          "sparse_counter": true,
+          "window_bits": 16,
+          "new_rounds": 100000,
+          "events": 221856371270,
+          "word_bits": 3106341,
+          "seconds": 565.112611073
+        }
+      ],
+      "cumulative_simulation_seconds": 2334.14567954,
+      "checkpoint": {
+        "path": "packet405.checkpoint.gz",
+        "bytes": 117137,
+        "sha256": "9e0dc5e7191953ea303b17e168938d89b01607f8f19db4b316fe1d4397e5b20a",
+        "uncompressed_bytes": 776676,
+        "uncompressed_sha256": "36fe3eeedefbe072ad2ea2f57a258bbbcb34c0bc20e22ea199dcb4248df464e9"
+      },
+      "reload_full_word_match": true
+    },
+    {
+      "entry": 482,
+      "final": {
+        "verified": false,
+        "entry": 482,
+        "status": "round_limit",
+        "rounds": 300000,
+        "counter_fallbacks": 100000,
+        "sparse_counter": true,
+        "window_bits": 16,
+        "new_rounds": 100000,
+        "events": 164815546515,
+        "word_bits": 4199938,
+        "seconds": 1185.23804257
+      },
+      "segments": [
+        {
+          "verified": false,
+          "entry": 482,
+          "status": "round_limit",
+          "rounds": 100000,
+          "window_bits": 16,
+          "new_rounds": 100000,
+          "events": 18279888243,
+          "word_bits": 1399938,
+          "seconds": 174.279198325
+        },
+        {
+          "verified": false,
+          "entry": 482,
+          "status": "round_limit",
+          "rounds": 200000,
+          "window_bits": 16,
+          "new_rounds": 100000,
+          "events": 73216116572,
+          "word_bits": 2799938,
+          "seconds": 488.430913457
+        },
+        {
+          "verified": false,
+          "entry": 482,
+          "status": "round_limit",
+          "rounds": 300000,
+          "counter_fallbacks": 100000,
+          "sparse_counter": true,
+          "window_bits": 16,
+          "new_rounds": 100000,
+          "events": 164815546515,
+          "word_bits": 4199938,
+          "seconds": 1185.23804257
+        }
+      ],
+      "cumulative_simulation_seconds": 1847.948154352,
+      "checkpoint": {
+        "path": "packet482.checkpoint.gz",
+        "bytes": 25474,
+        "sha256": "76483463c01bc7995d833902bca1dfe77a1d4c9364d8ad044ff81ac135097857",
+        "uncompressed_bytes": 1050084,
+        "uncompressed_sha256": "4fe90952456c768b01fa5beb96f97673774ae9f8cd48b5aedb17afadae4e3de0"
+      },
+      "reload_full_word_match": true
+    }
+  ],
+  "benchmarks": [
+    {
+      "entry": 405,
+      "modes": {
+        "single_dense": {
+          "verified": false,
+          "entry": 405,
+          "status": "round_limit",
+          "rounds": 10000,
+          "prefix_skip": false,
+          "counter_fallbacks": 0,
+          "sparse_counter": false,
+          "window_bits": 0,
+          "new_rounds": 10000,
+          "events": 88620901,
+          "word_bits": 62088,
+          "seconds": 4.504471081
+        },
+        "window_dense": {
+          "verified": false,
+          "entry": 405,
+          "status": "round_limit",
+          "rounds": 10000,
+          "prefix_skip": false,
+          "counter_fallbacks": 0,
+          "sparse_counter": false,
+          "window_bits": 16,
+          "new_rounds": 10000,
+          "events": 88620901,
+          "word_bits": 62088,
+          "seconds": 1.33829881
+        },
+        "window_sparse": {
+          "verified": false,
+          "entry": 405,
+          "status": "round_limit",
+          "rounds": 10000,
+          "prefix_skip": false,
+          "counter_fallbacks": 0,
+          "sparse_counter": true,
+          "window_bits": 16,
+          "new_rounds": 10000,
+          "events": 88620901,
+          "word_bits": 62088,
+          "seconds": 0.91317653
+        },
+        "default": {
+          "verified": false,
+          "entry": 405,
+          "status": "round_limit",
+          "rounds": 10000,
+          "prefix_skip": true,
+          "counter_fallbacks": 0,
+          "sparse_counter": true,
+          "window_bits": 16,
+          "new_rounds": 10000,
+          "events": 88620901,
+          "word_bits": 62088,
+          "seconds": 0.64719941
+        }
+      },
+      "window_speedup": 3.3658186403079893,
+      "sparse_speedup": 1.4655422758182364,
+      "default_speedup": 6.959943120158283
+    },
+    {
+      "entry": 482,
+      "modes": {
+        "single_dense": {
+          "verified": false,
+          "entry": 482,
+          "status": "round_limit",
+          "rounds": 10000,
+          "prefix_skip": false,
+          "counter_fallbacks": 0,
+          "sparse_counter": false,
+          "window_bits": 0,
+          "new_rounds": 10000,
+          "events": 182018343,
+          "word_bits": 139938,
+          "seconds": 8.11923278
+        },
+        "window_dense": {
+          "verified": false,
+          "entry": 482,
+          "status": "round_limit",
+          "rounds": 10000,
+          "prefix_skip": false,
+          "counter_fallbacks": 0,
+          "sparse_counter": false,
+          "window_bits": 16,
+          "new_rounds": 10000,
+          "events": 182018343,
+          "word_bits": 139938,
+          "seconds": 2.799909474
+        },
+        "window_sparse": {
+          "verified": false,
+          "entry": 482,
+          "status": "round_limit",
+          "rounds": 10000,
+          "prefix_skip": false,
+          "counter_fallbacks": 9778,
+          "sparse_counter": true,
+          "window_bits": 16,
+          "new_rounds": 10000,
+          "events": 182018343,
+          "word_bits": 139938,
+          "seconds": 2.703568714
+        },
+        "default": {
+          "verified": false,
+          "entry": 482,
+          "status": "round_limit",
+          "rounds": 10000,
+          "prefix_skip": true,
+          "counter_fallbacks": 0,
+          "sparse_counter": false,
+          "window_bits": 16,
+          "new_rounds": 10000,
+          "events": 182018343,
+          "word_bits": 139938,
+          "seconds": 2.598387967
+        }
+      },
+      "window_speedup": 2.8998197461008344,
+      "sparse_speedup": 1.035634662992331,
+      "default_speedup": 3.124719204027934
+    }
+  ],
+  "late_counter_comparison": [
+    {
+      "mode": "sparse",
+      "verified": false,
+      "entry": 482,
+      "status": "round_limit",
+      "rounds": 201000,
+      "counter_fallbacks": 1000,
+      "sparse_counter": true,
+      "window_bits": 16,
+      "new_rounds": 1000,
+      "events": 73950627905,
+      "word_bits": 2813938,
+      "seconds": 10.711909751
+    },
+    {
+      "mode": "dense",
+      "verified": false,
+      "entry": 482,
+      "status": "round_limit",
+      "rounds": 201000,
+      "counter_fallbacks": 0,
+      "sparse_counter": false,
+      "window_bits": 16,
+      "new_rounds": 1000,
+      "events": 73950627905,
+      "word_bits": 2813938,
+      "seconds": 9.822231393
+    },
+    {
+      "mode": "previous_dense",
+      "verified": false,
+      "entry": 482,
+      "status": "round_limit",
+      "rounds": 201000,
+      "window_bits": 16,
+      "new_rounds": 1000,
+      "events": 73950627905,
+      "word_bits": 2813938,
+      "seconds": 6.774403742
+    }
+  ],
+  "late_full_word_validation": [
+    {
+      "entry": 405,
+      "runs": [
+        {
+          "options": [],
+          "verified": false,
+          "entry": 405,
+          "status": "round_limit",
+          "rounds": 400100,
+          "prefix_skip": true,
+          "counter_fallbacks": 0,
+          "sparse_counter": true,
+          "window_bits": 16,
+          "new_rounds": 100,
+          "events": 142052821373,
+          "word_bits": 2485747,
+          "seconds": 0.530750098
+        },
+        {
+          "options": [
+            "--no-prefix",
+            "--sparse-counter"
+          ],
+          "verified": false,
+          "entry": 405,
+          "status": "round_limit",
+          "rounds": 400100,
+          "prefix_skip": false,
+          "counter_fallbacks": 0,
+          "sparse_counter": true,
+          "window_bits": 16,
+          "new_rounds": 100,
+          "events": 142052821373,
+          "word_bits": 2485747,
+          "seconds": 0.64530691
+        },
+        {
+          "options": [
+            "--single",
+            "--dense-counter",
+            "--no-prefix"
+          ],
+          "verified": false,
+          "entry": 405,
+          "status": "round_limit",
+          "rounds": 400100,
+          "prefix_skip": false,
+          "counter_fallbacks": 0,
+          "sparse_counter": false,
+          "window_bits": 0,
+          "new_rounds": 100,
+          "events": 142052821373,
+          "word_bits": 2485747,
+          "seconds": 19.54920237
+        }
+      ],
+      "full_word_match": true
+    },
+    {
+      "entry": 482,
+      "runs": [
+        {
+          "options": [],
+          "verified": false,
+          "entry": 482,
+          "status": "round_limit",
+          "rounds": 300100,
+          "prefix_skip": true,
+          "counter_fallbacks": 0,
+          "sparse_counter": false,
+          "window_bits": 16,
+          "new_rounds": 100,
+          "events": 164925495585,
+          "word_bits": 4201338,
+          "seconds": 1.398542719
+        },
+        {
+          "options": [
+            "--no-prefix",
+            "--sparse-counter"
+          ],
+          "verified": false,
+          "entry": 482,
+          "status": "round_limit",
+          "rounds": 300100,
+          "prefix_skip": false,
+          "counter_fallbacks": 100,
+          "sparse_counter": true,
+          "window_bits": 16,
+          "new_rounds": 100,
+          "events": 164925495585,
+          "word_bits": 4201338,
+          "seconds": 1.564772155
+        },
+        {
+          "options": [
+            "--single",
+            "--dense-counter",
+            "--no-prefix"
+          ],
+          "verified": false,
+          "entry": 482,
+          "status": "round_limit",
+          "rounds": 300100,
+          "prefix_skip": false,
+          "counter_fallbacks": 0,
+          "sparse_counter": false,
+          "window_bits": 0,
+          "new_rounds": 100,
+          "events": 164925495585,
+          "word_bits": 4201338,
+          "seconds": 4.770213063
+        }
+      ],
+      "full_word_match": true
+    }
+  ],
+  "validation": {
+    "verified": false,
+    "models": [
+      {
+        "entry": 405,
+        "python_rounds": 1000,
+        "unbatched_rounds": 100,
+        "ordinary_tm_boundaries": 10,
+        "ordinary_tm_steps": 2605,
+        "blank_seed_steps": 4,
+        "learned_packet_inputs": 14,
+        "packet_oracle_steps": 70,
+        "native_seconds": 0.006774761,
+        "checkpoint_resume": "passed",
+        "rollback_controls": "passed"
+      },
+      {
+        "entry": 482,
+        "python_rounds": 1000,
+        "unbatched_rounds": 100,
+        "ordinary_tm_boundaries": 10,
+        "ordinary_tm_steps": 4827,
+        "blank_seed_steps": 4,
+        "learned_packet_inputs": 48,
+        "packet_oracle_steps": 303,
+        "native_seconds": 0.023743625,
+        "checkpoint_resume": "passed",
+        "rollback_controls": "passed"
+      }
+    ],
+    "frontier_regression": {
+      "entry": 405,
+      "from_round": 161210,
+      "to_round": 161211,
+      "word_bits": 1001253,
+      "packet_oracle_steps": 174,
+      "full_word_match": true
+    },
+    "native_selftest": {
+      "selftest": "passed",
+      "field_operations": 100000,
+      "window_cases": 2463528,
+      "counter_operations": 200000
+    }
+  },
+  "source_sha256": {
+    "packet_stream.cpp": "39388d7d5c15ea2a17d3189278767e2cee3789de1e3d2439438a7f50044fa865",
+    "packet_stream_validate.py": "58be6b1d9578a2b03722e4d845a17aafaf868a3c30865430905b9160ca963261",
+    "sliding_bits.hpp": "f4ce13c86334d5f3f9945a98785c7f964b38fa8eea37fd8212c63aab6c407a59"
+  },
+  "build_flags": "g++ -O3 -march=native -std=c++17",
+  "ubsan_validation": {
+    "verified": false,
+    "models": [
+      {
+        "entry": 405,
+        "python_rounds": 1000,
+        "unbatched_rounds": 100,
+        "ordinary_tm_boundaries": 10,
+        "ordinary_tm_steps": 2605,
+        "blank_seed_steps": 4,
+        "learned_packet_inputs": 14,
+        "packet_oracle_steps": 70,
+        "native_seconds": 0.015381688,
+        "checkpoint_resume": "passed",
+        "rollback_controls": "passed"
+      },
+      {
+        "entry": 482,
+        "python_rounds": 1000,
+        "unbatched_rounds": 100,
+        "ordinary_tm_boundaries": 10,
+        "ordinary_tm_steps": 4827,
+        "blank_seed_steps": 4,
+        "learned_packet_inputs": 48,
+        "packet_oracle_steps": 303,
+        "native_seconds": 0.073942979,
+        "checkpoint_resume": "passed",
+        "rollback_controls": "passed"
+      }
+    ],
+    "frontier_regression": {
+      "entry": 405,
+      "from_round": 161210,
+      "to_round": 161211,
+      "word_bits": 1001253,
+      "packet_oracle_steps": 174,
+      "full_word_match": true
+    },
+    "native_selftest": {
+      "selftest": "passed",
+      "field_operations": 100000,
+      "window_cases": 2463528,
+      "counter_operations": 200000
+    }
+  },
+  "proof_validation": {
+    "coq_version": "8.20.1",
+    "file": "verify/ResearchPacketCoverage.v",
+    "closed_assumption_reports": 12,
+    "kernel_checked": true
+  }
+}

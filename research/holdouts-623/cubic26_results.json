@@ -112,5 +112,22 @@
       "blank_iterations_compared": 1000000
     }
   },
-  "scope": "Unverified recurrence iteration counts, not certified raw TM steps."
+  "scope": "Unverified recurrence iteration counts, not certified raw TM steps.",
+  "five_trillion": {
+    "machine": "1RB1LC_1LC1RD_1LA0LB_0RB1RE_1RF0RA_---0RC",
+    "status": "iteration_limit",
+    "verified": false,
+    "backend": "guarded_table",
+    "bits": 11,
+    "iterations": 5000000000000,
+    "new_iterations": 1000000000000,
+    "a": 2009061144720,
+    "b": 15490938245740,
+    "jumps": 435064926732,
+    "jumped_iterations": 4999999883688,
+    "scalar_iterations": 116312,
+    "seconds": 587.928759916,
+    "total_seconds": 2936.6232542909993,
+    "terminal_checks_this_run": 188
+  }
 }

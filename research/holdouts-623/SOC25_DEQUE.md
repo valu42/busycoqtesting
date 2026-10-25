@@ -2,7 +2,7 @@
 
 **Result: one billion reset rounds from each of three initial states, with no halt.** At 100,000 rounds, the new deque implementation is 415–457 times faster than an independently written, compiled big-integer implementation of the same map. This is a measured representation improvement, not an exponential-time shortcut or a classification.
 
-This additional direction arose while auditing [upstream PR #40](https://github.com/ccz181078/busycoq/pull/40). It is separate from [the Cubic Mess search](CUBIC26.md). The three representative tables below do not occur in the supplied 623-machine file, including under reflected state renaming; this work is not counted as progress on three additional members of that ordering.
+This additional direction arose while auditing [upstream PR #40](https://github.com/ccz181078/busycoq/pull/40). It is separate from [the Cubic Mess search](CUBIC26.md). The three representative tables below do not occur directly in the supplied 623-machine file. A further audit of the existing equivalence catalogue identifies supplied entries **535, 572, and 573** with these same three starts, as checked below. Thus the existing billion-round experiments also cover those three variants; they remain unknown.
 
 ## Source and exact scope
 
@@ -24,13 +24,21 @@ For example, `(1,2)` maps to `(5,20)` and then to `(16,52144)`; `(3,6)` halts. T
 | 2 | (2,4) | `1RB1LA_1LC1RD_1LA0LC_1RE0RB_1RF1LC_1RA---` |
 | 3 | (1,3) | `1RB1LA_1LC1RD_1LA0LC_1RE0RB_1RF0RB_1RA---` |
 
-The upstream proof relates additional tables to the same three starts. No equivalence or classification is inferred merely from a transition-table resemblance.
+The upstream proof relates additional tables to the same three starts. [ResearchSOC25Coverage.v](../../verify/ResearchSOC25Coverage.v) explicitly links the following supplied inputs to the existing representatives, using the existing `Eqv_WordPairs` equivalences and checked reflection maps:
+
+| Supplied entry | Existing model | CLI start | Initial `(L,X)` |
+| --- | --- | --- | --- |
+| 535 | `TM93.tm'` | 2 | `(2,4)` |
+| 572 | `TM97.tm'` | 3 | `(1,3)` |
+| 573 | reflection of `TM90.tm'` | 1 | `(1,2)` |
+
+All three printed statements have closed assumptions and pass independent kernel checking. No unmerged upstream source is imported by this coverage file. Combining these existing equivalences with the pinned upstream `eqv_F` statements justifies the start mapping; the native billion-round runs are still unverified. This corrects the earlier representative-only coverage audit and is not a new machine classification.
 
 ## Representation change
 
 The direct map repeatedly removes blocks from the **low** end of the integer, adds or subtracts powers of two, and creates bits at the **high** end. An ordinary contiguous big integer copies or shifts its remaining limbs when dropping a low block. As the counter grows, that mandatory work dominates the simulation.
 
-[soc25_deque.cpp](soc25_deque.cpp) keeps 64-bit words in a deque with an absolute bit origin:
+[soc25_deque.cpp](soc25_deque.cpp) keeps 64-bit words in a deque using the shared [sliding_bits.hpp](sliding_bits.hpp), with an absolute bit origin:
 
 - Removing low bits advances the origin, discards fully consumed words, and masks one boundary word. The untouched middle is not copied.
 - Adding or subtracting a power of two edits its word and propagates a carry or borrow only as far as needed.

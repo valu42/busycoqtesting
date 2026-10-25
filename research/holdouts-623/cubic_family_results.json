@@ -1,0 +1,603 @@
+{
+  "verified": false,
+  "scope": "Certificate iterations, not raw TM steps. Native runs and checkpoints are unverified.",
+  "runs": [
+    {
+      "entry": 35,
+      "initial_run": {
+        "verified": false,
+        "entry": 35,
+        "lemma": "CubicCap.WF17",
+        "status": "iteration_limit",
+        "iterations": 1000000000,
+        "new_iterations": 1000000000,
+        "a": 23622827,
+        "b": 0,
+        "c": 1576380037,
+        "jumps": 0,
+        "scalar_steps": 1000000000,
+        "seconds": 17.409323025
+      },
+      "continuation": {
+        "verified": false,
+        "entry": 35,
+        "lemma": "CubicCap.WF17",
+        "backend": "asymmetric_table",
+        "bits": 10,
+        "events": 5,
+        "status": "iteration_limit",
+        "iterations": 1000000000000,
+        "new_iterations": 999000000000,
+        "a": 1456783997093,
+        "b": 0,
+        "c": 143215903080,
+        "jumps": 159840034693,
+        "scalar_steps": 1000008918,
+        "seconds": 3656.860639256
+      },
+      "cumulative_seconds": 3674.269962281,
+      "checkpoint": "cubic35.checkpoint",
+      "sha256": "d87a1c5fe24576db784d8d50f2bc088d8de3911e3e42e757240017375a218180"
+    },
+    {
+      "entry": 138,
+      "initial_run": {
+        "verified": false,
+        "entry": 138,
+        "lemma": "CubicCap.WF35",
+        "status": "iteration_limit",
+        "iterations": 1000000000,
+        "new_iterations": 1000000000,
+        "a": 529408046,
+        "b": 2,
+        "c": 735295997,
+        "jumps": 99997537,
+        "scalar_steps": 24630,
+        "seconds": 1.3697646
+      },
+      "continuation": {
+        "verified": false,
+        "entry": 138,
+        "lemma": "CubicCap.WF35",
+        "status": "iteration_limit",
+        "iterations": 100000000000,
+        "new_iterations": 99000000000,
+        "a": 48338543900,
+        "b": 0,
+        "c": 75830728075,
+        "jumps": 9999996898,
+        "scalar_steps": 31020,
+        "seconds": 137.968309241
+      },
+      "cumulative_seconds": 139.33807384099998,
+      "checkpoint": "cubic138.checkpoint",
+      "sha256": "850039b788e0d29c96b842b7f68ae39afa20fde3c4c01e102ab587849cd06bdf"
+    },
+    {
+      "entry": 269,
+      "initial_run": {
+        "verified": false,
+        "entry": 269,
+        "lemma": "CubicCap.WF32",
+        "status": "iteration_limit",
+        "iterations": 1000000000,
+        "new_iterations": 1000000000,
+        "a": 1947277894,
+        "b": 1,
+        "c": 26361055,
+        "jumps": 99997547,
+        "scalar_steps": 24530,
+        "seconds": 1.389601942
+      },
+      "continuation": {
+        "verified": false,
+        "entry": 269,
+        "lemma": "CubicCap.WF32",
+        "status": "iteration_limit",
+        "iterations": 100000000000,
+        "new_iterations": 99000000000,
+        "a": 159466687122,
+        "b": 1,
+        "c": 20266656441,
+        "jumps": 9999996918,
+        "scalar_steps": 30820,
+        "seconds": 138.0684632
+      },
+      "cumulative_seconds": 139.458065142,
+      "checkpoint": "cubic269.checkpoint",
+      "sha256": "132801b3bb77ede918db682c5ee0221f89166e9f245769262538b2a2e398a345"
+    },
+    {
+      "entry": 409,
+      "initial_run": {
+        "verified": false,
+        "entry": 409,
+        "lemma": "CubicCap.WF36",
+        "status": "iteration_limit",
+        "iterations": 1000000000,
+        "new_iterations": 1000000000,
+        "a": 344531310,
+        "b": 2,
+        "c": 827734345,
+        "jumps": 99997533,
+        "scalar_steps": 24670,
+        "seconds": 1.39692948
+      },
+      "continuation": {
+        "verified": false,
+        "entry": 409,
+        "lemma": "CubicCap.WF36",
+        "status": "iteration_limit",
+        "iterations": 100000000000,
+        "new_iterations": 99000000000,
+        "a": 192643925654,
+        "b": 0,
+        "c": 3678037175,
+        "jumps": 9999996887,
+        "scalar_steps": 31130,
+        "seconds": 137.075882541
+      },
+      "cumulative_seconds": 138.472812021,
+      "checkpoint": "cubic409.checkpoint",
+      "sha256": "4e4a0f45956841be585f15c0a26f006251f5da1209d5bda23f2c7021e3210430"
+    },
+    {
+      "entry": 494,
+      "initial_run": {
+        "verified": false,
+        "entry": 494,
+        "lemma": "CubicCap.WF33",
+        "status": "iteration_limit",
+        "iterations": 1000000000,
+        "new_iterations": 1000000000,
+        "a": 471542266,
+        "b": 2,
+        "c": 764228895,
+        "jumps": 99997544,
+        "scalar_steps": 24560,
+        "seconds": 1.418360083
+      },
+      "continuation": {
+        "verified": false,
+        "entry": 494,
+        "lemma": "CubicCap.WF33",
+        "status": "iteration_limit",
+        "iterations": 100000000000,
+        "new_iterations": 99000000000,
+        "a": 174667235660,
+        "b": 2,
+        "c": 12666382201,
+        "jumps": 9999996905,
+        "scalar_steps": 30950,
+        "seconds": 136.876245493
+      },
+      "cumulative_seconds": 138.294605576,
+      "checkpoint": "cubic494.checkpoint",
+      "sha256": "c2867c576334413e85aa783d1e508dbc2bf2a4795b0b7e78333ebd5d706dc80a"
+    }
+  ],
+  "benchmarks": [
+    {
+      "entry": 35,
+      "scalar": {
+        "verified": false,
+        "entry": 35,
+        "lemma": "CubicCap.WF17",
+        "backend": "scalar",
+        "bits": 10,
+        "events": 5,
+        "status": "iteration_limit",
+        "iterations": 1000000000,
+        "new_iterations": 1000000000,
+        "a": 23622827,
+        "b": 0,
+        "c": 1576380037,
+        "jumps": 0,
+        "scalar_steps": 1000000000,
+        "seconds": 10.212531921
+      },
+      "accelerated": {
+        "verified": false,
+        "entry": 35,
+        "lemma": "CubicCap.WF17",
+        "backend": "asymmetric_table",
+        "bits": 10,
+        "events": 5,
+        "status": "iteration_limit",
+        "iterations": 1000000000,
+        "new_iterations": 1000000000,
+        "a": 23622827,
+        "b": 0,
+        "c": 1576380037,
+        "jumps": 159997960,
+        "scalar_steps": 19458,
+        "seconds": 3.700341269
+      },
+      "ratio": 2.7598892044246206
+    },
+    {
+      "entry": 138,
+      "scalar": {
+        "verified": false,
+        "entry": 138,
+        "lemma": "CubicCap.WF35",
+        "backend": "scalar",
+        "bits": 10,
+        "events": 5,
+        "status": "iteration_limit",
+        "iterations": 1000000000,
+        "new_iterations": 1000000000,
+        "a": 529408046,
+        "b": 2,
+        "c": 735295997,
+        "jumps": 0,
+        "scalar_steps": 1000000000,
+        "seconds": 6.736942056
+      },
+      "accelerated": {
+        "verified": false,
+        "entry": 138,
+        "lemma": "CubicCap.WF35",
+        "backend": "doubling_table",
+        "bits": 10,
+        "events": 5,
+        "status": "iteration_limit",
+        "iterations": 1000000000,
+        "new_iterations": 1000000000,
+        "a": 529408046,
+        "b": 2,
+        "c": 735295997,
+        "jumps": 99997537,
+        "scalar_steps": 24630,
+        "seconds": 1.382933408
+      },
+      "ratio": 4.871486954489713
+    },
+    {
+      "entry": 269,
+      "scalar": {
+        "verified": false,
+        "entry": 269,
+        "lemma": "CubicCap.WF32",
+        "backend": "scalar",
+        "bits": 10,
+        "events": 5,
+        "status": "iteration_limit",
+        "iterations": 1000000000,
+        "new_iterations": 1000000000,
+        "a": 1947277894,
+        "b": 1,
+        "c": 26361055,
+        "jumps": 0,
+        "scalar_steps": 1000000000,
+        "seconds": 6.75899063
+      },
+      "accelerated": {
+        "verified": false,
+        "entry": 269,
+        "lemma": "CubicCap.WF32",
+        "backend": "doubling_table",
+        "bits": 10,
+        "events": 5,
+        "status": "iteration_limit",
+        "iterations": 1000000000,
+        "new_iterations": 1000000000,
+        "a": 1947277894,
+        "b": 1,
+        "c": 26361055,
+        "jumps": 99997547,
+        "scalar_steps": 24530,
+        "seconds": 1.341184803
+      },
+      "ratio": 5.039566967118401
+    },
+    {
+      "entry": 409,
+      "scalar": {
+        "verified": false,
+        "entry": 409,
+        "lemma": "CubicCap.WF36",
+        "backend": "scalar",
+        "bits": 10,
+        "events": 5,
+        "status": "iteration_limit",
+        "iterations": 1000000000,
+        "new_iterations": 1000000000,
+        "a": 344531310,
+        "b": 2,
+        "c": 827734345,
+        "jumps": 0,
+        "scalar_steps": 1000000000,
+        "seconds": 6.536770103
+      },
+      "accelerated": {
+        "verified": false,
+        "entry": 409,
+        "lemma": "CubicCap.WF36",
+        "backend": "doubling_table",
+        "bits": 10,
+        "events": 5,
+        "status": "iteration_limit",
+        "iterations": 1000000000,
+        "new_iterations": 1000000000,
+        "a": 344531310,
+        "b": 2,
+        "c": 827734345,
+        "jumps": 99997533,
+        "scalar_steps": 24670,
+        "seconds": 1.388632593
+      },
+      "ratio": 4.707343134498932
+    },
+    {
+      "entry": 494,
+      "scalar": {
+        "verified": false,
+        "entry": 494,
+        "lemma": "CubicCap.WF33",
+        "backend": "scalar",
+        "bits": 10,
+        "events": 5,
+        "status": "iteration_limit",
+        "iterations": 1000000000,
+        "new_iterations": 1000000000,
+        "a": 471542266,
+        "b": 2,
+        "c": 764228895,
+        "jumps": 0,
+        "scalar_steps": 1000000000,
+        "seconds": 6.957539454
+      },
+      "accelerated": {
+        "verified": false,
+        "entry": 494,
+        "lemma": "CubicCap.WF33",
+        "backend": "doubling_table",
+        "bits": 10,
+        "events": 5,
+        "status": "iteration_limit",
+        "iterations": 1000000000,
+        "new_iterations": 1000000000,
+        "a": 471542266,
+        "b": 2,
+        "c": 764228895,
+        "jumps": 99997544,
+        "scalar_steps": 24560,
+        "seconds": 1.396014602
+      },
+      "ratio": 4.983858653077327
+    }
+  ],
+  "validation": {
+    "verified": false,
+    "models": [
+      {
+        "entry": 35,
+        "lemma": "WF17",
+        "arithmetic_cases": 1183,
+        "ordinary_tm_cases": 1183,
+        "halting_cases": 23,
+        "max_raw_steps": 287,
+        "blank_entry_steps": 8,
+        "python_orbit_iterations": 1000000,
+        "checkpoint_resume": "passed",
+        "terminal_controls": "passed"
+      },
+      {
+        "entry": 269,
+        "lemma": "WF32",
+        "arithmetic_cases": 1183,
+        "ordinary_tm_cases": 1183,
+        "halting_cases": 42,
+        "max_raw_steps": 358,
+        "blank_entry_steps": 5,
+        "python_orbit_iterations": 1000000,
+        "checkpoint_resume": "passed",
+        "terminal_controls": "passed"
+      },
+      {
+        "entry": 494,
+        "lemma": "WF33",
+        "arithmetic_cases": 1183,
+        "ordinary_tm_cases": 1183,
+        "halting_cases": 42,
+        "max_raw_steps": 350,
+        "blank_entry_steps": 27,
+        "python_orbit_iterations": 1000000,
+        "checkpoint_resume": "passed",
+        "terminal_controls": "passed"
+      },
+      {
+        "entry": 138,
+        "lemma": "WF35",
+        "arithmetic_cases": 1183,
+        "ordinary_tm_cases": 1183,
+        "halting_cases": 42,
+        "max_raw_steps": 346,
+        "blank_entry_steps": 7,
+        "python_orbit_iterations": 1000000,
+        "checkpoint_resume": "passed",
+        "terminal_controls": "passed"
+      },
+      {
+        "entry": 409,
+        "lemma": "WF36",
+        "arithmetic_cases": 1183,
+        "ordinary_tm_cases": 1183,
+        "halting_cases": 42,
+        "max_raw_steps": 344,
+        "blank_entry_steps": 5,
+        "python_orbit_iterations": 1000000,
+        "checkpoint_resume": "passed",
+        "terminal_controls": "passed"
+      }
+    ],
+    "native_selftest": {
+      "selftest": "passed",
+      "accepted_jumps": 1000000,
+      "mixed_jumps": 657456,
+      "orbits": 4
+    }
+  },
+  "ubsan_validation": {
+    "verified": false,
+    "models": [
+      {
+        "entry": 35,
+        "lemma": "WF17",
+        "arithmetic_cases": 1183,
+        "ordinary_tm_cases": 1183,
+        "halting_cases": 23,
+        "max_raw_steps": 287,
+        "blank_entry_steps": 8,
+        "python_orbit_iterations": 1000000,
+        "checkpoint_resume": "passed",
+        "terminal_controls": "passed"
+      },
+      {
+        "entry": 269,
+        "lemma": "WF32",
+        "arithmetic_cases": 1183,
+        "ordinary_tm_cases": 1183,
+        "halting_cases": 42,
+        "max_raw_steps": 358,
+        "blank_entry_steps": 5,
+        "python_orbit_iterations": 1000000,
+        "checkpoint_resume": "passed",
+        "terminal_controls": "passed"
+      },
+      {
+        "entry": 494,
+        "lemma": "WF33",
+        "arithmetic_cases": 1183,
+        "ordinary_tm_cases": 1183,
+        "halting_cases": 42,
+        "max_raw_steps": 350,
+        "blank_entry_steps": 27,
+        "python_orbit_iterations": 1000000,
+        "checkpoint_resume": "passed",
+        "terminal_controls": "passed"
+      },
+      {
+        "entry": 138,
+        "lemma": "WF35",
+        "arithmetic_cases": 1183,
+        "ordinary_tm_cases": 1183,
+        "halting_cases": 42,
+        "max_raw_steps": 346,
+        "blank_entry_steps": 7,
+        "python_orbit_iterations": 1000000,
+        "checkpoint_resume": "passed",
+        "terminal_controls": "passed"
+      },
+      {
+        "entry": 409,
+        "lemma": "WF36",
+        "arithmetic_cases": 1183,
+        "ordinary_tm_cases": 1183,
+        "halting_cases": 42,
+        "max_raw_steps": 344,
+        "blank_entry_steps": 5,
+        "python_orbit_iterations": 1000000,
+        "checkpoint_resume": "passed",
+        "terminal_controls": "passed"
+      }
+    ],
+    "native_selftest": {
+      "selftest": "passed",
+      "accepted_jumps": 1000000,
+      "mixed_jumps": 657456,
+      "orbits": 4
+    }
+  },
+  "additional_width_checks": {
+    "selftests": [
+      {
+        "events": 3,
+        "selftest": "passed",
+        "accepted_jumps": 1000000,
+        "mixed_jumps": 666310,
+        "orbits": 4
+      },
+      {
+        "events": 6,
+        "selftest": "passed",
+        "accepted_jumps": 1000000,
+        "mixed_jumps": 630207,
+        "orbits": 4
+      },
+      {
+        "events": 8,
+        "selftest": "passed",
+        "accepted_jumps": 1000000,
+        "mixed_jumps": 344638,
+        "orbits": 4
+      }
+    ],
+    "cross_events_resume": "passed"
+  },
+  "proof_validation": {
+    "coq_version": "8.20.1",
+    "files": [
+      "verify/ResearchCubicModels.v",
+      "verify/ResearchCubicFamily.v",
+      "verify/ResearchCubicFamilyJump.v"
+    ],
+    "closed_assumption_reports": 21,
+    "kernel_checked": true
+  },
+  "large_counter_checks": [
+    {
+      "entry": 138,
+      "initial": [
+        1234567890123456,
+        2,
+        987654321987654
+      ],
+      "iterations": 256,
+      "block_bits": 16,
+      "accepted_jumps": 16,
+      "python_match": true,
+      "artificial_not_claimed_blank_reachable": true
+    },
+    {
+      "entry": 269,
+      "initial": [
+        1234567890123456,
+        2,
+        987654321987654
+      ],
+      "iterations": 256,
+      "block_bits": 16,
+      "accepted_jumps": 16,
+      "python_match": true,
+      "artificial_not_claimed_blank_reachable": true
+    },
+    {
+      "entry": 409,
+      "initial": [
+        1234567890123456,
+        2,
+        987654321987654
+      ],
+      "iterations": 256,
+      "block_bits": 16,
+      "accepted_jumps": 16,
+      "python_match": true,
+      "artificial_not_claimed_blank_reachable": true
+    },
+    {
+      "entry": 494,
+      "initial": [
+        1234567890123456,
+        2,
+        987654321987654
+      ],
+      "iterations": 256,
+      "block_bits": 16,
+      "accepted_jumps": 16,
+      "python_match": true,
+      "artificial_not_claimed_blank_reachable": true
+    }
+  ]
+}
