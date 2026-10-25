@@ -190,9 +190,103 @@ PY
 
 The upstream open-PR audit was refreshed: #39 remains excluded from new-result claims; #3 and #4 concern assumptions. The next focused mathematical task is a recursive description of the reachable words at reset boundaries, proved closed under the total recurrence. Merely extending the simulation or dropping parity guards would not settle it.
 
+## 2026-10-25 — Sixth pass: symbolic frontiers, different starts, and invariant synthesis
+
+**Outcome: 22 more checked statements and three reproducible search tools; no new complete blank-run classification.** The new directions were symbolic input exploration, synthesis of both side automata, and memoization across recursively nested tape blocks. These are additions to this research branch, not claims that the methods are new to the literature.
+
+### Monotone-list frontier and falsification
+
+The individual target is entry 144,
+`1RB0LE_0RC---_1RD0LA_1RE0RA_1LC0LF_0RC1LC`.
+At a frontier, the head is in B with an entirely blank right side; the finite left word is written nearest-cell first.
+[ResearchMonotoneFrontier.v](../../verify/ResearchMonotoneFrontier.v) contains 13 statements: entry and local scanning rules, two general frontier returns, a further concrete return, two blank-state bridges, and a checked halting counterexample with its word property. The general rules preserve arbitrary untouched tails. In particular, `root_fours` covers an arbitrary repetition count, not a fixed simulation prefix.
+
+An initially plausible grammar forbade adjacent zeros in the finite word. Ordinary exploration returned safely on every word below `2^20` and on 10,000 sampled 256-bit words. This was misleading: [monotone_frontier.py](monotone_frontier.py) found a halting word after exploring 58,900 symbolic work states:
+
+```text
+11111101011010110111111011
+```
+
+This is the 26-bit nearest-first word `0x37ed6bf`. The independent coordinate-tape replay halts after 434 transitions. Coq proves both that the finite word has no adjacent zeros and that the corresponding B/frontier configuration halts; **the exact count 434 is an explorer measurement, not a separate Coq runtime theorem**. This is not a configuration claimed reachable from the blank A start.
+
+The symbolic search assigns a bit only when execution first reaches unread input, and merges equal control/work-word/grammar states. It avoids enumerating all complete words of a given length. Every reported counterexample is completed to a finite admissible word and independently replayed. A bounded search that finds nothing still reports unknown.
+
+A stricter hypothesis bounded the leading one-run by five, allowed interior one-runs congruent to 1 or 2 modulo four, capped the number of the latter, and constrained the final run after the head to residue 0 or 1. Closure fails immediately: `11111` returns to `11010111101`, which contains an interior run of four. `five_ones_return` checks this transition in Coq. Separate halting searches with marker caps 0, 1, and 2 each exhausted 500,000 symbolic states without a halt; they do not repair the failed closure condition.
+
+```sh
+python3 research/holdouts-623/monotone_frontier.py --selftest
+python3 research/holdouts-623/monotone_frontier.py --seconds 30
+python3 research/holdouts-623/monotone_frontier.py --grammar residues --check-closure
+```
+
+### Common programs with distinct blank starts
+
+Ignoring the initial-state label reveals two useful pairs. [ResearchStartVariants.v](../../verify/ResearchStartVariants.v) checks both directions of each reflected state map and records the actual different initial configurations:
+
+| Supplied entry | Shared program | Blank start reduces to |
+| --- | --- | --- |
+| 7 | `FractalSweep.tm` | recurrence pair `([1], [])`, proved in the previous pass |
+| 549 | `FractalSweep.tm` | recurrence pair `([1], [1])` |
+| 144 | `MonotoneFrontier.tm` | B/frontier left word `1` |
+| 321 | `MonotoneFrontier.tm` | B/frontier left word `101` |
+
+The new file contains nine statements. Both halting reductions are two-way. They **do not** assert that the two blank runs in a pair have the same outcome. The proofs check the inverse state map directly, avoiding the functional-extensionality dependency of the general double-reflection lemma. All nine report closed assumptions.
+
+An exploratory comparison of the first 100,000 unbatched recurrence pairs from each fractal start found no shared configuration hash. This is neither an inequivalence proof nor a classification. The explorer now accepts `--start E`; checkpoints record the start, retain compatibility with old A checkpoints, and reject an explicitly mismatched start. A split 500+500-call E run matched an uninterrupted 1,000-call run.
+
+```sh
+python3 research/holdouts-623/fractal_sweep.py --start E --iterations 100000 --seconds 30 --max-bits 1000000 --output /path/to/twin.json
+python3 research/holdouts-623/fractal_sweep.py --resume /path/to/twin.json --seconds 30
+```
+
+A wider transition-graph comparison also allowed the initial state to move. It compared 240,489 distinct tables appearing in non-research proof sources, finding 935 matching occurrences across 363 supplied inputs. Most were in equivalence catalogues; a table occurrence is not a blank-run theorem. No existing classification was transferred merely from this graph match. The monotone entries 116/375/387 form another common-program group with different starts.
+
+### Synthesizing both side automata
+
+[synthesize_invariant.py](synthesize_invariant.py) uses Z3 to choose both DFA transition tables and an allowed relation on `(left state, TM state, scanned bit, right state)`. Both automata read from blank infinity toward the head and loop at state zero on zero. Constraints include the blank start, forbid all halting configurations, and require closure under every possible predecessor when popping a side. This searches transition tables directly instead of choosing a residue or suffix generator in advance.
+
+The selection was the 88 inputs labelled Unknown in the working taxonomy plus the ten fractal/monotone targets, giving 98 distinct machines. A four-worker grid tried:
+
+- sizes `(4,4)`, `(2,8)`, `(8,2)` with two solver seconds each: 294 UNSAT results;
+- sizes `(8,8)`, `(16,4)`, `(4,16)` with five solver seconds each: 115 UNSAT and 179 timeout/unknown results.
+
+Thus **588 bounded attempts produced no candidate**. UNSAT is only a result for the stated finite template and sizes, not evidence that a machine halts. Two nonhalting and two halting controls produced the expected SAT/SAT/UNSAT/UNSAT results. For SAT, an independent Python least-fixed-point traversal checks the proposed DFA tables without using the solver's allowed relation. This is still unverified code: any positive on a holdout requires Coq replay before acceptance.
+
+Install `z3-solver` in an isolated environment (tested version 5.3.1.0), then for example:
+
+```sh
+python3 research/holdouts-623/synthesize_invariant.py --selftest
+python3 research/holdouts-623/synthesize_invariant.py --input /path/to/BB6_holdouts_623.txt --index 144 --left 8 --right 8 --seconds 5
+```
+
+A separate exploratory generator that tracked run residues and a capped number of exceptional runs was tested with the existing FAR engine: 108 bounded orientation/settings attempts on entries 7/144/321, all unknown. No certificate was obtained.
+
+### Recursively memoized blocks
+
+[hierarchical_sim.py](hierarchical_sim.py) stores binary tape blocks in shared binary trees and caches execution from a block boundary until exit or halt. Parent calls compose child calls; a repeated complete configuration inside a finite block produces a cycle candidate. This differs from comparing fixed-width block transition graphs: it reuses execution at every represented block size. It is an unverified simulator, not a proof checker.
+
+Validation compared 13,416 finite-block cases with ordinary execution, including 168 cycles, and checked 276 complete global snapshots while crossing block boundaries and expanding into blank space. The default ten fractal/monotone targets were tried at levels 8 and 16. All 20 runs stopped at budgets. At level 16, with 800,000 cache misses allowed, the last completed snapshot for entry 7 represented 187,774,600,009 simulated raw steps; entry 549 represented 178,044,727,628. These are unverified execution counts, not certified bounds or nonhalting evidence. Interrupted inner calls contribute no count to the reported completed snapshot.
+
+Another 88 runs on the Unknown selection used level 10, a 300,000-cache-miss limit, a billion top-level calls, and ten seconds each, with two worker processes. All were unknown: 64 hit the entry limit and 24 the time limit. No halt or cycle candidate was found. Timeouts depend on host load.
+
+```sh
+python3 research/holdouts-623/hierarchical_sim.py /path/to/BB6_holdouts_623.txt --selftest
+python3 research/holdouts-623/hierarchical_sim.py /path/to/BB6_holdouts_623.txt --level 16 --entries 800000 --blocks 1000000000 --seconds 20
+```
+
+The 22 new statements compile in Coq 8.20.1 with native compilation disabled and pass a separate `coqchk`. All 22 assumption reports are closed. No axiom or admitted proof was added:
+
+```sh
+coqc -native-compiler no -Q verify BusyCoq verify/ResearchMonotoneFrontier.v
+coqc -native-compiler no -Q verify BusyCoq verify/ResearchStartVariants.v
+coqchk -silent -bytecode-compiler yes -Q verify BusyCoq BusyCoq.ResearchMonotoneFrontier BusyCoq.ResearchStartVariants
+```
+
+The upstream and owner open-PR audits were refreshed. Upstream #39 and owner #1 remain excluded from new-result claims; upstream #3/#4 concern assumptions. The useful remaining mathematical task is a reachable-word invariant stronger than the rejected grammars, or a terminating recurrence analysis. None of the negative bounded searches supplies that missing argument.
+
 ## Proof status
 
-No new complete blank-run halting/nonhalting classification, machine-to-machine equivalence, or explicit raw-step bound has been established in this work. The fractal machine's halting equivalence to its total recurrence is proved; classification of the initial recurrence orbit remains open. Search failures are not proofs of nonhalting or inequivalence.
+No new complete blank-run halting/nonhalting classification, equivalence between two blank runs, or explicit certified raw-step bound has been established in this work. Two fractal blank starts are reduced to distinct initial pairs of the same total recurrence; their classification remains open. A monotone start is similarly reduced to a different frontier of its partner's program. Search failures are not proofs of nonhalting or inequivalence.
 
 A result will be submitted only after the exact theorem is checked by Rocq and the current PRs are checked again for duplication. Research and proof PRs from this work target this repository, not upstream.
 

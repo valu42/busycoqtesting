@@ -9,8 +9,10 @@ not raw TM steps and not a certified lower bound.
 Time and space budgets are checked between calls, so one call may exceed them.
 
 Both words are nonnegative, arbitrary-precision integers, nearest bit first.
-The right integer includes the scanned cell. The initial pair is (1, 0),
-reached after the blank machine's first step. No input attachment is required.
+The right integer includes the scanned cell. Start A uses pair (1, 0),
+reached after the blank machine's first step. Start E uses (1, 1), also
+covering machine 549 through ResearchStartVariants.v's checked reduction.
+No input attachment is required.
 """
 import argparse
 import hashlib
@@ -179,11 +181,15 @@ def selftest():
 
 
 def run(args):
-    l, r, base, batch_count = 1, 0, 0, 0
+    initial_state = args.start or "A"
+    l, r, base, batch_count = 1, int(initial_state == "E"), 0, 0
     if args.resume:
         data = json.loads(args.resume.read_text())
         if data.get("schema") != SCHEMA or data.get("machine") != MACHINE:
             raise ValueError("checkpoint is for a different recurrence")
+        initial_state = data.get("initial_state", "A")
+        if initial_state not in ("A", "E") or (args.start and args.start != initial_state):
+            raise ValueError("checkpoint has a different starting state")
         if data.get("status") not in ("iteration_limit", "time_limit", "space_limit"):
             raise ValueError("checkpoint is not resumable")
         l, r = int(data["left_hex"], 16), int(data["right_hex"], 16)
@@ -214,12 +220,13 @@ def run(args):
                 break
             l, r = result
         done += 1
-    data = dict(schema=SCHEMA, machine=MACHINE, left_hex=hex(l), right_hex=hex(r),
+    data = dict(schema=SCHEMA, machine=MACHINE, initial_state=initial_state,
+                left_hex=hex(l), right_hex=hex(r),
                 iterations=base+done, batches=batch_count, status=status)
     if args.output:
         args.output.write_text(json.dumps(data) + "\n")
     digest = hashlib.sha256((hex(l) + ":" + hex(r)).encode()).hexdigest()
-    print(json.dumps({k: data[k] for k in ("iterations", "batches", "status")} |
+    print(json.dumps({k: data[k] for k in ("initial_state", "iterations", "batches", "status")} |
                      {"left_bits": l.bit_length(), "right_bits": r.bit_length(),
                       "seconds": time.monotonic()-start, "digest": digest}))
     return data
@@ -228,6 +235,8 @@ def run(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--selftest", action="store_true")
+    parser.add_argument("--start", choices=("A", "E"),
+                        help="blank starting state; defaults to A or the checkpoint's start")
     parser.add_argument("--iterations", type=int, default=100000)
     parser.add_argument("--seconds", type=float, default=20)
     parser.add_argument("--max-bits", type=int, default=200000)

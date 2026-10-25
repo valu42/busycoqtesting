@@ -7,6 +7,7 @@ Makefile.coq.conf
 *.d
 *.aux
 *.cache
+__pycache__/
 *.ml
 *.mli
 !verify/main.ml
