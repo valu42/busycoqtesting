@@ -284,9 +284,35 @@ coqchk -silent -bytecode-compiler yes -Q verify BusyCoq BusyCoq.ResearchMonotone
 
 The upstream and owner open-PR audits were refreshed. Upstream #39 and owner #1 remain excluded from new-result claims; upstream #3/#4 concern assumptions. The useful remaining mathematical task is a reachable-word invariant stronger than the rejected grammars, or a terminating recurrence analysis. None of the negative bounded searches supplies that missing argument.
 
+## 2026-10-25 — Seventh pass: accelerated search on Cubic Mess
+
+The focused target is supplied entry 26, `1RB1LC_1LC1RD_1LA0LB_0RB1RE_1RF0RA_---0RC`, a potentially probviously halting machine. [CUBIC26.md](CUBIC26.md) gives the derivation, source attribution, commands, exact proof scope, and benchmark data.
+
+Racheline's published two-counter rules were independently checked in Coq, including every exceptional case on the invariant domain `a>=1, b>=2, a+b>=11`. `ResearchCubic26.v` proves a two-way reduction from blank-run halting to termination of that recurrence. `ResearchCubic26Jump.v` proves an abstract guarded-doubling composition theorem, the correction bounds, the ideal modular residue, and the four-state parity update. The 15 printed assumption reports are closed, and both files pass independent kernel checking. These are recurrence and arithmetic theorems, not a certification of the native executable.
+
+The new [cubic26_accel.cpp](cubic26_accel.cpp) predicts a block of regular branches by doubling modulo the original counter sum, then applies a precomputed affine correction. A two-sided margin guard excludes every exceptional/halting branch inside an accepted block; a rejected guard falls back to one ordinary recurrence iteration. It runs **13.05 times faster** than the compiled scalar recurrence over the first billion iterations on this host. This is a constant-factor gain, not the requested exponential shortcut. Larger tables, composed byte tables, and reciprocal approximations were also tried and were slower.
+
+The search reached **4,000,000,000,000 recurrence iterations**, ending at `(7354046713435,6645952891241)` without halting, in 2348.694 cumulative simulation seconds. This is five times the `8e11` recurrence iterations reported on the checked wiki page, not a claim about all previous simulations. [cubic26.checkpoint](cubic26.checkpoint) preserves that native state for continuation; [cubic26_results.json](cubic26_results.json) records the milestones and checks. Counts are not raw TM steps or certified bounds.
+
+Validation includes 2,806 ordinary-TM configuration comparisons, 12,030,650 accepted jumps compared with scalar execution, a million-round Python comparison, cross-width checkpoint/resume checks, terminal and integer-limit controls, and the full suite under the undefined-behavior sanitizer. The checkpoint was reloaded without advancing and retained the exact final counters.
+
+## 2026-10-25 — Eighth pass: avoid copying growing binary counters
+
+The refreshed upstream audit found [PR #40](https://github.com/ccz181078/busycoq/pull/40), which supplies a complete reset-round map for the SOC25 family. Its pinned main source was compiled and kernel-checked independently; its eight `eqv_F` statements and `F_G` report closed assumptions. These are the upstream author's results. The separate wrappers involving `Eqv_v3` were not part of this audit, and no upstream proof source was copied into this branch.
+
+This suggested an additional representation-based acceleration. [soc25_deque.cpp](soc25_deque.cpp) stores the binary counter in a deque of machine words with a moving low-bit origin. Consuming low blocks leaves the remaining words in place. The auxiliary counter is kept as signed powers of two, so only the necessary carry and borrow regions are touched. [SOC25_DEQUE.md](SOC25_DEQUE.md) explains the construction and limitations. This family is additional exploratory work: the three representative tables are not members of the supplied 623-machine ordering, even under reflected state renaming.
+
+Against an independent **compiled C++ big-integer** implementation of the same upstream map, full 100,000-round comparisons give speedups of **456.70x, 438.59x, and 415.14x** for the three starts. This avoids a mandatory full-counter copy per round; it is not a proof of an exponential improvement or constant worst-case round cost.
+
+Each start completed **one billion reset rounds without a halt**, a thousand times the round count reported in the pinned upstream PR. Simulation times were 153.811, 156.502, and 153.763 seconds. Final counter widths are about 8.56 billion bits each. The small result records are in [soc25_results.json](soc25_results.json); the roughly one-GiB counter payloads are not included in Git. This tool currently replays from a selected start rather than resuming saved large states.
+
+The independent checks cover 18,056 round cases, including 6,033 halting cases; 100,000 arithmetic-operation comparisons; complete Python orbit comparisons; complete 100,000-round comparisons against Boost `cpp_int`; and budget/error controls. The native/Python suite also passed under the undefined-behavior sanitizer. The native implementation and long orbit remain unverified, so no classification or certified raw-step count is claimed.
+
+The final open-PR audit covers upstream #40 (related recurrence work, explicitly credited), #39 (previously excluded halting result), #3/#4 (assumptions), and owner #1 (previously excluded halting result). No new complete result is claimed from these searches.
+
 ## Proof status
 
-No new complete blank-run halting/nonhalting classification, equivalence between two blank runs, or explicit certified raw-step bound has been established in this work. Two fractal blank starts are reduced to distinct initial pairs of the same total recurrence; their classification remains open. A monotone start is similarly reduced to a different frontier of its partner's program. Search failures are not proofs of nonhalting or inequivalence.
+No new complete blank-run halting/nonhalting classification, equivalence between two blank runs, or explicit certified raw-step bound has been established in this work. Two fractal blank starts are reduced to distinct initial pairs of the same total recurrence; their classification remains open. A monotone start is similarly reduced to a different frontier of its partner's program. Cubic Mess now has a checked complete recurrence reduction and a separate abstract jump theorem, while the accelerated native searches remain unverified. Search failures are not proofs of nonhalting or inequivalence.
 
 A result will be submitted only after the exact theorem is checked by Rocq and the current PRs are checked again for duplication. Research and proof PRs from this work target this repository, not upstream.
 
