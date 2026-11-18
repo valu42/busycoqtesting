@@ -5,6 +5,8 @@ Machine 31 is `1RB3RB---4RA2RA_2LA2RA3LB4LB1LB`. Its blank-tape verdict is open.
 Start with the infinite word
 `AAAAA(BAAAA)…`, where the parenthesized block repeats forever. Apply the same two-cell transformation $F$ repeatedly. **The machine halts exactly when the fourth letter is B in some iterate.** If the first such iterate is number $j$, counting the seed as zero, the head reaches the undefined instruction A2 at coordinate $2j$. Letters are counted from the start of each iterate.
 
+Six single-request edits provably reach the same fixed stream. For each whole-period shift the six altered runs share a verdict. Exactly 29 positive shift counts halt by +100, and every shift count from 384 onward clears +100. [Postponement proof and exact replays](line31-edits.md)
+
 ## Deriving the transformation
 
 The community credits Daniel Yuan with the [original longitudinal analysis](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved). The starting results here are the [certified negative driver](mixed-and-sweeps.md) and the [fresh-cell entry table and paired halt criterion](https://github.com/valu42/busycoqtesting/blob/dcacb2022e4ed1ac33f1a11f30391c70abcbb3bb/research/bb2x5/halting-outlook/edge31.md). A first A entering a virgin even cell sends BB to the virgin odd neighbor. The two symbols are then 4 and 3. A later B sent as the first letter to the next virgin even cell is followed immediately by A. The first B writes 2 and returns in A, and that second entry reaches literal A2. A first A instead opens the next pair safely.

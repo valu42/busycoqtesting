@@ -289,7 +289,25 @@ void print_rows(const std::vector<Row>& rows, unsigned start) {
                   << ' ' << rows[x].prefix << '\n';
 }
 
+#include "line31_edits.hpp"
+
 int main(int argc, char** argv) try {
+    if (argc == 6 && std::string_view(argv[1]) == "--capture-edits")
+        return edits31::search(number(argv[2]), number(argv[3]), number(argv[4]), number(argv[5]));
+    if (argc == 6 && (std::string_view(argv[1]) == "--postpone-band" ||
+                      std::string_view(argv[1]) == "--literal-shift")) {
+        Count cut = number(argv[2]), last = number(argv[3]);
+        if (cut > std::numeric_limits<unsigned>::max() || last > std::numeric_limits<unsigned>::max())
+            throw std::runtime_error("cut too large");
+        if (std::string_view(argv[1]) == "--literal-shift")
+            return edits31::literal_shift(unsigned(cut), unsigned(last), number(argv[4]), number(argv[5]));
+        return edits31::check_shift_band(unsigned(cut), unsigned(last), number(argv[4]), number(argv[5]));
+    }
+    if (argc == 5 && std::string_view(argv[1]) == "--postpone-edit") {
+        Count cut = number(argv[2]);
+        if (cut > std::numeric_limits<unsigned>::max()) throw std::runtime_error("cut too large");
+        return edits31::postpone(unsigned(cut), number(argv[3]), number(argv[4]));
+    }
     if (argc == 4 && std::string_view(argv[1]) == "--from56") {
         DiskPeriod disk(argv[2], 53'427'204'485);
         Count n = number(argv[3]);
