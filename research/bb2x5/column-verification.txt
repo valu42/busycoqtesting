@@ -1,0 +1,7 @@
+first-danger counts p(0) through p(12): [2, 2, 3, 5, 5, 9, 9, 10, 10, 12, 17, 17, 18]
+cyclic discrepancy, cuts 3 through 9: [6, 9, 14, 22, 35, 50, 127]
+ordinary p evaluated at every cut subsequently reached by a d: [2, 2, 3, 5, 5, 9, 9, 10, 10, 12, 17, 17, 18, 26, 30, 31, 32, 33, 34, 34, 36, 44, 44, 45, 45, 52, 59, 59, 59, 62, 62, 66, 70, 70, 71, 71, 71]
+iteration of p starting at zero through this sample: [0, 2, 3, 5, 9, 12, 18, 34, 71]
+73 cycles increased width; the square bound missed 23.
+Phase-independent period bounds recover 22 of those misses.
+remaining checkpoint and (cut, phase, high E bound): [(17, 688, 274, 11, [(5, 18, 46), (6, 13, 13), (7, 12, 5), (8, 12, 1), (9, 11, 0)])]

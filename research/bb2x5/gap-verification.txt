@@ -1,0 +1,10 @@
+p(16) = 32
+p(26) = 59
+p(34) = 71
+p(50) = 100
+p(60) = 118
+p(69) = 129
+p(70) = 140
+p(71) = 142
+cut 16 gaps through the first d at cut 71: 30139997
+cut 15 gaps through the same event: 40186168
