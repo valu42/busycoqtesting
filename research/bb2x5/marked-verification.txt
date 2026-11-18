@@ -1,0 +1,11 @@
+Independent short-word checks passed.
+line 17 blank checkpoint 252 head -12 digits 7 rightmost visited 9
+line 17 blank checkpoint 2889 head -37 digits 20 rightmost visited 10
+line 17 blank checkpoint 2308940 head -844 digits 424 rightmost visited 11
+line 17 initially pending inputs [(2, 0), (404, 1), (411, 1), (412, 0), (413, 1), (416, 0), (417, 1), (420, 1)]
+cut 6: 777777777777777776 slots, period 28, marked at [3, 7, 14, 23]
+cut 59: at most 33577048 slots, 393280 marks per period of 3146280
+cut 403: at most 24 slots; possible marks [5, 11, 17, 23]
+cut-59 marks tested 4196890; depth bound 36; signed coefficient 1269218094854420032
+slot bounds at cuts 404 through 409: [23, 18, 13, 5, 1, 0]
+1000000000000000000 complete header epochs; more than 10^36 defined elementary steps from blank.
