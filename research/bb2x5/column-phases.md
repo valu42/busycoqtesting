@@ -55,6 +55,19 @@ For a backward computation, let $S_t$ contain every finite upper word that survi
 
 There is no uniform state bound for these exact backward computations, regardless of the outcome on blank. For any $b$ let $t$ be the tick of the $2^b$-th signed through-pass and choose $k$ as in the negative-tail construction above. On inputs $3^k0^j$ precisely $2^b$ dangerous carries and no safe carry reach the upper $j$ pairs through tick $t$. Consequently $3^k0^j$ belongs to $S_t$ exactly when $j>b$. The $b+2$ prefixes with $0\le j\le b+1$ must leave distinct automaton states. For $j_1<j_2$, appending $b-j_1$ zeros makes the first fail and the second survive. In particular the pristine-suffix examples at $j=b$ halt at exactly tick $t$, producing finite halting times with no common upper bound on these nonblank tapes. [Transducer and backward checker](column_tick.py) · [Checks through horizon 21](tick-verification.txt)
 
+## A one-tick safety test using digit counts
+
+For a finite upper word write $S=\#0-\#1-\#3$, with the same digits $2u+e$ as in the transducer. **If $S\ge0$, the word survives the entire next tick.** To prove this, follow just those partial scans on which the dangerous carry is still present. The maximum possible score at each safe-token count $g$ is as follows.
+
+| $g$ | 9 | 10 | 5 | 6 | 3 | 4 | 2 | 1 | 0 |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| maximum $S$ | 0 | 1 | 0 | 1 | 0 | 1 | 0 | −1 | −2 |
+| attaining prefix | empty | 0 | 01 | 010 | 0101 | 01010 | 010101 | 01013 | 010133 |
+
+Start at $(9,1)$ with score zero. On each of the 36 possible single digits from these nine states, either the dangerous carry stops or the current row value plus the digit's score is at most the next row value. The listed witnesses attain equality at every state. The two halting terminal carries have negative bounds. The example `01013` halts at score −1.
+
+There is an obstruction to promoting this to a globally nondecreasing additive score. Let $N(w)$ be the four digit counts of $w$. Three complete safe ticks are `111 → 3331`, `211 → 1110`, and `0312 → 23310`. Their changes in $N$ are $a=(0,-2,0,3)$, $b=(1,1,-1,0)$, and $c=(0,0,0,1)$. The true seed is `21`, whereas `0133` halts within one tick. Their count difference is $v=(-1,0,1,-2)$. Direct addition gives $a+2b+c+2v=0$. A linear digit score nondecreasing on all safe transitions has nonnegative dot product with $a,b,c$. It cannot also have positive dot product with $v$. This obstruction concerns the global one-tick inequalities and the stated seed. A phase-sensitive reserve, a later seed, or a bound over several ticks is a different problem. All four witness tapes are also checked by literal execution. [Checker](column_tick.py) · [Output](tick-verification.txt)
+
 ## The first dangerous arrival and a bound on its plateaux
 
 Write $g$ for the number of $P$ before the first $Q$ in $W_j$. Then $p(j)=\lceil g/2\rceil$ is the number of extensions before that arrival. The least fixed point of $p$, if one exists, is the first halting width. In the word following the leading $P^g$, let $r$ count $Q$ up to the next $P$ and $s$ count $Q$ between that $P$ and the following $P$. Thus $r\ge1$, $s\ge0$.

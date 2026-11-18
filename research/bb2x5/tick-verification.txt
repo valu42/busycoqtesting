@@ -1,4 +1,6 @@
 carry states 18 with 2 halting terminal states
 literal eight-epoch checks on 341 aligned physical words
 true first-tick word (2, 1); all checkpoints agree through tick 4096
+tight upper scores at the two halting carries: -2 -1
+additive-score obstruction: three literal safe ticks and one literal B3
 minimal survival-DFA sizes through horizon 21 : [10, 34, 75, 135, 229, 336, 467, 657, 948, 1248, 1619, 2068, 2649, 3174, 3866, 4691, 5622, 6426, 7607, 8915, 10306]

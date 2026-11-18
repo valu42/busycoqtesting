@@ -1,0 +1,4 @@
+3588 cut states, 61932 weighted pairs, 23 changing rounds; potential [-56,0], minimum two-piece balance 20
+phase-0 seed potential -2
+Blank epoch 331: 612729 literal steps, head -871, width 1035, cut 530, switch count 7.
+Full-history replay: 186576 cases, minimum two-piece balance 20 and seed potential -2

@@ -42,6 +42,45 @@ def tick(word):
     return None if suffix is None else tuple(image)+suffix
 
 
+def count_test():
+    # On paths that still pass Q, these are exact upper bounds on
+    # number of zeros minus number of odd digits in the scanned prefix.
+    best = {9:(0,''), 10:(1,'0'), 5:(0,'01'), 6:(1,'010'), 3:(0,'0101'),
+            4:(1,'01010'), 2:(0,'010101'), 1:(-1,'01013'), 0:(-2,'010133')}
+    def gain(digit):
+        return int(digit == 0) - (digit % 2)
+
+    for g,(score,witness) in best.items():
+        carry = (9,True)
+        for digit in map(int,witness):
+            carry,_ = column(carry,digit)
+        assert carry == (g,True) and sum(map(gain,map(int,witness))) == score
+        for digit in range(4):
+            (nxt,passes),_ = column(carry,digit)
+            if passes:
+                assert score+gain(digit) <= best[nxt][0]
+    assert all(best[g][0] < 0 for g in (0,1))
+    print('tight upper scores at the two halting carries:',best[0][0],best[1][0])
+
+    # A nondecreasing additive digit score strictly separating 21 from the
+    # one-tick halters would have positive dot product with the zero vector.
+    def word(s):
+        return tuple(map(int,s))
+    def counts(w):
+        return tuple(w.count(i) for i in range(4))
+    def difference(a,b):
+        return tuple(x-y for x,y in zip(counts(a),counts(b)))
+    pairs = [('111','3331'),('211','1110'),('0312','23310')]
+    rows = []
+    for source,target in pairs:
+        assert tick(word(source)) == raw_tick(word(source)) == word(target)
+        rows.append(difference(word(target),word(source)))
+    assert tick(word('0133')) is None and raw_tick(word('0133')) is None
+    rows.append(difference(word('21'),word('0133')))
+    assert all(sum(k*x for k,x in zip((1,2,1,2),col)) == 0 for col in zip(*rows))
+    print('additive-score obstruction: three literal safe ticks and one literal B3')
+
+
 def raw_tick(word):
     """Eight epochs on a nonblank tape in the correct phase, or the first B3."""
     table = parse(M26)
@@ -170,4 +209,5 @@ if __name__ == '__main__':
     if args.horizon < 0:
         parser.error('horizon must be nonnegative')
     audit()
+    count_test()
     backward(args.horizon)

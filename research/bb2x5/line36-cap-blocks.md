@@ -79,3 +79,5 @@ python3 line36_cap_replay.py cap36.tsv
 c++ -std=c++17 -O2 line36_left.cpp -o line36-left
 python3 line36_left.py ./line36-left --projected
 ```
+
+A [one-cell left cut](line36-local-cut.md) further reduces the left certificate to 3,588 states and 186,576 local cases. It works with the original 50-cell right certificate.
