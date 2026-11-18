@@ -2,27 +2,15 @@
     A terminal value [Some v] stands for the integer potential [-v].
     At a branching node, openings take its low child and closings its high
     child. Traverse a physical cap from its rightmost cell to its leftmost. *)
-From Coq Require Import Bool List Arith PArith Uint63 PArray PrimString.
+From Coq Require Import Bool List Arith PArith Uint63 PArray.
 From BusyCoq Require Import Line36Matching Line36Right Line36CapModel Line36CapData.
 
 Local Open Scope uint63_scope.
-Definition read_digit (s : PrimString.string) (i : int) :=
-  PrimInt63.sub (PrimString.get s i) 48.
-Definition atom (s : PrimString.string) (i : int) :=
-  read_digit s i lor (read_digit s (i+1) << 6)
-    lor (read_digit s (i+2) << 12) lor (read_digit s (i+3) << 18).
-(** Eight printable bytes encode two child IDs. Expanding once lets the
-    reflective checker use a constant-time primitive array lookup per edge. *)
-Definition expand_one (a : int * array int) :=
-  let '(i,t) := a in
-  let s := PArray.get cap_chunks (i >> 12) in
-  let j := (i land 4095) << 3 in
-  (i+1, PArray.set t i (atom s j lor (atom s (j+4) << 21))).
-Definition cap_table :=
-  snd (Pos.iter expand_one (0,PArray.make 1342831 0) 1342831%positive).
+(** Two levels of primitive arrays store the children of each node. *)
+Definition cap_table := cap_chunks.
 Definition cap_root : int := 1342830.
 Definition child (node : int) (opening : bool) :=
-  let bits := PArray.get cap_table node in
+  let bits := PArray.get (PArray.get cap_table (node >> 12)) (node land 4095) in
   if opening then bits land 2097151 else bits >> 21.
 Definition cap_dead (node : int) := PrimInt63.eqb node 0.
 Close Scope uint63_scope.

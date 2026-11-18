@@ -271,19 +271,23 @@ void write_rocq_witness(const std::string& filename, std::vector<Word>& words,
             "unexpected Rocq decision diagram");
     std::ofstream out(filename, std::ios::binary);
     require(static_cast<bool>(out), "cannot open Rocq witness file");
-    out << "From Coq Require Import PArray PrimString PrimInt63.\n"
-        << "Open Scope pstring_scope.\n"
-        << "Definition cap_chunks : array PrimString.string := [|\n";
-    for (std::size_t i = 0; i < nodes.size(); ++i) {
-        if (!(i % 4096)) {
-            if (i) out << "\";\n";
-            out << '"';
+    out << "From Coq Require Import Uint63 PArray.\nOpen Scope uint63_scope.\n";
+    constexpr std::size_t block_size = 4096;
+    for (std::size_t start = 0; start < nodes.size(); start += block_size) {
+        out << "Definition cap_block_" << start / block_size << " : array int := [|\n";
+        std::size_t stop = std::min(start + block_size, nodes.size());
+        for (std::size_t i = start; i < stop; ++i) {
+            if (i != start) out << ((i-start)%30 == 0 ? ";\n" : ";");
+            out << ((Word(nodes[i].second) << 21) | nodes[i].first);
         }
-        for (Id child : {nodes[i].first, nodes[i].second}) {
-            for (int k = 0; k < 4; ++k) out.put(static_cast<char>(48+((child >> (6*k)) & 63)));
-        }
+        out << " | 0 |].\n";
     }
-    out << "\" | \"\" |].\n";
+    out << "Definition cap_chunks : array (array int) := [|\n";
+    for (std::size_t start = 0; start < nodes.size(); start += block_size) {
+        if (start) out << ";\n";
+        out << "cap_block_" << start / block_size;
+    }
+    out << " | cap_block_0 |].\n";
     out.close();
     require(static_cast<bool>(out), "error writing Rocq witness");
 }
