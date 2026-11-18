@@ -61,12 +61,14 @@ def coefficients(word, state, low):
 
 
 class Calls:
-    def __init__(self, word=b'', raw=0, limit=10**9):
+    def __init__(self, word=b'', raw=0, limit=10**9, on_guard=None, on_round=None):
         self.tape = bytearray(word)
         self.steps = raw
         self.work = 0
         self.limit = limit
         self.halt_cell = None
+        self.on_guard = on_guard
+        self.on_round = on_round
 
     def tick(self):
         self.work += 1
@@ -78,11 +80,68 @@ class Calls:
             self.tape.append(0)
         return self.tape[i]
 
+    def guard_three(self, i):
+        """Run the B call on the 3 next to an A0 guard. Report each reply word."""
+        while True:
+            self.tick()
+            self.tape[i] = 4  # B3 sends A
+            self.steps += 1
+            _, first = yield self.many(i+1, 'A', 1)
+            if first == HALT:
+                return HALT
+            # B4 sends A from a suspended 0; A4 sends B from a suspended 2.
+            self.tape[i], entry = (0, 'A') if first == 'B' else (2, 'B')
+            self.steps += 1
+            _, second = yield self.many(i+1, entry, 1)
+            if second == HALT:
+                return HALT
+            if second == 'B':
+                if self.on_round is not None:
+                    self.on_round(i, first+second)
+                self.tape[i] = 2 if first == 'B' else 4
+                self.steps += 1  # B0 or B2 returns B
+                return 'B'
+            if first == 'B':
+                if self.on_round is not None:
+                    self.on_round(i, 'BA')
+                # A0 now installs another real guard on this cell.
+                return (yield self.unit(i, 'A'))
+            self.tape[i] = 3  # A2 sends the third call, in A
+            self.steps += 1
+            _, third = yield self.many(i+1, 'A', 1)
+            if third == HALT:
+                return HALT
+            if self.on_round is not None:
+                self.on_round(i, 'AA'+third)
+            if third == 'A':
+                self.tape[i] = 2
+                self.steps += 1  # A3 returns A onto the parent guard
+                return 'A'
+            # B returned onto 3. Start the next round on the evolved suffix.
+
     def unit(self, i, state):
         """Finish one call from its current instruction, including every exceptional reply."""
         while True:
             self.tick()
-            rule = RULES.get((state, self.digit(i)))
+            scanned = self.digit(i)
+            if state == 'A' and scanned == 0:
+                if self.on_guard is not None:
+                    self.on_guard(self.tape, i+1)
+                # A0 installs 1 and calls right in B. B0 or B2 returns B
+                # immediately. B1 then exits to the left in A.
+                child = self.digit(i+1)
+                if child in (0, 2):
+                    self.tape[i:i+2] = bytes((3, child+2))
+                    self.steps += 3
+                    return 'A'
+                if child == 3:
+                    self.tape[i] = 1
+                    self.steps += 1
+                    state = yield self.guard_three(i+1)
+                    if state == HALT:
+                        return HALT
+                    continue
+            rule = RULES.get((state, scanned))
             if rule is None:
                 self.halt_cell = i
                 return HALT
@@ -194,7 +253,10 @@ class Calls:
     def epoch(self):
         # A0 writes 1 and calls the suffix in B. B1 restores 3 and moves to a fresh zero.
         self.steps += 1
-        _, response = self.run(self.many(0, 'B', 1))
+        if self.tape and self.tape[0] == 3:
+            response = self.run(self.guard_three(0))
+        else:
+            _, response = self.run(self.many(0, 'B', 1))
         if response == 'B':
             self.steps += 1
             self.tape.insert(0, 3)
@@ -202,6 +264,51 @@ class Calls:
         if response == 'A':
             self.halt_cell = -1  # A on the new guard 1.
         return False
+
+    def epoch_block(self, count, on_block=None):
+        """Advance up to count epochs, preserving the physical state at the first exception."""
+        if count < 1:
+            raise ValueError('expected a positive epoch count')
+        if ((count == 1 and on_block is None) or self.on_guard is not None or self.on_round is not None
+                or self.tape[:2] != b'\x03\x02'):
+            if on_block is not None:
+                on_block(0, 1, 'literal', None)
+            return (1, False) if self.epoch() else (0, True)
+        end = TWOS.match(self.tape, 1).end()
+        block = 3**(end-1)
+        calls = block*(3**count-1)
+
+        def probe(n):
+            trial = Calls(self.tape[end:], limit=self.limit-self.work)
+            j, reply = trial.run(trial.many(0, 'A', n))
+            self.work += trial.work
+            return trial, j, reply
+
+        trial, j, reply = probe(calls)
+        if reply != 'B':
+            # Only complete epochs with all-B tail replies can use the geometric
+            # formula. The failed probe mutated a private copy of the tail.
+            lo, hi = 0, count
+            while lo+1 < hi:
+                mid = (lo+hi)//2
+                if block*(3**mid-1) <= j:
+                    lo = mid
+                else:
+                    hi = mid
+            if not lo:
+                if on_block is not None:
+                    on_block(end-1, 1, reply, j)
+                return (1, False) if self.epoch() else (0, True)
+            count = lo
+            calls = block*(3**count-1)
+            trial, j, reply = probe(calls)
+        if reply != 'B' or j != calls:
+            raise ValueError('inconsistent tail reply in geometric epoch batch')
+        self.tape = bytearray([3]) + bytearray([2])*(end-1+count) + trial.tape
+        self.steps += trial.steps + 2*calls + count
+        if on_block is not None:
+            on_block(end-1, count, 'B', None)
+        return count, False
 
 
 def snapshot(epochs, vm, halted=False):
@@ -245,9 +352,10 @@ def main():
     parser.add_argument('--resume', type=Path)
     parser.add_argument('--checkpoint', type=Path, required=True)
     parser.add_argument('--every', type=int, default=100)
+    parser.add_argument('--batch', type=int, default=1, help='maximum epochs per geometric tail batch')
     parser.add_argument('--work', type=int, default=10**9)
     args = parser.parse_args()
-    if holdouts()[6] != MACHINE or min(args.epochs, args.work) < 0 or args.every < 1:
+    if holdouts()[6] != MACHINE or min(args.epochs, args.work) < 0 or min(args.every, args.batch) < 1:
         parser.error('invalid dataset or work limits')
     try:
         state = load(args.resume) if args.resume else snapshot(0, Calls())
@@ -257,11 +365,13 @@ def main():
         vm = Calls(map(int, state['word']), int(state['steps_hex'], 16), args.work)
         save(args.checkpoint, state)
         while epochs < args.epochs:
-            if not vm.epoch():
+            count = min(args.batch, args.epochs-epochs, args.every-epochs % args.every)
+            completed, halted = vm.epoch_block(count)
+            epochs += completed
+            if halted:
                 save(args.checkpoint, snapshot(epochs, vm, halted=True))
                 print(f'Halt at epoch {epochs}, raw time {hex(vm.steps)}.')
                 return
-            epochs += 1
             if epochs % args.every == 0 or epochs == args.epochs:
                 save(args.checkpoint, snapshot(epochs, vm))
                 print(f'{epochs} completed epochs, {vm.steps.bit_length()} raw counter bits, {len(vm.tape)} cells.', flush=True)

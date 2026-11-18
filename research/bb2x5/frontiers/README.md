@@ -78,10 +78,12 @@ If M child calls all reply in B, the parent executes N+M instructions. In a pack
 
 An exceptional child is handled in chronological order. After j ordinary child replies, A on 2 has completed ⌊j/3⌋ parent calls and is waiting on digit 3, 4 or 0 according to j mod 3. A on 4 has completed j and is waiting on 2. B has completed 2j+[initial digit = 2] and is waiting on 0. For p completed parent calls add p+j+1 local steps to include the outstanding request. A returning child resumes the actual suspended instruction, and an undefined entry at any depth immediately propagates its physical halt coordinate. Nonordinary symbols use the literal transition table. The implementation keeps the active calls on an explicit stack.
 
+For a header with k twos, exactly 3^k successive B returns from the tail followed by an A return force A1 at the original guard. The tail can also complete whole epochs in one geometric batch. The guard derivation gives the exact outside cost, the constraints on the rank of the first A reply, constructed halting tapes and the measurements from blank. [Machine 7 guard search](line7-guards.md)
+
 ```sh
 python3 frontiers/line7.py --epochs 4096 --checkpoint /tmp/line7.json
 python3 frontiers/line7.py --resume frontiers/runs/line7-calls.json \
-  --epochs 10000 --checkpoint /tmp/line7-next.json
+  --epochs 20000 --batch 128 --checkpoint /tmp/line7-next.json
 BB25_WINDOW=/tmp/bb25-window python3 frontiers/test_line7.py
 ```
 
