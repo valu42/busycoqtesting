@@ -70,6 +70,15 @@ class TiledTests(unittest.TestCase):
                     self.assertGreaterEqual(actual, target)
                     self.assertEqual(result, advance_packed(start, actual, PACKED, 2**24, 2**31))
 
+    def test_coded_periods_against_independent_packed_run(self):
+        start = replay(0, 6)
+        # The low limit forces a finite tail after several coded period lifts.
+        for bits, threads in ((1_000_000, 1), (5_000_000, 3)):
+            target = 10**17 + 1
+            result = advance_tiled(start, target, TILES, bits, threads, coded=True)
+            self.assertGreaterEqual(result['epochs'], target)
+            self.assertEqual(result, advance_packed(start, result['epochs'], PACKED, 2**26, 2**31))
+
     def test_endpoint_and_refusal_controls(self):
         start = replay(0, 6)
         self.assertEqual(advance_tiled(start, 425, TILES, 10000, 2), replay(425, 6))

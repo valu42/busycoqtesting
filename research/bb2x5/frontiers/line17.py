@@ -237,13 +237,14 @@ def advance_packed(seed, epochs, engine, word_bits=2**28, finite_slots=10**11):
     return advance_native(seed, epochs, engine, word_bits, finite_slots)
 
 
-def advance_tiled(seed, epochs, engine, word_bits, threads, aligned=False):
+def advance_tiled(seed, epochs, engine, word_bits, threads, aligned=False, coded=False):
     """Replay periodic words using temporary packed files and independent tiles."""
     if not 16 <= word_bits <= 2**43 or not 1 <= threads <= 64:
         raise ValueError('invalid tiled worker budget or thread count')
     env = os.environ.copy()
     env.setdefault('OMP_WAIT_POLICY', 'PASSIVE')
-    return advance_native(seed, epochs, engine, word_bits, threads, env=env, aligned=aligned)
+    mode = "coded" if coded else ("at-least" if aligned else None)
+    return advance_native(seed, epochs, engine, word_bits, threads, env=env, aligned=mode)
 
 
 def advance_native(seed, epochs, engine, *limits, env=None, aligned=False):
@@ -253,7 +254,7 @@ def advance_native(seed, epochs, engine, *limits, env=None, aligned=False):
         raise ValueError('invalid additional epoch count')
     command = [str(Path(engine).resolve()), str(epochs), *(str(limit) for limit in limits)]
     if aligned:
-        command.append('at-least')
+        command.append(aligned)
     proc = subprocess.run(command, input=seed['register'], text=True, capture_output=True, env=env)
     if proc.returncode:
         raise ValueError(proc.stderr.strip() or 'packed worker failed')
@@ -413,6 +414,8 @@ def main():
     workers.add_argument('--tiled-engine',type=Path,help='native file-backed parallel packed worker')
     parser.add_argument('--at-least', action='store_true',
                         help='choose a complete period at or beyond the requested tiled sweep count')
+    parser.add_argument('--coded', action='store_true',
+                        help='use byte-coded pure periods and choose an aligned tiled sweep boundary')
     parser.add_argument('--threads',type=int,default=1,help='number of worker threads for the tiled engine')
     parser.add_argument('--word-bits',type=int,default=2**28,help='largest materialized packed word in bits')
     parser.add_argument('--finite-slots',type=int,default=10**11,help='maximum slots entering a streamed suffix')
@@ -420,13 +423,13 @@ def main():
     parser.add_argument('--resume',type=Path,help='start at this saved boundary; --epochs remains an absolute target')
     parser.add_argument('--checkpoint',type=Path,required=True)
     args=parser.parse_args()
-    if args.at_least and not args.tiled_engine:
-        parser.error('--at-least requires --tiled-engine')
+    if (args.at_least or args.coded) and not args.tiled_engine:
+        parser.error('--at-least and --coded require --tiled-engine')
     try:
         if args.tiled_engine:
             seed = load(args.resume) if args.resume else replay(0,6)
             result = advance_tiled(seed,args.epochs-seed['epochs'],args.tiled_engine,
-                                   args.word_bits,args.threads,args.at_least)
+                                   args.word_bits,args.threads,args.at_least,args.coded)
         elif args.packed_engine:
             seed = load(args.resume) if args.resume else replay(0,6)
             result = advance_packed(seed,args.epochs-seed['epochs'],args.packed_engine,

@@ -4,7 +4,13 @@ Machine `1RB2RA3LB---2LB_2LA0LA4RB0RB1LA` starts in A on an all-zero, two-way ta
 
 ## Exact blank-tape run
 
-The deepest completed blank run reached **10,706,070,760,419,157,619,517,903,863,810 sweeps** without halting. Its exact clock is **1604679315779428558158711107420718740667238049241268905851427862** raw instructions (≈ 1.60468 × 10^63). The head is in A at -21,412,141,520,838,315,239,035,807,728,464. Pair 191 received one input. The terminal received zero slots. This is approximately **11,462×** the raw clock at the previous independently published 10^29-sweep checkpoint. [Latest resumable checkpoint](frontiers/runs/line17-epochs.json) · [Per-pair instruction counts](frontiers/runs/line17-aligned-1e31-counts.txt)
+The coded simulator completed **16,059,106,140,628,736,429,276,855,795,714 ordinary sweeps** from blank without a halt. The exact clock is **3610528460503714255857099991695000099688771322805641540615097630 raw instructions** (≈ 3.61053 × 10^63), **2.25 times** the previous clock of 1.60468 × 10^63. The head is in A at -32,118,212,281,257,472,858,553,711,592,272. Pair 191 of the 424 zero-indexed pairs received 1 input slot. The terminal received zero. [Resumable checkpoint](frontiers/runs/line17-epochs.json) · [All 424 pair counts](frontiers/runs/line17-coded-counts.txt)
+
+The [coded accelerator](frontiers/line17_coded.hpp) stores sixteen pulse slots in one byte. There are exactly 250 sixteen-slot words in which successive marks are at least four positions apart. Each frame records its precise bit length and the trit and pending-bit transition for each possible entrance state. The simulator reads a frame once for all phases of a periodic lift, writes their outputs in chronological order and releases the consumed input extent. It can also run consecutive frames in parallel after a serial scan of their entrance states.
+
+This extended the last materialized period from cut 108 to cut 111. The latter contains 375,872,944,880 slots and 46,984,013,696 marks. After the two-sweep origin it repeats every 16,059,106,140,628,736,429,276,855,795,712 sweeps. Passing 1 complete copy through the remaining 313 pairs gives the checkpoint above. Every pair satisfied the pulse, trit and elementary-instruction balance checks. The independent packed simulator, the tiled simulator and the physical register interpreter agreed on a further 10,001 sweeps from this checkpoint. [Period trace](frontiers/runs/line17-coded-periods.txt) · [Independent checker](frontiers/line17_literal_check.py)
+
+The preceding aligned run completed 10,706,070,760,419,157,619,517,903,863,810 sweeps and reached pair 191. [Previous physical checkpoint](https://github.com/valu42/busycoqtesting/blob/77e5095fad7ceddc4fb84832c7d8fa34ad3a314b/research/bb2x5/frontiers/runs/line17-epochs.json) · [Previous pair counts](frontiers/runs/line17-aligned-1e31-counts.txt)
 
 At the intermediate **10^30-sweep checkpoint**, the machine has executed exactly **14000000000000000000000000000145389392205733010185916014084982** defined raw instructions and is in state A. Pair 186 received one input, the deepest of pairs 0–423 reached in this phase. No slot reached the singleton. The clock is about **100×** the [previous 10^29-sweep checkpoint](https://github.com/valu42/busycoqtesting/blob/12c4acdce3310d435190895136f65826a702f1c8/research/bb2x5/frontiers/runs/line17-epochs.json) and about 278× the initial 6 × 10^28 run on this research branch. [Intermediate checkpoint](frontiers/runs/line17-1e30.json)
 
@@ -23,8 +29,9 @@ The four known marks in the homogeneous region occur at local slots 5, 11, 17 an
 | 10^29 | 173 | 169 | 165 | 161 | 175 |
 | 10^30 | 184 | 180 | 176 | 172 | 186 |
 | 10,706,070,760,419,157,619,517,903,863,810 | 189 | 185 | 181 | 177 | 191 |
+| 16,059,106,140,628,736,429,276,855,795,714 | 189 | 185 | 181 | 177 | 191 |
 
-The two later rows follow directly from the saved cumulative slot counts. Cut 403 is the entrance to the final 21 pairs. [Earlier mark fronts](https://github.com/valu42/busycoqtesting/blob/12c4acdce3310d435190895136f65826a702f1c8/research/bb2x5/line17-edge-time.md)
+The later rows follow directly from the saved cumulative slot counts. Cut 403 is the entrance to the final 21 pairs. [Earlier mark fronts](https://github.com/valu42/busycoqtesting/blob/12c4acdce3310d435190895136f65826a702f1c8/research/bb2x5/line17-edge-time.md)
 
 ## The fifth future mark is fixed
 
@@ -107,6 +114,9 @@ BB25_TILE17=/tmp/bb25-tiles17 BB25_PACK17=/tmp/bb25-packed17 python3 frontiers/t
 python3 frontiers/line17.py --tiled-engine /tmp/bb25-tiles17 --threads 4 --at-least \
   --epochs 10000000000000000000000000000000 --word-bits 250000000000 \
   --depth --checkpoint /tmp/line17-aligned.json
+python3 frontiers/line17.py --tiled-engine /tmp/bb25-tiles17 --threads 8 --coded \
+  --epochs 16059106140628736429276855795714 --word-bits 640000000000 \
+  --depth --checkpoint /tmp/line17-coded.json
 python3 frontiers/line17_literal_check.py --self-test
 python3 frontiers/test_line17_pile.py
 python3 frontiers/line17_width.py --engine /tmp/bb25-packed17 --cuts $(seq 10 5 110) > /tmp/widths.jsonl

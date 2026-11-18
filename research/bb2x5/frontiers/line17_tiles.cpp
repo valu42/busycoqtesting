@@ -267,8 +267,8 @@ Ray lift(unsigned& state,const Ray& in,Totals& totals,const Tables& t,Count limi
     return out;
 }
 
-void write_row(unsigned state, const mpz_class& slots, const mpz_class& calls, const mpz_class& inner) {
-    std::cout << state/2 << ' ' << state%2 << ' ' << slots << ' ' << calls << ' ' << inner << '\n';
+void write_row(unsigned state, const mpz_class& slots, const mpz_class& calls, const mpz_class& inner, std::ostream& out=std::cout) {
+    out << state/2 << ' ' << state%2 << ' ' << slots << ' ' << calls << ' ' << inner << '\n';
 }
 
 // Stream a finite suffix once its period would need too much disk. Each digit
@@ -327,24 +327,26 @@ void finish_aligned_tail(const Ray& in, const std::vector<unsigned>& states, siz
 // The source phase at each chosen boundary contains a complete number of every
 // earlier period. This makes an arbitrary-precision sweep index inexpensive to
 // reconstruct even when its decimal representation was unknown during the lift.
-void write_aligned_rows(const std::vector<Cycle>& history, const mpz_class& epochs) {
-    std::cout << "epochs " << epochs << '\n';
+void write_aligned_rows(const std::vector<Cycle>& history, const mpz_class& epochs, std::ostream& out=std::cout) {
+    out << "epochs " << epochs << '\n';
     for (const auto& c : history) {
         mpz_class delta = epochs - c.origin;
         if (delta < 0 || delta % c.root_period != 0)
             throw std::logic_error("chosen sweep does not align with a preceding cut");
         mpz_class k = delta / c.root_period;
         write_row(c.state, c.prefix_slots + k*c.period_slots,
-                  c.prefix_calls + k*c.period_calls, c.prefix_inner + k*c.period_inner);
+                  c.prefix_calls + k*c.period_calls, c.prefix_inner + k*c.period_inner,out);
     }
-    std::cout.flush();
+    out.flush();
 }
 }
+#include "line17_coded.hpp"
 int main(int argc,char** argv) try {
     using namespace tiled;
-    bool aligned = argc == 5 && std::string(argv[4]) == "at-least";
+    bool coded_mode = argc == 5 && std::string(argv[4]) == "coded";
+    bool aligned = coded_mode || (argc == 5 && std::string(argv[4]) == "at-least");
     if (argc != 4 && !aligned)
-        throw std::runtime_error("usage: line17-tiles ADDITIONAL_EPOCHS WORD_BITS THREADS [at-least] < register");
+        throw std::runtime_error("usage: line17-tiles ADDITIONAL_EPOCHS WORD_BITS THREADS [at-least|coded] < register");
     mpz_class epochs(argv[1],10);
     Count limit = number(argv[2]);
     Count requested_workers = number(argv[3]);
@@ -388,6 +390,14 @@ int main(int argc,char** argv) try {
                 std::cerr << "cycle " << i+1 << ' ' << origin << ' ' << root_period << ' '
                           << length(stream.prefix) << ' ' << length(stream.period) << ' '
                           << stream.period_marks << '\n';
+            if (coded_mode && i+1>=53 && length(stream.prefix)==0 && length(stream.period)>=65536 &&
+                length(stream.period)<=limit && origin+root_period<epochs) {
+                coded::Alphabet alphabet;
+                auto word=coded::from_packed(stream.period,alphabet);
+                stream=Ray{};
+                coded::run(std::move(word),std::move(history),states,epochs,limit,workers,alphabet);
+                return 0;
+            }
             bool stream_tail = length(stream.period) > limit/3;
             if (origin + root_period >= epochs || i+1 == states.size() || stream_tail) {
                 mpz_class repeats = 0;

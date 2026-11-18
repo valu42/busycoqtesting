@@ -228,7 +228,7 @@
     "machine": "1RB2RA3LB---2LB_2LA0LA4RB0RB1LA",
     "structure": "Finite marked counter. Overflow can return to A3",
     "outlook": "Probable halting",
-    "floor": "\u2248 1.60468 \u00d7 10^63 (N)",
+    "floor": "\u2248 3.61053 \u00d7 10^63 (N)",
     "estimate": "Halt uncalibrated. Next overflow models \u2248 4 \u00d7 10^149 or 3 \u00d7 10^158",
     "evidence": "Pair 191 reached. Fifth cut-403 mark at 29. First +12 before 3.545 \u00d7 10^331",
     "report": "line17.md",
