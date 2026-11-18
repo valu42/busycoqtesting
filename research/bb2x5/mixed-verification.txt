@@ -1,0 +1,10 @@
+Ten infinite blank left-half response streams checked by finite return certificates.
+Two cell tables, periodic 3-cell driver and 54 control words verified.
+Parity counterexample from 1211112 verified, 160 defined steps before B4.
+Direct blank trajectory at steps 59171 and 59284 verified.
+24 three-trailing-one reductions verified on the concrete tape.
+48 concrete reset transitions and 84 halting auxiliary inputs verified.
+568 independent mixed-word jumps compared to elementary execution.
+Blank execution exceeds 10^150 transitions. Macro or single-step operations 125929.
+Checkpoints 150. Final (X,d,p,v) = (17685409337871071437945067042863731510599348531038942414719572388029981550919706820362504337797345350764528767447906973177704411920824903433805647582756, 317, 1, 0).
+Certified-by-macro lower bound as an integer: 17921185959398381326999924427360332684801409572696426389249522334712413809327314183493118667019884645087285383760723375100511869285304307305940851211126

@@ -1,0 +1,20 @@
+line 2: 2400 blank left extensions at 27064000 raw steps; rightmost cell 3979
+line 2: fixed-cut right steps 19383199 and flexible retries at cycles [0]
+line 2: unrestricted generator word GGFF returns A to the next B in 125 steps
+line 2: ordinary-word orbit formulas cross-checked on binary widths 1 through 6
+line 26: after 131072 aadd cycles, (u,e,m) = (14809968640, 81588923392, 74)
+line 26: finite alternative input adad reaches its first virtual overflow at token 4
+counter: 511 direct epoch checks, 211 halting inputs; 300 blank epochs vs column model, first 64 vs concrete TM after entry
+  stream representatives j=0..12: first tokens aabbabaaaaaaa, last length 137781
+line 17 blank checkpoint 252 head -12 digits 7 rightmost visited 9
+line 17 blank checkpoint 2889 head -37 digits 20 rightmost visited 10
+line 17 blank checkpoint 2308940 head -844 digits 424 rightmost visited 11
+line 17 initially pending inputs [(2, 0), (404, 1), (411, 1), (412, 0), (413, 1), (416, 0), (417, 1), (420, 1)]
+line 17 first four marked slots at every cut from 53 to 403: [5, 11, 17, 23]
+line 17 first-edge words in cells -1 through 11 ['0444040444444', '1444040444444', '4444040444444']
+line 17 return 55 steps later: A at -1, cells 0 through 12 = 1213031302222
+line 17: gap choices 6, 13, 17 yield the three edge symbols ['4', '0', '1']
+line 17: blank return crosses -8 without halting; before -10 only A3 at -4 is possible
+line 17: gap 56 at cut 403 reaches the edge on slot 6513 then A3 at -4 in 242 moves
+line 17: the first 4727680 genuine slots admit all three chosen edge symbols and a halting continuation
+line 10: coordinate 15 has 19024 AAA rotations out of 409152
