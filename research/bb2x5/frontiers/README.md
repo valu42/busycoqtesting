@@ -163,8 +163,9 @@ The timestamp and packed workers agree on all 424 pairs and the exact clock at 1
 | 2 × 10²⁸ | 173 | 1 |
 | 3 × 10²⁸ | 173 | 1 |
 | 4 × 10²⁸ | 173 | 1 |
+| 6 × 10²⁸ | 173 | 1 |
 
-The [literal initialization](../frontier-background.md#configuration-and-entry) visits no cell to the right of coordinate 11. At the [4 × 10²⁸ checkpoint](runs/line17-epochs.json), the terminal singleton at 11 has still received zero calls. Thus the first visit to coordinate 12 is later than 2.24 × 10⁵⁸ defined instructions.
+The [literal initialization](../frontier-background.md#configuration-and-entry) visits no cell to the right of coordinate 11. At the [6 × 10²⁸ checkpoint](runs/line17-epochs.json), the terminal singleton at 11 has still received zero calls. Thus the first visit to coordinate 12 is later than 5.04 × 10⁵⁸ defined instructions.
 
 The tests exhaust every normal pair/pulse control case, replay the complete physical tape through 425 epochs with an elementary interpreter, and meet the independent 100-million-step moving-window checkpoint. The Python-only timestamp implementation and a native replay using a different cut produce byte-identical full configurations and time at 10¹⁸ epochs. Independent cut choices also agree at 10²¹ and 10²² epochs. At the published endpoint, advancing another 1,000,001 epochs as one batch or in two parts gives the same full checkpoint.
 
@@ -193,5 +194,7 @@ BB25_PACK17=/tmp/bb25-packed17 python3 frontiers/test_line17_visit.py
 ```
 
 The short `check` command replays the physical arrival from the enclosed boundary. To independently reproduce blank-orbit provenance, rebuild the preceding boundary with the ordinary packed worker and compare it with `before` in the record. For both pairs, bisecting ordinary sweeps and locating the source slot directly gave byte-identical records.
+
+When probing beyond a saved depth, pass `--miss-checkpoint /tmp/line17-next.json` to `find`. If the target receives zero inputs, the search saves the complete physical register and raw clock at the horizon in the same pass. All digits from the target onward retain their starting state. The next search can resume from this file. A successful visit still writes its witness to `--output`.
 
 The same worker accepts `select RANK` in its native interface to find the parent of any positive output rank. The [edge-time calculation](../line17-edge-time.md) uses this to bound the actual first visit to +12 and supplies a separate calculator for testing a proposed input stream at the final 21 pairs.

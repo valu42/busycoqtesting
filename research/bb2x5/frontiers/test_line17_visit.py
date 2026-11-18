@@ -3,6 +3,7 @@ import copy
 import os
 from pathlib import Path
 import subprocess
+import tempfile
 import unittest
 
 from checkpoints import checksum
@@ -96,6 +97,24 @@ class VisitTests(unittest.TestCase):
         with self.assertRaises(ValueError): verify(corrupt)
         with self.assertRaises(ValueError): locate(line17.replay(1,6),0,5,PACKED,16,10000)
         self.assertIsNone(locate(seed,424,10000,PACKED,16,10**7))
+
+    def test_complete_checkpoint_from_a_miss(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory)/'boundary.json'
+            for start in (0, 12345, 10**8):
+                seed=line17.replay(start,22)
+                for budget in (16, 2**18):
+                    for target in (100, 424):
+                        self.assertIsNone(locate(seed,target,start+1000,PACKED,budget,10**7,miss_checkpoint=path))
+                        self.assertEqual(line17.load(path),line17.advance_packed(seed,1000,PACKED,budget))
+            seed=line17.replay(0,6)
+            self.assertIsNone(locate(seed,7,0,PACKED,16,0,miss_checkpoint=path))
+            original=path.read_bytes()
+            self.assertIsNotNone(locate(seed,7,1000,PACKED,16,10000,miss_checkpoint=path))
+            self.assertEqual(path.read_bytes(),original)
+            with self.assertRaises(ValueError):
+                locate(seed,100,10**12,PACKED,16,0,miss_checkpoint=path)
+            self.assertEqual(path.read_bytes(),original)
 
 
 if __name__=='__main__': unittest.main()

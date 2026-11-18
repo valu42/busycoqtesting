@@ -166,21 +166,37 @@ def make_record(before,pair,event):
     return {'payload':payload,'sha256':checksum(payload)}
 
 
-def locate(seed,pair,through,engine,word_bits,finite_slots,work=10**7):
-    width=len(digits(seed['register']))
+def locate(seed,pair,through,engine,word_bits,finite_slots,work=10**7,miss_checkpoint=None):
+    data=digits(seed['register'])
+    width=len(data)
     if not 0<=pair<=width or through<seed['epochs'] or not fresh_at(seed,pair):
         raise ValueError('need a boundary at or before the search horizon and before the first visit')
     if not 16<=word_bits<=2**32 or not 0<=finite_slots<2**60 or work<1:
         raise ValueError('invalid work budget')
     epochs=through-seed['epochs']
-    if not epochs: return None
+    if not epochs:
+        if miss_checkpoint is not None: line17.save(miss_checkpoint,seed)
+        return None
     relative_slot=1
     if pair:
-        proc=subprocess.run([str(Path(engine).resolve()),str(epochs),str(word_bits),str(finite_slots),'first'],
+        mode='first' if miss_checkpoint is None else 'scan'
+        proc=subprocess.run([str(Path(engine).resolve()),str(epochs),str(word_bits),str(finite_slots),mode],
                             input=seed['register'][:2*pair],text=True,capture_output=True)
         if proc.returncode: raise ValueError(proc.stderr.strip() or 'slot locator failed')
-        if proc.stdout.strip()=='none': return None
-        relative_slot=int(proc.stdout)
+        rows=proc.stdout.splitlines()
+        selected=rows.pop()
+        if selected=='none':
+            if miss_checkpoint is not None:
+                counts=line17.native_counts(rows,4*epochs,pair)
+                if counts[-1].slots:
+                    raise ValueError('worker reported a miss after emitting a slot')
+                # Every deeper pair had zero input and retains its starting phase.
+                counts.extend(line17.Counts((data[i][0],data[i-1][1])) for i in range(pair,width))
+                end=line17.record(epochs,counts,seed['register'],seed['steps'],seed['head'],seed['epochs'])
+                if not fresh_at(end,pair): raise ValueError('miss changed the target trit')
+                line17.save(miss_checkpoint,end)
+            return None
+        relative_slot=int(selected)
     if not 1<=relative_slot<=4*epochs:
         raise ValueError('first slot outside the finite search')
     whole=(relative_slot-1)//4
@@ -218,6 +234,7 @@ def main():
     find.add_argument('--finite-slots',type=int,default=10**11)
     find.add_argument('--literal-work',type=int,default=10**7)
     find.add_argument('--output',type=Path,required=True)
+    find.add_argument('--miss-checkpoint',type=Path,help='save the complete ordinary endpoint if the target stays untouched')
     check=sub.add_parser('check',help='replay the arrival from its recorded pre-sweep boundary')
     check.add_argument('record',type=Path)
     check.add_argument('--literal-work',type=int,default=10**7)
@@ -228,7 +245,8 @@ def main():
             doc=json.loads(args.record.read_text())
         else:
             seed=line17.load(args.resume) if args.resume else line17.replay(0,6)
-            doc=locate(seed,args.pair,args.through,args.packed_engine,args.word_bits,args.finite_slots,args.literal_work)
+            doc=locate(seed,args.pair,args.through,args.packed_engine,args.word_bits,args.finite_slots,
+                       args.literal_work,args.miss_checkpoint)
             if doc is None:
                 print(f'Pair {args.pair} received no input through sweep {args.through}.')
                 return

@@ -288,7 +288,7 @@ bool reaches_cut(std::vector<unsigned>& states,size_t digit,unsigned bit,Count& 
 // If the periodic word gets too large, stream the input through every remaining
 // digit. Partial words carry their ending digit states into the next chunk.
 std::optional<Count> finish(const Transfer& tr, const Stream& in, const std::vector<unsigned>& initial,
-                            unsigned cut, Count work_limit,const mpz_class& rank) {
+                            unsigned cut, Count work_limit,const mpz_class& rank,bool report_counts) {
     if (in.size()>work_limit)
         throw std::runtime_error("finite slot budget at pair "+std::to_string(cut)+
                                  ": need "+in.size().get_str()+", budget "+std::to_string(work_limit));
@@ -352,20 +352,22 @@ std::optional<Count> finish(const Transfer& tr, const Stream& in, const std::vec
         for (Count j=0;j<copies;++j) if (feed(in.period)) return match;
     }
     if (feed(in.suffix)) return match;
-    if (!locate)
+    if (report_counts)
         for (const auto& digit:digits) print(digit.state,digit.n,digit.calls,digit.interior);
     return {};
 }
 
 int main(int argc,char** argv) try {
     mpz_class rank=0; // Zero selects the ordinary complete-sweep clock.
-    if (argc==5 && std::string(argv[4])=="first") rank=1;
+    bool scan=argc==5 && std::string(argv[4])=="scan";
+    if (scan || (argc==5 && std::string(argv[4])=="first")) rank=1;
     else if (argc==6 && std::string(argv[4])=="select") {
         rank=mpz_class(argv[5],10);
         if (rank<=0) throw std::runtime_error("the output rank must be positive");
     } else if (argc!=4)
-        throw std::runtime_error("usage: line17-packed ADDITIONAL_EPOCHS WORD_BITS FINITE_SLOTS [first | select RANK] < register");
+        throw std::runtime_error("usage: line17-packed ADDITIONAL_EPOCHS WORD_BITS FINITE_SLOTS [first | scan | select RANK] < register");
     bool locate=rank>0;
+    bool report_counts=!locate || scan;
     mpz_class epochs(argv[1],10);
     Count limit=number(argv[2]), work_limit=number(argv[3]);
     std::string register_word;
@@ -385,7 +387,7 @@ int main(int argc,char** argv) try {
     Stream input;
     input.period.push(2,4,limit); input.copies=epochs;
     auto finish_stream=[&](unsigned cut) {
-        auto hit=finish(tr,input,initial,cut,work_limit,rank);
+        auto hit=finish(tr,input,initial,cut,work_limit,rank,report_counts);
         if (locate) {
             input=Stream{};
             if (hit) std::cout<<origins->root(tr,mpz_class(*hit))<<'\n';
@@ -402,7 +404,7 @@ int main(int argc,char** argv) try {
         try {
             auto out=lift(tr,input,state,tally,limit);
             if (locate) origins->remember(input,initial[i]);
-            else print(state,out.size(),tally.calls,tally.interior);
+            if (report_counts) print(state,out.size(),tally.calls,tally.interior);
             input=std::move(out);
         } catch (const WordLimit&) {
             finish_stream(i);
