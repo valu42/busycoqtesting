@@ -1,0 +1,4 @@
+35/37 suffix correspondence by old debts zero through five: [953, 847, 657, 435, 239, 105] with 44 guard failures
+literal epoch 5 at 97 steps, head -5, word 213111112
+epoch 1001 width 2037 with 459 covered triples after the two-cell cap
+periods of the affine Pascal boundary checked through 64 centers
