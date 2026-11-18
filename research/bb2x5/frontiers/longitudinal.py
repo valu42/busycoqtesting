@@ -17,7 +17,11 @@ from prior_sweeps import parse, TapeMachine
 DRIVERS = {8: ('BBABA',1,1,'A'), 10: ('AB',5,1,'A'), 11: ('BBBA',2,1,'A'), 12: ('BBBABABAABABBA',2,1,'A'),
            13: ('BABAB',1,1,'A'), 21: ('BAABABABAAABA',2,1,'A'),
            22: ('BAABABABAAABA',2,1,'A'), 31: ('ABAAA',1,2,'B')}
-PREFIX = {10: 'BBA'}
+# Line 20 has a certified negative driver but a positive B2 can return B.
+# Treat it as a batch stop and replay the affected period using the real rule.
+GUARDED_DRIVERS = {20: ('ABA', 7, 1, 'A')}
+RIGHT_GUARDS = {20: (('B', 2),)}
+PREFIX = {10: 'BBA', 20: 'BAAAB'}
 FORMAT = 'bb2x5-longitudinal-v1'
 HALTED = 'bb2x5-longitudinal-halt-v1'
 
@@ -58,13 +62,28 @@ def check_return_contract(rules, first, usual):
 class Driver:
     def __init__(self, line):
         self.line=line
-        self.period, self.transient, width, self.usual=DRIVERS[line]
+        self.period, self.transient, width, self.usual=(DRIVERS | GUARDED_DRIVERS)[line]
         self.prefix = PREFIX.get(line, '')
         self.machine=holdouts()[line-1]
         rules=parse(self.machine)
+        # A surrogate may stop at an exceptional instruction on the positive
+        # half. Only a complete batch avoiding every guard is accepted. The
+        # negative driver and chronological confirmation use the original TM.
+        self.right_machine = self.machine
+        for state, symbol in RIGHT_GUARDS.get(line, ()):
+            if (state, symbol) not in rules:
+                raise ValueError('guard must name a defined instruction')
+            offset = 16 * 'AB'.index(state) + 3 * symbol
+            self.right_machine = self.right_machine[:offset] + '---' + self.right_machine[offset+3:]
+        right_rules = parse(self.right_machine)
+        # A literal exception can leave a tape outside the guarded machine's
+        # blank orbit. Its return contract must hold on that tape as well.
+        if line in GUARDED_DRIVERS and any(
+                target != self.usual for _, move, target in right_rules.values() if move < 0):
+            raise ValueError('guarded driver has an unchecked left return')
         first=[]
         for q in 'AB':
-            m=TapeMachine(self.machine)
+            m=TapeMachine(self.right_machine)
             m.state=q
             for _ in range(1000):
                 if not m.step():
@@ -75,7 +94,7 @@ class Driver:
             else:
                 raise ValueError('virgin call did not return within the setup budget')
         self.first=''.join(first)
-        check_return_contract(rules, self.first, self.usual)
+        check_return_contract(right_rules, self.first, self.usual)
         if self.first[0]!=self.usual:
             raise ValueError('first positive excursion returns in the wrong state')
         # Table after j external calls: cumulative subordinate calls, count of
@@ -190,7 +209,7 @@ class Driver:
             raise ValueError('entry prefix length must be between 0 and 65536')
         if not 0 <= finite_slots < 2**64:
             raise ValueError('invalid finite slot budget')
-        protocol=' '.join((self.machine,self.prefix or '.',self.period,self.usual,self.first,state['positive_tape'] or '.'))+'\n'
+        protocol=' '.join((self.right_machine,self.prefix or '.',self.period,self.usual,self.first,state['positive_tape'] or '.'))+'\n'
         cmd=[str(Path(engine).resolve()),str(groups),str(max_bits)]
         if prefix_length or finite_slots:
             cmd.append(str(prefix_length))
@@ -287,7 +306,7 @@ def save(path,state):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--engine',type=Path,required=True)
-    p.add_argument('--line',type=int,choices=DRIVERS,required=True)
+    p.add_argument('--line',type=int,choices=DRIVERS | GUARDED_DRIVERS,required=True)
     p.add_argument('--groups',type=int,required=True,help='additional source periods per batch')
     p.add_argument('--batches',type=int,default=1)
     p.add_argument('--max-bits',type=int,default=2**30,help='maximum materialized bits in any one word')

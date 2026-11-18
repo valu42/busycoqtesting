@@ -63,8 +63,8 @@ def tokens(m):
             return out
 
 
-def skip(m, cap=None):
-    """Return a lower bound on concrete steps, zero when no macro is used."""
+def skip(m, cap=None, *, exact=False):
+    """Apply successful probes. Return their number, or their raw cost if exact."""
     t, x = m.tape, m.head
     if m.state != 'A' or t.get(x) not in (2, 4):
         return 0
@@ -91,13 +91,24 @@ def skip(m, cap=None):
         n = min(n, cap)
     if n == 0:
         return 0
+    # Incrementing z costs 1+2*v2(z+1), plus two steps when the
+    # left marker grows. Sum v2 over the interval using binary popcounts.
+    if exact:
+        z = power+value if full else value
+        cost = 3*n + 2*(z.bit_count() - (z+n).bit_count())
+        if full:
+            cost += 2*((z+n).bit_length() - z.bit_length())
     calls = n
     for j0, digit in ts:
+        if exact:
+            cost += 3*calls
         if digit is None:
             calls *= 2
             continue
         new = (2, 0, 4)[(digit-calls) % 3]
         calls = (calls+2-digit)//3
+        if exact:
+            cost += calls  # one extra local instruction on each pair underflow
         if new:
             t[j0+1] = new
         else:
@@ -110,22 +121,22 @@ def skip(m, cap=None):
     else:
         for i in range(power.bit_length()-1):
             t[x-1-i] = 2 + (((value+n) >> i) & 1)
-    return n
+    return cost if exact else n
 
 
-def next_zero(m, limit=120000):
-    low = 0
+def next_zero(m, limit=120000, *, exact=False):
+    elapsed = 0
     for work in range(1, limit+1):
-        count = skip(m)
+        count = skip(m, exact=exact)
         if count:
-            low += count
+            elapsed += count
         else:
             if not m.step():
-                return None, low, work
-            low += 1
+                return None, elapsed, work
+            elapsed += 1
         c = decode(m)
         if c and c[-1] == 0:
-            return c, low, work
+            return c, elapsed, work
     raise RuntimeError("work limit in next_zero")
 
 

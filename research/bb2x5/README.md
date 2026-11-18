@@ -11,7 +11,7 @@ These notes record results on the November 3, 2026 list of 37 formal holdouts. E
 | 26 | `1RB2RB4LA2RA1LA_2LA4RA3LA---3RA` | The blank machine halts exactly at the least fixed point of a monotone integer function. All widths through 173 are excluded. Its blank run exceeds $3.77\times10^{23}$ steps. [Bounds and calendar](column-phases.md) · [Halting permutations](column-traps.md) · [Exact carry accounting](column-reserve.md) |
 | 2 | `1RB---4LB0LA4RA_2LB2LA3RA4LB0RB` | A fixed-cut protocol replaces the growing left half. The negative prefix is exact through 2,400 extensions from blank. |
 | 10 | `1RB2RB3LA4LA1LA_2LB3RA---4RA1RB` | Three leading A entries at the fresh edge halt. Cyclic period counts are known. The starting position matters. |
-| 3 | `1RB---0RB0LA2RA_2LB2LA3RA4LB0LB` | Mixed binary/ternary macros give a lower bound exceeding 10¹⁵⁰ defined steps from blank. Higher reset branches remain open. |
+| 3 | `1RB---0RB0LA2RA_2LB2LA3RA4LB0LB` | The 320th zero-counter checkpoint is at about 3.09717 × 10³¹² defined steps from blank. Higher reset branches remain open. [Exact mixed-counter clock](frontiers/line3-timing.md) |
 | 35 | `1RB2LA4RA1LA3LA_0LA3RB3LB2RB---` | Adding one opening transfers the line 37 right edge. A growing suffix follows Pascal's recurrence with constant boundary bit one. The left guard remains open. [Proof and checks](line35-pascal.md) |
 | 36 | `1RB2LA1LA4RA2LA_0LA3RB3LB2RB---` | **Runs forever from blank.** Two integer certificates keep every sweep away from B4. [Rocq theorem](../../verify/Line36Nonhalting.v) · [Proof](line36-nonhalting.md) |
 
