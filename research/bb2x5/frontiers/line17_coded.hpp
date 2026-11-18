@@ -291,13 +291,50 @@ struct Tail {
 
 bool trace() {return std::getenv("LINE17_TILES_TRACE")!=nullptr;}
 
+bool read_frame_size(std::istream& input,unsigned& size) {
+    unsigned char b[4];
+    input.read(reinterpret_cast<char*>(b),4);
+    if(input.gcount()==0 && input.eof()) return false;
+    if(input.gcount()!=4) throw std::runtime_error("truncated coded frame size");
+    size=unsigned(b[0])|(unsigned(b[1])<<8)|(unsigned(b[2])<<16)|(unsigned(b[3])<<24);
+    if(!size || size>(1u<<22)) throw std::runtime_error("invalid coded frame size");
+    return true;
+}
+
+// A portable frame has a little-endian 32-bit slot count and ceil(count/16)
+// alphabet bytes. Frame padding has no effect on the source word.
+void export_period(Word& word,const std::vector<Cycle>& history,Count marks,const char* path) {
+    const auto& last=history.back();
+    std::string tmp=std::string(path)+".tmp";
+    std::ofstream out(tmp,std::ios::binary);
+    read(word,true,64,[&](const Batch& batch){
+        for(const auto& job:batch) for(const auto& b:job.blocks) {
+            const unsigned n=b.slots;
+            const unsigned char length[4]={static_cast<unsigned char>(n),static_cast<unsigned char>(n>>8),
+                static_cast<unsigned char>(n>>16),static_cast<unsigned char>(n>>24)};
+            out.write(reinterpret_cast<const char*>(length),4);
+            out.write(reinterpret_cast<const char*>(b.bytes.data()),b.bytes.size());
+        }
+        if(!out) throw std::runtime_error("cannot write coded period");
+    });
+    out.close();
+    if(!out || std::rename(tmp.c_str(),path)!=0) throw std::runtime_error("cannot install coded period");
+    std::cout<<"period "<<history.size()<<' '<<last.origin<<' '<<last.root_period<<' '<<word.slots<<' '<<marks<<'\n';
+    for(const auto& c:history) {
+        if(last.root_period%c.root_period!=0) throw std::logic_error("incompatible coded export periods");
+        mpz_class k=last.root_period/c.root_period;
+        write_row(c.state,k*c.period_slots,k*c.period_calls,k*c.period_inner);
+    }
+}
+
 void run(Word word,std::vector<Cycle> history,const std::vector<unsigned>& states,
-         const mpz_class& minimum,Count limit,int workers,const Alphabet& a) {
+         const mpz_class& minimum,Count limit,int workers,const Alphabet& a,
+         size_t export_cut=0,const char* export_path=nullptr) {
     size_t cut=history.size();
     mpz_class origin=history.back().origin,root=history.back().root_period;
     Count marks=history.back().period_inner.get_ui()/2-word.slots;
     if(history.back().prefix_slots) throw std::runtime_error("expected a pure coded period");
-    while(cut<states.size() && origin+root<minimum) {
+    while(cut<(export_cut ? export_cut : states.size()) && origin+root<minimum) {
         auto phases=cycle(word.map,states[cut]);
         if(phases.empty()) break;
         // At a closed digit boundary, there are at most three compounds per
@@ -317,6 +354,10 @@ void run(Word word,std::vector<Cycle> history,const std::vector<unsigned>& state
         c.period_calls=counts.calls;c.period_inner=counts.inner;c.origin=origin;c.root_period=root;
         history.push_back(c);word=std::move(next);marks=counts.inner/2-counts.slots;
         if(trace()) std::cerr<<"coded cut "<<cut<<" root "<<root<<" slots "<<word.slots<<" marks "<<marks<<std::endl;
+    }
+    if(export_cut) {
+        if(cut!=export_cut) throw std::runtime_error("coded period budget or transient before requested export cut");
+        export_period(word,history,marks,export_path);return;
     }
     mpz_class copies=0;
     if(minimum>origin) {

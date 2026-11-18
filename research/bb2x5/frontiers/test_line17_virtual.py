@@ -1,0 +1,78 @@
+"""Compare fused physical endpoints, pending flags and counts with the packed worker."""
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+import unittest
+
+from line17 import DATA, load, native_counts, record, replay
+
+TILES = Path(os.environ.get('BB25_TILE17', '/tmp/bb25-tiles17')).resolve()
+PACKED = Path(os.environ.get('BB25_PACK17', '/tmp/bb25-packed17')).resolve()
+DRIVER = Path(__file__).with_name('line17_virtual.py')
+
+
+class FusedTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.directory = tempfile.TemporaryDirectory()
+        cls.addClassCleanup(cls.directory.cleanup)
+        cls.root = Path(cls.directory.name)
+        cls.period = cls.root / 'cut59.code'
+        cls.worker('build', '--cut', 59, '--word-bits', 10_000_000)
+        cls.meta = json.loads((cls.root/'cut59.code.json').read_text())
+
+    @classmethod
+    def worker(cls, mode, *args, check=True):
+        return subprocess.run([sys.executable, str(DRIVER), mode, '--engine', str(TILES),
+                               '--period', str(cls.period), '--threads', '2', *map(str,args)],
+                              check=check, capture_output=True, text=True)
+
+    def packed(self, epochs):
+        return subprocess.run([str(PACKED), str(epochs), str(2**28), str(2**34)],
+                              input=DATA+'\n', check=True, capture_output=True, text=True).stdout.splitlines()
+
+    def compare(self, copies, digits, batch, prefix, *args):
+        epochs = self.meta['origin'] + copies*self.meta['root_period']
+        chk = self.root/(prefix+'.json')
+        counts = self.root/(prefix+'.counts')
+        self.worker('advance', '--epochs', epochs, '--digits', digits, '--phase-batch', batch,
+                    '--checkpoint', chk, '--counts', counts, *args)
+        header, *rows = counts.read_text().splitlines()
+        self.assertEqual(header, f'epochs {epochs}')
+        reference = self.packed(epochs)
+        self.assertEqual(rows, reference)
+        self.assertEqual(load(chk), record(epochs, native_counts(reference, 4*epochs, 424)))
+        return chk, counts
+
+    def test_batch_with_pending_seam_and_resume(self):
+        origin = replay(self.meta['origin'], 6)
+        seed, counts = self.compare(5, 7, 3, 'seed')
+        self.assertNotEqual(load(seed)['register'], origin['register'])
+        self.compare(17, 7, 4, 'continued', '--seed', seed, '--seed-counts', counts)
+        self.compare(17, 5, 1, 'five')
+
+    def test_physical_periods(self):
+        result = subprocess.run([str(TILES),'probe',str(self.period),'59','7','2'],
+                                check=True,capture_output=True,text=True)
+        orders = [int(line.split()[2]) for line in result.stdout.splitlines() if 'source-copies' in line]
+        self.assertEqual(orders[:4], [3, 9, 9, 9])
+        self.assertEqual(len(orders), 7)
+
+    def test_checksum_and_truncated_frame(self):
+        source = self.period.read_bytes()
+        path = self.root/'damaged.code'
+        path.write_bytes(source[:-1])
+        path.with_suffix('.code.json').write_text(json.dumps(self.meta))
+        result = self.worker('advance','--period',path,'--epochs',100,'--checkpoint',self.root/'bad.json',check=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('checksum mismatch',result.stderr)
+        result = subprocess.run([str(TILES),'probe',str(path),'59','2','1'],capture_output=True,text=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('truncated frame',result.stderr.lower())
+
+
+if __name__ == '__main__':
+    unittest.main()

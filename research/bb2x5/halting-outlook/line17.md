@@ -7,7 +7,7 @@ Research pass: **2026-11-18**. No formal proof assistant verification was perfor
 
 ## Accelerator update
 
-The coded simulator reached 16,059,106,140,628,736,429,276,855,795,714 ordinary sweeps and pair 191 at ≈ 3.61053 × 10^63 raw instructions from blank. Two extrapolations from 21 shortened registers put the first +12 visit around 4 × 10^149 or 3 × 10^158 instructions. The rigorous upper bound is 3.545 × 10^331. The first five genuine marks at cut 403 occupy slots 5, 11, 17, 23 and 29. The blank trajectory still has two previously observed overflow resets and no calibrated raw halting clock.
+The fused simulator reached 144,531,955,265,658,627,863,491,702,161,410 ordinary sweeps and pair 201 at ≈ 2.92453 × 10^65 raw instructions from blank. Two extrapolations from 21 shortened registers put the first +12 visit around 4 × 10^149 or 3 × 10^158 instructions. The rigorous upper bound is 3.545 × 10^331. The first five genuine marks at cut 403 occupy slots 5, 11, 17, 23 and 29. The blank trajectory still has two previously observed overflow resets and no calibrated raw halting clock.
 
 [Simulator, experiments, and reproduction](../line17-accelerator.md) · [Exact blank-tape checkpoint](../frontiers/runs/line17-epochs.json)
 

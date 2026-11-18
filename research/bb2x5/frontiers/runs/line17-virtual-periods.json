@@ -1,0 +1,72 @@
+{
+  "format": "bb2x5-line17-fused-periods-v1",
+  "machine": "1RB2RA3LB---2LB_2LA0LA4RB0RB1LA",
+  "source_cut": 110,
+  "root_sweep_origin": 2,
+  "source_period_sweeps": 5353035380209578809758951931904,
+  "source_period_slots": 187936890096,
+  "source_period_marks": 23492006848,
+  "coded_source_frame_count": 680511,
+  "physical_probe": {
+    "depth": 4,
+    "physical_states": 1296,
+    "stripe_image_cardinality_including_conflict": [
+      82,
+      82
+    ]
+  },
+  "virtual_probe": {
+    "depth": 7,
+    "normalized_states": 2187,
+    "sampled_orbit_length": 486,
+    "physical_suffix_tokens": 128,
+    "distinct_physical_end_states": 2187
+  },
+  "periods": [
+    {
+      "cut": 111,
+      "base_copies": 3,
+      "sweeps_per_period": 16059106140628736429276855795712,
+      "period_slots": 375872944880,
+      "period_marks": 46984013696
+    },
+    {
+      "cut": 112,
+      "base_copies": 9,
+      "sweeps_per_period": 48177318421886209287830567387136,
+      "period_slots": 751745054448,
+      "period_marks": 93968027392
+    },
+    {
+      "cut": 113,
+      "base_copies": 27,
+      "sweeps_per_period": 144531955265658627863491702161408,
+      "period_slots": 1503489273584,
+      "period_marks": 187936054784
+    },
+    {
+      "cut": 114,
+      "base_copies": 81,
+      "sweeps_per_period": 433595865796975883590475106484224,
+      "period_slots": 3006977711856,
+      "period_marks": 375872109568
+    },
+    {
+      "cut": 115,
+      "base_copies": 243,
+      "sweeps_per_period": 1300787597390927650771425319452672,
+      "period_slots": 6013954588400,
+      "period_marks": 751744219136
+    },
+    {
+      "cut": 116,
+      "base_copies": 243,
+      "sweeps_per_period": 1300787597390927650771425319452672
+    },
+    {
+      "cut": 117,
+      "base_copies": 486,
+      "sweeps_per_period": 2601575194781855301542850638905344
+    }
+  ]
+}

@@ -341,12 +341,17 @@ void write_aligned_rows(const std::vector<Cycle>& history, const mpz_class& epoc
 }
 }
 #include "line17_coded.hpp"
+#include "line17_ternary.hpp"
+#include "line17_virtual.hpp"
 int main(int argc,char** argv) try {
     using namespace tiled;
-    bool coded_mode = argc == 5 && std::string(argv[4]) == "coded";
+    if(argc>1 && std::string(argv[1])=="probe")return virtual_probe(argc-1,argv+1);
+    if(argc>1 && std::string(argv[1])=="virtual")return virtual_advance(argc-1,argv+1);
+    bool exporting = argc == 6 && std::string(argv[4]) == "export-coded";
+    bool coded_mode = exporting || (argc == 5 && std::string(argv[4]) == "coded");
     bool aligned = coded_mode || (argc == 5 && std::string(argv[4]) == "at-least");
     if (argc != 4 && !aligned)
-        throw std::runtime_error("usage: line17-tiles ADDITIONAL_EPOCHS WORD_BITS THREADS [at-least|coded] < register");
+        throw std::runtime_error("usage: line17-tiles ADDITIONAL_EPOCHS WORD_BITS THREADS [at-least|coded] or CUT WORD_BITS THREADS export-coded FILE < register");
     mpz_class epochs(argv[1],10);
     Count limit = number(argv[2]);
     Count requested_workers = number(argv[3]);
@@ -357,6 +362,12 @@ int main(int argc,char** argv) try {
     std::string reg;
     std::cin>>reg;
     if (reg.empty() || reg.size()%2 || reg.size()>848) throw std::runtime_error("invalid register length");
+    size_t export_cut=0;
+    if(exporting) {
+        if(epochs<53 || epochs>reg.size()/2) throw std::runtime_error("coded export cut outside the register");
+        export_cut=epochs.get_ui();
+        mpz_ui_pow_ui(epochs.get_mpz_t(),7,reg.size()/2+1);
+    }
     Tables t; Ray stream;
     auto initial=std::make_shared<Bits>(4); initial->addr[0]=2; initial->size=4;
     append(stream.period,initial); stream.copies=epochs;
@@ -395,10 +406,13 @@ int main(int argc,char** argv) try {
                 coded::Alphabet alphabet;
                 auto word=coded::from_packed(stream.period,alphabet);
                 stream=Ray{};
-                coded::run(std::move(word),std::move(history),states,epochs,limit,workers,alphabet);
+                coded::run(std::move(word),std::move(history),states,epochs,limit,workers,alphabet,
+                           export_cut,exporting ? argv[5] : nullptr);
                 return 0;
             }
             bool stream_tail = length(stream.period) > limit/3;
+            if (exporting && (stream_tail || i+1>=export_cut))
+                throw std::runtime_error("cannot reach a pure coded period at requested cut within budget");
             if (origin + root_period >= epochs || i+1 == states.size() || stream_tail) {
                 mpz_class repeats = 0;
                 if (epochs > origin) {
