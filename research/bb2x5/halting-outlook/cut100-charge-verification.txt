@@ -1,0 +1,3 @@
+Ordinary derivative words and exterior-debt controls checked: 24564
+Real epoch 1300, after cut 99: 7 positive groups; earliest [(105, '12113'), (339, '12113'), (763, '12113'), (909, '12113'), (1131, '12113'), (1391, '12113')]
+This blank tape has guard debt 0 and cut-100 debt 0

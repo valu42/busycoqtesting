@@ -1,0 +1,6 @@
+572-sweep pulse forecast advances by 52 at: [13138, 21510, 32742, 39398, 221658, 247762]
+Consecutive correct holdout forecasts between the fourth and fifth slips: 182207
+Blank epochs 11823, 12395: common prefix 201, cut-100 inputs 1, 1.
+Blank epochs 12566, 13138: common prefix 89, cut-100 inputs 1, 2.
+Changed 101st digit 1 to 2 at epoch 1300. Pulses (epoch, first three digits, elapsed raw steps): [(1309, '232', 51247), (1313, '323', 74041)]
+All 14 altered sweeps agree with literal tape and raw clock through: 79832

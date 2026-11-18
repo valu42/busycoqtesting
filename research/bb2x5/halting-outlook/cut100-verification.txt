@@ -1,0 +1,9 @@
+42-sweep gap sufficient: 62992 reachable (phase, word) pairs.
+41-sweep input fails the prefix test at update 159, phase 2; double-input offsets [77, 118].
+Abstract input (offset zero is epoch 1300): 001000000000000000000000000000001111000000000000000000000000000000000000000002000000000000010100000000000000000000000020000001000010100000001000000000000000000
+Oracle witness rejected by physical digit 101 at offset 24: C requires at least one debt.
+Allowed gap edges and literal canonical sweeps: (155813, 156)
+Three-cell local criterion sufficient: 148081 reachable (phase, word) pairs.
+Allowed three-cell edges and literal canonical sweeps: (507861, 260)
+Local doubles unrestricted; other doubles after at least 89 sweeps: 258932 pairs.
+Allowed combined edges and literal canonical sweeps: (992052, 312)

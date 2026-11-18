@@ -4,6 +4,10 @@ The original pass on this outlook branch began on **2026-11-18** at [master 01b0
 
 The earlier outlook, [680c696](https://github.com/valu42/busycoqtesting/commit/680c69635d58a26ad2d33814ac16df4f72a86975), began at [2ab106f](https://github.com/valu42/busycoqtesting/commit/2ab106f706cb1715d494c7f67464e9222092058f). Its machine reports, programs and checkpoints are inherited here. Their original dates and starting commits identify their provenance. The current table marks those contributions **I**. Reports below record where later evidence supersedes those experiments.
 
+## Line 34 proof pass on 18 November
+
+From [outlook c970885](https://github.com/valu42/busycoqtesting/commit/c970885c2e6dce20b0a712d310ba16982660e2f5), two finite certificates reduce blank nonhalting to a condition after digit 100. The spatial test allows any debt attained in the first eight suffix cells, and always permits zero or one. A separate test permits all streams bounded by two with doubles at least 42 sweeps apart. The blank run attained 135,652,670,312 instructions. The all-time source bound and the blank outcome remain open. [Proof, controls, and complete trace](cut100.md)
+
 ## Continuation on 18 November
 
 This continuation starts from [outlook 6e9f4ea](https://github.com/valu42/busycoqtesting/commit/6e9f4ea27600c34026e8d1c4eb795a7b040a6d5f) and the then-current [master 04b5213](https://github.com/valu42/busycoqtesting/commit/04b52137b2de1784986655cb9014c486de4dfd22). The [claim board registration](https://github.com/valu42/busycoqtesting/commit/b5f832e10857b90a9d9f643407421e69f12832ac) separated the new work on 13, 33 and 34 from concurrent return investigations on 15 and 18. The outlook keeps a byte-identical [intake table](simulation-table-at-intake.txt) for offline checks. Other researchers can update the live simulation table. The generator checks the intake hash and matches every current line and string against the intake roster.

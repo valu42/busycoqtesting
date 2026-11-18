@@ -1,8 +1,12 @@
 # Line 34: how much unmatched tape reaches the guard?
 
-**Machine** `1RB2LA4RA1LA3LA_0LA2RB3RB2LB---`. **Outlook: Unknown.** Six unmatched closings in a sweep halt this machine. The new results isolate a necessary event in a particular suffix and measure it in the blank run. The exact clock now reaches **33,919,375,494 defined instructions**. An all-time nonhalting proof remains open.
+**Machine** `1RB2LA4RA1LA3LA_0LA2RB3RB2LB---`. **Outlook: Unknown.** Six unmatched closings in a sweep halt this machine. The new results isolate a necessary event in a particular suffix and measure it in the blank run. The initial timed pass reached **33,919,375,494 defined instructions**. An all-time nonhalting proof remains open.
 
 At a sweep boundary A is on the blank just before a word of opening (1), neutral (2) and closing (3) cells. Each closing matches the nearest available opening to its left. The **debt** of a word is the largest excess of closings over openings in any prefix, including the empty prefix. Write $d(j)$ for the debt of the portion strictly after its first $j$ cells, and $H=d(0)$. The inherited [sweep reduction and literal interpreter](../prior_sweeps.py) show that $H\ge6$ reaches the undefined instruction B4. When $H<6$ the sweep finishes in finite time.
+
+## Current proof result
+
+The [cut-100 report](cut100.md) advances the blank endpoint to 135,652,670,312 instructions and gives two phase-independent conditions for nonhalting. The earlier checkpoint and cut-12 calculations follow.
 
 ## Proof target
 

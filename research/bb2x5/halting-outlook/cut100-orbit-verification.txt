@@ -1,0 +1,5 @@
+Boundaries: [{'epoch': 8000, 'steps': 138991710, 'head': -8000, 'width': 9733}, {'epoch': 125000, 'steps': 33919375494, 'head': -125000, 'width': 152334}, {'epoch': 250000, 'steps': 135652670312, 'head': -250000, 'width': 304657}]
+Pulse counts by segment: [35, 614, 656]
+Pulse phases: [34] gaps: {156: 437, 208: 867}
+First prefix lengths reaching two: {3: 1305} raw intervals: [992550, 225513878]
+First contract violation: None signal SHA-256: ef3b58a160fd55f660d4a172af7c6256b1bbeb33cc2854b7ae757fc113a3fc27
