@@ -1,0 +1,7 @@
+Tested the exact minimum over prefixes in 32130 cap/prefix pairs.
+Literal epoch 32, width 92 and 41-bit seed 605926600073
+62671 block states, 200597 edges, 32 changing rounds, potential [-16,0], seed -2
+Every tiled interval has length minus twice its balance at most 22.
+Blank epoch 331: 612729 literal steps, head -871, width 1035, cut 530, switch count 7.
+14352 projected states, 657878 weighted pairs, potential [-110,0], 17 rounds.
+12-edge closed walk, total displacement 0, total charge -2.

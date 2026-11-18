@@ -222,7 +222,74 @@ int weight(const Edge& e) {
     return 6*e.displacement - 24*e.charge - 4;
 }
 
-int main() {
+// The earlier complete piece remains part of the local word enumeration.
+// A single potential can cover both of its choices.
+void check_projected(const vector<vector<Edge>>& graph) {
+    std::map<State,int> projected_ids;
+    vector<int> image;
+    for (State state : states) {
+        state.last_choice = 0;
+        auto [entry, fresh] = projected_ids.emplace(state, static_cast<int>(projected_ids.size()));
+        image.push_back(entry->second);
+    }
+    assert(projected_ids.size() == 14352);
+    vector<std::map<int,int>> costs(projected_ids.size());
+    for (size_t i = 0; i < graph.size(); ++i) {
+        auto& moves = costs[image[i]];
+        for (const auto& edge : graph[i]) {
+            auto [entry, fresh] = moves.emplace(image[edge.destination],weight(edge));
+            if (!fresh) entry->second = std::min(entry->second,weight(edge));
+        }
+    }
+    size_t arcs = 0;
+    for (const auto& moves : costs) arcs += moves.size();
+    assert(arcs == 657878);
+    vector<int> potential(costs.size());
+    int rounds = 0;
+    for (;;) {
+        auto next = potential;
+        for (size_t i = 0; i < costs.size(); ++i)
+            for (const auto& [to,cost] : costs[i])
+                next[to] = std::min(next[to],potential[i]+cost);
+        if (next == potential) break;
+        potential.swap(next);
+        ++rounds;
+        assert(rounds <= 17);
+    }
+    assert(rounds == 17);
+    assert(*std::min_element(potential.begin(),potential.end()) == -110);
+    assert(*std::max_element(potential.begin(),potential.end()) == 0);
+    for (size_t i = 0; i < graph.size(); ++i)
+        for (const auto& edge : graph[i])
+            assert(potential[image[edge.destination]] <= potential[image[i]] + weight(edge));
+    assert(12*(debt_limit+1)-238 >= 110);
+    std::cout << "14352 projected states, 657878 weighted pairs, potential [-110,0], 17 rounds.\n";
+
+    // A closed walk in the original finite-debt graph limits the rate
+    // obtainable by changing the two coefficients in this left inequality.
+    struct Witness { int state, movement, charge; };
+    const vector<Witness> cycle{
+        {121,3,0}, {5089,-14,-1}, {9600,0,0}, {14585,5,0},
+        {19532,0,0}, {24171,-1,0}, {257,3,0}, {5185,1,-1},
+        {9666,0,0}, {14449,5,0}, {19437,0,0}, {24057,-2,0}
+    };
+    int movement = 0, charge = 0;
+    for (size_t i = 0; i < cycle.size(); ++i) {
+        const auto step = cycle[i];
+        const int to = cycle[(i+1) % cycle.size()].state;
+        const auto& moves = graph[step.state];
+        assert(std::any_of(moves.begin(),moves.end(),[&](const Edge& e) {
+            return e.destination == to && e.displacement == step.movement && e.charge == step.charge;
+        }));
+        movement += step.movement;
+        charge += step.charge;
+    }
+    assert(movement == 0 && charge == -2);
+    std::cout << "12-edge closed walk, total displacement 0, total charge -2.\n";
+}
+
+int main(int argc, char** argv) {
+    assert(argc == 1 || (argc == 2 && string(argv[1]) == "--projected"));
     for (int t = 0; t < phases; ++t) {
         assert(std::cin >> prefix[t] >> header_size[t]);
         for (auto& alternatives : piece[t])
@@ -237,6 +304,10 @@ int main() {
         edge_count += graph.back().size();
     }
     assert(edge_count == 1752900);
+    if (argc == 2) {
+        check_projected(graph);
+        return 0;
+    }
     vector<int> potential(states.size());
     int rounds = 0;
     for (; rounds <= 17; ++rounds) {

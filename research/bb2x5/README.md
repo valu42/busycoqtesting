@@ -2,7 +2,7 @@
 
 [Simulation table for all 37 holdouts](SIMULATION_TABLE.md) · [Run and resume the simulators](frontiers/README.md)
 
-These notes record results on the November 3, 2026 list of 37 formal holdouts. Each machine is identified by its full transition string. All line numbers here are **one-based positions in that exact file**. The scripts use an initially blank, two-way infinite tape, state A and head coordinate zero. An undefined instruction halts on arrival. Line 36 has a computer-assisted proof of blank-tape nonhalting. Its Rocq formalization remains open. [Proof and reproduction](line36-nonhalting.md)
+These notes record results on the November 3, 2026 list of 37 formal holdouts. Each machine is identified by its full transition string. All line numbers here are **one-based positions in that exact file**. The scripts use an initially blank, two-way infinite tape, state A and head coordinate zero. An undefined instruction halts on arrival. Line 36 has a computer-assisted proof of blank-tape nonhalting. Its Rocq formalization remains open. [Proof and reproduction](line36-nonhalting.md) · [Reduced certificates and verification](line36-cap-blocks.md)
 
 | Formal line | Machine | Result to continue from |
 |---:|---|---|

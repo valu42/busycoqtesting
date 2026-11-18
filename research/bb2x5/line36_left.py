@@ -94,8 +94,8 @@ def check_seed():
 
 
 def main():
-    if len(sys.argv) != 2:
-        raise SystemExit('Pass the path to the compiled line36_left executable.')
+    if len(sys.argv) not in (2, 3) or (len(sys.argv) == 3 and sys.argv[2] != '--projected'):
+        raise SystemExit('Pass the path to the compiled line36_left executable, optionally followed by --projected.')
     rows = phases()
     check_density(rows)
     check_seed()
@@ -104,7 +104,7 @@ def main():
         tokens.extend([prefix, str(header)])
         for k in range(6):
             tokens.extend([pieces[k, 0], pieces[k, 1]])
-    subprocess.run([sys.argv[1]], input='\n'.join(tokens) + '\n', text=True, check=True)
+    subprocess.run(sys.argv[1:], input='\n'.join(tokens) + '\n', text=True, check=True)
 
 
 if __name__ == '__main__':
