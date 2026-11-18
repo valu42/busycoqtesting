@@ -17,7 +17,7 @@ These counts measure calls to the simulator. One call can stand for many element
 
 The standalone file in upstream draft PR #100 contains the target table, the T4 simulator, and `Theorem halt : halts tm c0.` It imports `Individual62` and the Coq standard library. A public verification run checks the exact submitted commit with Coq 8.18.0, then passes the compiled objects to `coqchk` in a separate job. [Submitted theorem](https://github.com/valu42/busycoqtesting/blob/cdbb2630b998012b7466070118dadde9671f94ab/verify/M_1RB1RD_1LC0RE_1LD1LC_1RA0LB_0RD0RF_0LCHHH.v#L5739) · [Upstream draft](https://github.com/ccz181078/busycoq/pull/100) · [Compiler and checker logs](https://github.com/valu42/busycoqtesting/actions/runs/44398354450)
 
-Coq 8.18.0 checked a second, checkpointed proof of `line448_halts : halts line448 c0` on November 18, 2026. It checks 58 consecutive segments from the exact blank start. Each intermediate equality compares complete compressed configurations. The last segment checks 3,119 successful calls after step 423,936, reads 1 in state F and verifies that the next call returns `None`. The final theorem composes the segments and transports halting through the twelve-entry table isomorphism. Its assumption report lists only Coq’s built-in `PrimInt63.int`, `lsr`, `land` and `eqb`, used to decode checkpoint numerals. The standalone submission encodes the same finite calculation directly in binary `N`.
+Coq 8.18.0 checked a second, checkpointed proof of `line448_halts : halts line448 c0` on November 18, 2026. It checks 57 consecutive segments from the exact blank start. Each intermediate equality compares complete compressed configurations. The last segment checks 3,119 successful calls after step 423,936, reads 1 in state F and verifies that the next call returns `None`. The final theorem composes the segments and transports halting through the twelve-entry table isomorphism. Its assumption report lists only Coq’s built-in `PrimInt63.int`, `lsr`, `land` and `eqb`, used to decode checkpoint numerals. The standalone submission encodes the same finite calculation directly in binary `N`.
 
 Two executions of the OCaml witness reproduced both stopping counts in the table above. The local `coqchk` accepted the shared engine, and both `stepFast_spec` and `run_pow_spec` printed `Closed under the global context`. A second upstream draft for line 448 independently reports the same terminal state and count from Python and JavaScript. [Parallel submission](https://github.com/ccz181078/busycoq/pull/101)
 
@@ -37,3 +37,14 @@ sh replay_line448.sh busycoq-448 H155900.v build-448-proof
 ```
 
 The first command invoking the replay checks both exact counts and reads the terminal cell. The second builds the decision with Coq's binary arithmetic, prints the assumptions of the theorem, and invokes `coqchk` with VM conversion enabled. [Replay script](replay_line448.sh)
+
+## Replay the checkpointed proof
+
+After the `witness` command above, run the following from `research/bb6`. The script obtains candidate tapes from the extracted simulator, then compiles a Coq equality for each pair of successive tapes. The last segment checks the scanned symbol and stopping instruction directly. `Joined448.v` composes the segments and proves the blank-start theorem. Use `--jobs` to select the number of concurrent Coq processes. A repeated run reuses completed modules in the same build directory.
+
+```sh
+ulimit -s unlimited
+python3 line448-checkpoints/replay.py build-448-witness --jobs 4
+```
+
+A fresh export from the published witness reproduced all 57 checkpoint modules and all 57 segment proofs byte for byte against the locally checked sources. The first five segments cover steps 0 through 245,760. Another 51 reach step 423,936. The final segment checks the remaining 3,119 successful steps and the halt. [Checkpoint verifier](line448-checkpoints/replay.py) · [Composed theorem](line448-checkpoints/Joined448.v)
