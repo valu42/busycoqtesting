@@ -1,5 +1,7 @@
 """Compare fused physical endpoints, pending flags and counts with the packed worker."""
+import hashlib
 import json
+import struct
 import os
 from pathlib import Path
 import subprocess
@@ -64,6 +66,39 @@ class FusedTests(unittest.TestCase):
                           '--checkpoint',self.root/'bad-index.json',check=False)
         self.assertNotEqual(bad.returncode,0)
         self.assertIn('index checksum',bad.stderr)
+
+    def test_lifted_period_matches_blank_export(self):
+        lifted, direct = self.root/'lifted60.code', self.root/'direct60.code'
+        self.worker('lift', '--output', lifted)
+        self.worker('build', '--period', direct, '--cut', 60, '--word-bits', 10_000_000)
+        metadata = [json.loads(p.with_suffix('.code.json').read_text()) for p in (lifted,direct)]
+        for meta in metadata:
+            del meta['sha256']
+        self.assertEqual(*metadata)
+        masks = [w for w in range(65536) if not w & ((w>>1)|(w>>2)|(w>>3))]
+
+        def word_hash(path):
+            acc = width = 0
+            digest = hashlib.sha256()
+            with path.open('rb') as stream:
+                while header := stream.read(4):
+                    n, = struct.unpack('<I',header)
+                    data = bytearray()
+                    for code in stream.read((n+15)//16):
+                        used = min(n,16)
+                        acc |= (masks[code] & ((1<<used)-1)) << width
+                        width += used
+                        n -= used
+                        while width >= 8:
+                            data.append(acc & 255)
+                            acc >>= 8
+                            width -= 8
+                    digest.update(data)
+            if width:
+                digest.update(bytes([acc]))
+            return digest.digest()
+
+        self.assertEqual(word_hash(lifted), word_hash(direct))
 
     def test_physical_periods(self):
         result = subprocess.run([str(TILES),'probe',str(self.period),'59','7','2'],

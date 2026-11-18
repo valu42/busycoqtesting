@@ -48,6 +48,56 @@ def build(args):
         print(f'Cut {args.cut} has {slots} slots and {marks} marks per {root} sweeps.')
 
 
+def verified_period(period):
+    meta = json.loads(metadata_path(period).read_text())
+    if (meta.get('format') != 'bb2x5-line17-coded-period-v1' or meta['machine'] != M17
+            or meta['sha256'] != file_hash(period)):
+        raise ValueError('period identity or checksum mismatch')
+    return meta
+
+
+def lifted_metadata(meta, result, initial):
+    name, copies, source_slots, source_marks, state, slots, calls, interior = result.split()
+    copies, source_slots, source_marks, state, slots, calls, interior = map(
+        int, (copies, source_slots, source_marks, state, slots, calls, interior))
+    if (name != 'lift' or copies not in range(1, 7) or state != initial
+            or (source_slots, source_marks) != (meta['slots'], meta['marks']) or interior % 2):
+        raise ValueError('inconsistent physical period lift')
+    cut = meta['cut'] + 1
+    root = copies*meta['root_period']
+    prefix = [[v, p, copies*n, copies*c, copies*i] for v,p,n,c,i in meta['prefix']]
+    prefix.append([state//2, state%2, slots, calls, interior])
+    rows = native_counts([' '.join(map(str, row)) for row in prefix], 4*root, cut)
+    start = digits(replay(meta['origin'],6)['register'])
+    from line17 import check_pulse_balances
+    check_pulse_balances(root, start[:cut], rows)
+    return {**meta, 'cut': cut, 'root_period': root, 'slots': slots,
+            'marks': interior//2-slots, 'prefix': prefix}
+
+
+def lift(args):
+    period, output = args.period.resolve(), args.output.resolve()
+    if len({period, metadata_path(period), output, metadata_path(output)}) != 4:
+        raise ValueError('lifted source needs its own destination')
+    meta = verified_period(period)
+    cut = meta['cut']
+    if not 0 < cut < 424:
+        raise ValueError('the source must have another physical pair')
+    seed = digits(replay(meta['origin'],6)['register'])
+    initial = 2*seed[cut][0]+seed[cut-1][1]
+    with tempfile.TemporaryDirectory(dir=output.parent) as folder:
+        tmp = Path(folder)/'period'
+        command = [str(args.engine.resolve()), 'lift', str(period), str(initial), str(args.threads), str(tmp)]
+        run = subprocess.run(command, capture_output=True, text=True, env=native_env())
+        if run.returncode:
+            raise ValueError(run.stderr.strip() or 'period lift failed')
+        new = lifted_metadata(meta, run.stdout, initial)
+        new['sha256'] = file_hash(tmp)
+        os.replace(tmp, output)
+        atomic_json(metadata_path(output), new)
+        print(f"Cut {new['cut']} has {new['slots']} slots and {new['marks']} marks per {new['root_period']} sweeps.")
+
+
 def native_env():
     env = os.environ.copy()
     env.setdefault('OMP_WAIT_POLICY', 'PASSIVE')
@@ -154,10 +204,7 @@ def advance(args):
         raise ValueError('period, index, checkpoint and counts need distinct files')
     if args.seed_counts and not args.counts:
         raise ValueError('seed counts require a cumulative counts destination')
-    meta = json.loads(metadata_path(period).read_text())
-    if (meta.get('format') != 'bb2x5-line17-coded-period-v1' or meta['machine'] != M17
-            or meta['sha256'] != file_hash(period)):
-        raise ValueError('period identity or checksum mismatch')
+    meta = verified_period(period)
     seed = load(args.seed) if args.seed else replay(meta['origin'], 6)
     root = meta['root_period']
     begin, remainder = divmod(seed['epochs']-meta['origin'],root)
@@ -217,7 +264,7 @@ def advance(args):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     modes = parser.add_subparsers(dest='action',required=True)
-    for name in ('build','advance'):
+    for name in ('build','lift','advance'):
         sub = modes.add_parser(name)
         sub.add_argument('--engine',type=Path,required=True)
         sub.add_argument('--period',type=Path,required=True)
@@ -225,6 +272,8 @@ def main():
         if name=='build':
             sub.add_argument('--cut',type=int,default=110)
             sub.add_argument('--word-bits',type=int,default=640_000_000_000)
+        elif name=='lift':
+            sub.add_argument('--output', type=Path, required=True)
         else:
             sub.add_argument('--epochs',type=int,required=True,help='absolute minimum sweep count')
             sub.add_argument('--digits',type=int,default=5,help='adjacent virtual digits, 1 through 7')
@@ -236,7 +285,7 @@ def main():
             sub.add_argument('--checkpoint',type=Path,required=True)
     args = parser.parse_args()
     try:
-        (build if args.action=='build' else advance)(args)
+        {'build':build, 'lift':lift, 'advance':advance}[args.action](args)
     except (ValueError, OSError, RuntimeError, OverflowError) as exc:
         parser.exit(2,f'Line 17 stopped: {exc}\n')
 

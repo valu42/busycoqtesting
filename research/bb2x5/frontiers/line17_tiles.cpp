@@ -343,8 +343,10 @@ void write_aligned_rows(const std::vector<Cycle>& history, const mpz_class& epoc
 #include "line17_coded.hpp"
 #include "line17_ternary.hpp"
 #include "line17_virtual.hpp"
+#include "line17_lift.hpp"
 int main(int argc,char** argv) try {
     using namespace tiled;
+    if(argc>1 && std::string(argv[1])=="lift")return virtual_lift(argc-1,argv+1);
     if(argc>1 && std::string(argv[1])=="index")return virtual_index(argc-1,argv+1);
     if(argc>1 && std::string(argv[1])=="probe")return virtual_probe(argc-1,argv+1);
     if(argc>1 && std::string(argv[1])=="virtual")return virtual_advance(argc-1,argv+1);

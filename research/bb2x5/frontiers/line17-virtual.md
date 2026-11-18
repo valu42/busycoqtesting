@@ -63,6 +63,13 @@ python3 frontiers/line17_virtual.py advance --engine /tmp/bb25-line17 \
   --checkpoint /tmp/line17-latest.json --counts /tmp/line17-latest.counts
 ```
 
+An existing source can advance one physical pair with the following command. The worker follows each starting phase until the complete trit and pending flag recur. It writes the phases in their original order and verifies every stripe endpoint. The cut-111 source needs about 23.5 GB. A cut-59 to cut-60 test compared every one of the 6,292,520 output slots against a separate export from blank, including the boundaries between frames.
+
+```sh
+python3 frontiers/line17_virtual.py lift --engine /tmp/bb25-line17 \
+  --period /tmp/line17-cut110.code --output /tmp/line17-cut111.code --threads 6
+```
+
 The optional stripe index saves the transfer of each piece of the source. Its companion checksum binds it to the exact source file and fusion depth. A resumed worker recomposes the whole action and reconstructs the physical phase from the saved trailing source tokens. Every emitted piece is checked against its expected ending phase.
 
 The target is an absolute minimum sweep count. The worker stops at the first whole source copy at or beyond it. To continue from a compatible saved checkpoint, pass `--seed`. Supply its matching `--seed-counts` if cumulative counts are also requested. A new checkpoint is installed after each verified copy. During a batched disk pass several completed copies can become available together. The older fixed-target and packed workers remain available for cross-checks. [Driver](line17_virtual.py) · [Virtual phases](line17_ternary.hpp) · [Physical boundary reconstruction](line17_virtual.hpp)
