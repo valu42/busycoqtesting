@@ -1,3 +1,3 @@
 # Agent instructions
 
-For BB(2,5) holdout work, including simulators, research notes and related proofs under `verify/`, start at the [research roadmap and claim board](research/bb2x5/ROADMAP.md). Register ongoing work or claim a specific task on `master` before starting. Update the same row with evidence and a handoff when the scope, owner or result changes.
+For BB(2,5) research and its related proofs under `verify/`, start at the [machine decision roadmap and claim board](research/bb2x5/ROADMAP.md). The objective is the number of distinct machines fully decided from blank. Pick a machine and claim its resolution campaign or a complementary approach on `master`. Keep that claim across milestones, renew it with evidence, and show which remaining obstacle your next step addresses. Before starting a simulation, tool change or formalization, identify the machine decision it serves. Update the decision tally when the evidence meets the roadmap's verification criteria.
