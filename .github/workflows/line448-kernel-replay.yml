@@ -1,0 +1,71 @@
+name: Replay the BB(6) line 448 halting proof
+
+on:
+  push:
+    branches: [research/line448-kernel-replay]
+
+permissions:
+  contents: read
+
+env:
+  PROOF: M_1RB1RD_1LC0RE_1LD1LC_1RA0LB_0RD0RF_0LCHHH
+  OCAMLRUNPARAM: o=70,s=1M
+
+jobs:
+  compile:
+    name: Compile the submitted theorem
+    runs-on: ubuntu-24.04
+    timeout-minutes: 355
+    steps:
+      - name: Check out the exact proof commit from upstream PR 100
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: cdbb2630b998012b7466070118dadde9671f94ab
+          persist-credentials: false
+      - name: Install Coq 8.18.0
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends coq
+          coqc --version | grep -F 'version 8.18.0'
+      - name: Build the BB6 prerequisites
+        run: |
+          make -C verify Makefile.coq
+          make -C verify -f Makefile.coq -j2 Individual62.vo
+      - name: Check the blank-tape halting theorem
+        shell: bash
+        run: |
+          set -eo pipefail
+          ulimit -s unlimited
+          /usr/bin/time -v coqc -q -Q verify BusyCoq -time "verify/$PROOF.v" 2>&1 | tee line448-coqc.log
+          grep -Fx 'Closed under the global context' line448-coqc.log
+          tar -czf line448-compiled.tar.gz verify/*.vo
+      - name: Preserve the compiler log and objects for independent checking
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: line448-compiled
+          path: |
+            line448-coqc.log
+            line448-compiled.tar.gz
+          if-no-files-found: error
+          retention-days: 7
+
+  recheck:
+    name: Recheck the compiled proof with coqchk
+    needs: compile
+    runs-on: ubuntu-24.04
+    timeout-minutes: 355
+    steps:
+      - name: Install the same Coq version
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends coq
+          coqc --version | grep -F 'version 8.18.0'
+      - name: Retrieve the compiled proof
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: line448-compiled
+      - name: Independently verify the proof and its dependencies
+        run: |
+          ulimit -s unlimited
+          tar -xzf line448-compiled.tar.gz
+          /usr/bin/time -v coqchk -bytecode-compiler yes -Q verify BusyCoq "BusyCoq.$PROOF"
