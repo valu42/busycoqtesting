@@ -1,7 +1,20 @@
 maximum consecutive Q, cuts 3..15: [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4, 4]
 upper bound at cut 78: 524409302061
+upper bound at cut 84: 5973349706294 first forced increase by cut 129
 one cycle on all paired residues verified through 6 columns
 plateau formula checked on 1584 gap triples
+blank third word 332100 and its immediately halting permutation 010233
+tick-4096 multiplicities (43,7,3,6), permuted tape halts at tick 305189 after 172 safe tokens at cut 46
+zero-prefix traps (low zeros, leading Ps, high all-ones, first Q tick):
+0 9 4 1
+1 10 4 1
+2 17 5 3
+3 18 5 3
+4 19 5 4
+5 20 5 4
+6 24 5 7
+two-color conjugacy on 1024 signed counter pairs, including through-passes
+four binary section rules on all 511 tails of length at most eight
 successive negative-tail passes (tick, sufficient low width): [(1, 4), (6, 8), (18, 10), (58, 15), (217, 20), (596, 24), (1792, 28), (6793, 32), (8656, 32), (25684, 35), (63433, 38)]
 every suffix of 0 pairs fails by tick 1 above 4 all-one pairs
 every suffix of 1 pairs fails by tick 6 above 8 all-one pairs
@@ -19,3 +32,11 @@ p(77) = 147, first Q at tick 2465019328
 p(78) = 151, first Q at tick 4636999907
 gaps processed at cut 16: 110162401
 gaps processed at cut 17: 82621428
+p(79) = 164, first Q at tick 10510188597
+p(80) = 164, first Q at tick 10510188597
+p(81) = 166, first Q at tick 15151618333
+p(82) = 166, first Q at tick 15151618333
+p(83) = 167, first Q at tick 18091796172
+p(84) = 173, first Q at tick 54306954019
+streamed gaps at cut 17: 967638458
+streamed gaps at cut 18: 725729236

@@ -1,6 +1,6 @@
 # Line 26 · what a finite automaton can certify
 
-The exact machine is `1RB2RB4LA2RA1LA_2LA4RA3LA---3RA`, line 26 of the November 3 list. The blank decision remains open. The argument below rules out a regular inductive invariant on the natural checkpoint tapes. It also excludes every possible first halting width through 151 and certifies more than 2.75 × 10²¹ defined instructions from blank.
+The exact machine is `1RB2RB4LA2RA1LA_2LA4RA3LA---3RA`, line 26 of the November 3 list. The blank decision remains open. The argument below rules out a regular inductive invariant on the natural checkpoint tapes. It also excludes every possible first halting width through 173 and certifies more than 3.77 × 10²³ defined instructions from blank.
 
 The community tracker credits mxdys with the competing-overflows interpretation. The [tape derivation](research-log.md#line-26--one-inequality-decides-a-finite-halt) proves the elementary trips and their positive durations. The [first-danger criterion](column-frontier.md) proves the equivalence with the least fixed point used below. The present work adds the scalar representation, the two-tail argument, the limitation on regular invariants, and a time-stamped calculation. [Formal list](BB2x5_Rocq_holdouts_37.txt) · [Public status](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved)
 
@@ -68,6 +68,8 @@ Start at $(9,1)$ with score zero. On each of the 36 possible single digits from 
 
 There is an obstruction to promoting this to a globally nondecreasing additive score. Let $N(w)$ be the four digit counts of $w$. Three complete safe ticks are `111 → 3331`, `211 → 1110`, and `0312 → 23310`. Their changes in $N$ are $a=(0,-2,0,3)$, $b=(1,1,-1,0)$, and $c=(0,0,0,1)$. The true seed is `21`, whereas `0133` halts within one tick. Their count difference is $v=(-1,0,1,-2)$. Direct addition gives $a+2b+c+2v=0$. A linear digit score nondecreasing on all safe transitions has nonnegative dot product with $a,b,c$. It cannot also have positive dot product with $v$. This obstruction concerns the global one-tick inequalities and the stated seed. A phase-sensitive reserve, a later seed, or a bound over several ticks is a different problem. All four witness tapes are also checked by literal execution. [Checker](column_tick.py) · [Output](tick-verification.txt)
 
+[Halting permutations and a binary recursion](column-traps.md) gives a stronger obstruction at two genuine blank checkpoints. It constructs halting words whose one-tick safety scores tend to positive infinity.
+
 ## The first dangerous arrival and a bound on its plateaux
 
 Write $g$ for the number of $P$ before the first $Q$ in $W_j$. Then $p(j)=\lceil g/2\rceil$ is the number of extensions before that arrival. The least fixed point of $p$, if one exists, is the first halting width. In the word following the leading $P^g$, let $r$ count $Q$ up to the next $P$ and $s$ count $Q$ between that $P$ and the following $P$. Thus $r\ge1$, $s\ge0$.
@@ -95,6 +97,19 @@ The checker computes all overlapping first-arrival counts and times independentl
 
 Before the first $Q$ at cut 78 there are 151 wraps. An earlier physical halt would therefore have had width at most 151, which has just been excluded. Before the final tick at least $N=8(4636999907-1)=37,095,999,248$ epochs have completed. In epoch $n$ both trips travel from the guard at $-n$ to at least coordinate zero and return to the guard. The leading `44` pairs pass, and a final unmatched leading `4` also reaches coordinate zero. Thus the two trips require at least $4n$ elementary instructions in total. Including the five-step entry gives **at least $5+2N(N+1)=2,752,226,320,489,425,129,509$ defined instructions from blank**. The exact number of steps to this event remains unknown.
 
+### Extension through cut 84
+
+An additional block of four ordinary pairs can be advanced by one table lookup per low-calendar gap. The lookup reads the current eight bits and the gap length, and returns the next eight bits, the emitted $P$ count and whether $Q$ passed. Accumulate the emitted counts until a $Q$ passes, and apply the existing sparse subtraction above the block. Every passed $Q$ keeps its original time stamp. The maximum-gap lemma bounds all pending counts for the cuts used here. Running this construction from low cuts 17 and 18 gives independent upper calculations at cuts 21 and 22. All the overlapping first-arrival counts and times agree.
+
+| cuts $j$ | $p(j)$ | tick of their first $Q$ |
+|---|---:|---:|
+| 79, 80 | 164 | 10,510,188,597 |
+| 81, 82 | 166 | 15,151,618,333 |
+| 83 | 167 | 18,091,796,172 |
+| 84 | 173 | 54,306,954,019 |
+
+Starting at $R_{15}=4$, the existing run recurrence gives $R_{84}\le5,973,349,706,294$ and $3R_{84}<2^{45}$. The plateau lemma implies $p(129)>p(84)=173$, so **$p(142)\ge174$**. The earlier fixed-point chain reaches 142. Its next iterate therefore excludes every candidate fixed point through 173. Before the first $Q$ at cut 84 the ordinary run has accumulated 173 wraps, so the physical run cannot have halted by then at any smaller width. Before the tick containing this event at least $N=8(54,306,954,019-1)=434,455,632,144$ epochs have completed. Consequently **the blank machine executes at least $5+2N(N+1)=377,503,392,604,154,203,337,765$ defined elementary instructions**. Only the calendars used for this finite bound are enumerated. [Checker](column_clock.cpp) · [Transcript](phase-verification.txt)
+
 The obstruction now is to show $p(j)>j$ for every later $j$ or to exhibit a fixed point. The long runs at other phases prevent a uniform constant bound on $R_j$. The first-arrival phase at each $j$, and the number of unused eligible upper digits at that phase, are more specific data than the worst case over all phases.
 
 ## Reproduction
@@ -105,4 +120,5 @@ Run from `research/bb2x5` with assertions enabled. Python 3.10 or newer and a C+
 python3 column_phases.py
 c++ -std=c++20 -O2 column_clock.cpp -o column-clock
 ./column-clock
+./column-clock --extended
 ```
