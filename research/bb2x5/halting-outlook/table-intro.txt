@@ -1,0 +1,12 @@
+# Halting outlook for the 37 BB(2,5) machines
+
+Latest research pass **2026-11-18**, starting at [master 01b0a10](https://github.com/valu42/busycoqtesting/commit/01b0a10592b3bf843c0fd5bb1718625c65632830). The November 3 line numbers and complete transition strings follow the [original simulation table](SIMULATION_TABLE.md). The [baseline](halting-outlook/BASELINE.md) identifies the earlier outlook and its experiments.
+
+**At a glance.** Line **17** has the strongest sourced case for halting. Lines **7** and **13** have specific routes to a halt, and the arithmetic on **29** and **30** favors nonhalting. Line **36** has a Rocq nonhalting theorem. The author also reports a proof for **37**. Its public write-up ends at a sufficient condition, so its row records the verification gap. No open machine has a calibrated estimate in raw instructions.
+
+**Notation.** Start in A on an all-zero, two-way tape. A raw step executes one defined instruction. Reaching `---` halts. `A1` means A scanning 1. A floor measures survival from blank. `≈` abbreviates a saved exact clock. **I** marks inherited repository evidence, including the earlier outlook. **N** marks results first obtained during this pass. **E** marks an external report. “Uncalibrated” means the evidence supplies no numerical stopping-time distribution. The reports define machine-specific counters and events.
+
+**Outlook labels.** **Proven halting** and **Proven nonhalting** require a reviewable blank-tape argument. The report states its formal verification status. **Probable halting** and **Probable nonhalting** require explicit heuristics favoring the indicated outcome. **Possible halting** identifies a specific candidate mechanism whose reachability or frequency remains open. **Unknown** means the reviewed evidence supports no direction.
+
+| Line | Machine | Structure / halt trigger | Halting outlook | Established raw-step floor | Estimated halting time | Evidence / main obstacle | Report |
+| ---- | ------- | ------------------------ | --------------- | -------------------------- | ---------------------- | ------------------------ | ------ |

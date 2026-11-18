@@ -1,0 +1,6 @@
+PASS: 18 blank epochs, complete configurations and exact raw counts; endpoint 84412
+PASS: ordinary-prefix safe filter, 2250 literal complete configurations with arbitrary two-cell tails
+PASS: terminal 32 -> 4432 B return in 9 raw instructions
+PASS: residual guard at epoch 415 returns B in 129 raw steps; full suffix matched
+PASS: residual guard at epoch 827 returns B in 21 raw steps; full suffix matched
+PASS: uninstrumented continuation 8256–9216 matches instrumented 8192–9216 full configuration and raw time

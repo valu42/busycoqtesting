@@ -1,0 +1,24 @@
+All 37 table rows match the run files.
+test_a_jump_guards (test_arithmetic5.ArithmeticTests.test_a_jump_guards) ... ok
+test_b_blocks_exhaustive_quotient_lifting (test_arithmetic5.ArithmeticTests.test_b_blocks_exhaustive_quotient_lifting) ... ok
+test_blank_rounds_against_scalar (test_arithmetic5.ArithmeticTests.test_blank_rounds_against_scalar) ... ok
+test_budget_resume_and_rejection (test_arithmetic5.ArithmeticTests.test_budget_resume_and_rejection) ... ok
+test_halts_and_adjacent_guards (test_arithmetic5.ArithmeticTests.test_halts_and_adjacent_guards) ... ok
+test_identity_and_literal_machine (test_arithmetic5.ArithmeticTests.test_identity_and_literal_machine) ... ok
+test_long_b_valuation_branches (test_arithmetic5.ArithmeticTests.test_long_b_valuation_branches) ... ok
+test_random_full_accelerator (test_arithmetic5.ArithmeticTests.test_random_full_accelerator) ... ok
+test_all_holdout_small_blocks (test_exact_blocks.ExactTests.test_all_holdout_small_blocks) ... ok
+test_arbitrarily_large_zero_block_export (test_exact_blocks.ExactTests.test_arbitrarily_large_zero_block_export) ... ok
+test_atomic_budgets (test_exact_blocks.ExactTests.test_atomic_budgets) ... ok
+test_atomic_checkpoint_write (test_exact_blocks.ExactTests.test_atomic_checkpoint_write) ... ok
+test_blank_trajectories_and_resume (test_exact_blocks.ExactTests.test_blank_trajectories_and_resume) ... ok
+test_checkpoint_rejects_damage (test_exact_blocks.ExactTests.test_checkpoint_rejects_damage) ... ok
+test_checkpoint_rejects_negative_period (test_exact_blocks.ExactTests.test_checkpoint_rejects_negative_period) ... ok
+test_exponential_reuse (test_exact_blocks.ExactTests.test_exponential_reuse) ... ok
+test_halt_loop_and_boundary_semantics (test_exact_blocks.ExactTests.test_halt_loop_and_boundary_semantics) ... ok
+test_large_integer_checkpoint (test_exact_blocks.ExactTests.test_large_integer_checkpoint) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 1.302s
+
+OK
