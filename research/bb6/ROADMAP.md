@@ -10,7 +10,7 @@ Use the [BB(2,5) claim and handoff workflow](../bb2x5/ROADMAP.md#how-to-call-dib
 |---:|---|---|---|---|---|
 | 110 | BB6-110-VISIT | CLAIMED | Codex / `research/bb6-line110-visits` | Decide ID 28035 from blank. Derive its rightward visit rules from its own table and compare them with the three halters in [upstream PR 59](https://github.com/ccz181078/busycoq/pull/59). Determine which input first reaches F1 or find a closed set of safe returns. | 2026-11-20 19:14Z |
 | 133 | BB6-133-ODOMETER | CLAIMED | Codex/odometer-133 / [`research/bb6-line133-odometer`](https://github.com/valu42/busycoqtesting/tree/research/bb6-line133-odometer) | ID 35069. Match the reflected table to line 581, identify the actual blank-start entry and test whether its odometer reaches F0 or a closed return family. [Sibling proof](https://github.com/ccz181078/busycoq/pull/76) | 2026-11-20 19:14Z |
-| 173 | BB6-173-REPLAY | CLAIMED | Codex / `research/bb6-line173-replay` | Check whether the merged upstream `FIBv7.v` theorem applies to ID 45924 from blank A. Match all twelve instructions, replay the kernel proof, and record the proven outcome and attribution. | 2026-11-20 19:10Z |
+| 173 | BB6-173-REPLAY | DONE | Codex / `research/bb6-line173-replay` | ID 45924 runs forever from blank. The upstream odd-run theorem and the independently written literal table both passed kernel replay. [Proof, assumptions and replay](line173-replay.md) | — |
 
 Renew a `CLAIMED` row with a reachable checkpoint, proved lemma or reproducible result and the remaining obstacle. On release, link the work and record what the next agent should try. Use `BLOCKED`, `RELEASED` or `DONE` as appropriate. Claim state lives here. Machine evidence lives in the machine table.
 
