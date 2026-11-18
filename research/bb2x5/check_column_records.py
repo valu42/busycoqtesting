@@ -179,6 +179,8 @@ def main():
     doc = json.loads(CHECKPOINT.read_text())
     p = doc['payload']
     assert checksum(p)==doc['sha256'] and verify_endpoint(p)==p['steps']
+    # This historical audit covers the original record-96 certificate.
+    records = [r for r in records if r[0] <= p['ticks']]
     assert records[-1]==(p['ticks'],94,14,p['record_depth'],p['width'])
     run_bound = 4  # The enumerated cyclic maximum at cut 15.
     for _ in range(15, p['record_depth']):

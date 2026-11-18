@@ -1,0 +1,147 @@
+{
+  "machine": "1RB---3RA2LA2RB_2LB3LA4LB4RA0RA",
+  "maximum_width": 8,
+  "modulus": 6561,
+  "covered_residues": 71,
+  "counts_by_width": {
+    "5": 1,
+    "6": 2,
+    "7": 5,
+    "8": 11
+  },
+  "certificates": [
+    {
+      "ternary_suffix": "22002",
+      "residue": 218,
+      "steps_after_A": 26,
+      "halt_offset_from_V": -5,
+      "final_word": "134244"
+    },
+    {
+      "ternary_suffix": "220002",
+      "residue": 650,
+      "steps_after_A": 29,
+      "halt_offset_from_V": -6,
+      "final_word": "1342424"
+    },
+    {
+      "ternary_suffix": "220020",
+      "residue": 654,
+      "steps_after_A": 27,
+      "halt_offset_from_V": -6,
+      "final_word": "1342442"
+    },
+    {
+      "ternary_suffix": "2110202",
+      "residue": 1802,
+      "steps_after_A": 50,
+      "halt_offset_from_V": -7,
+      "final_word": "13424244"
+    },
+    {
+      "ternary_suffix": "2200002",
+      "residue": 1946,
+      "steps_after_A": 32,
+      "halt_offset_from_V": -7,
+      "final_word": "13424224"
+    },
+    {
+      "ternary_suffix": "2200020",
+      "residue": 1950,
+      "steps_after_A": 30,
+      "halt_offset_from_V": -7,
+      "final_word": "13424242"
+    },
+    {
+      "ternary_suffix": "2200200",
+      "residue": 1962,
+      "steps_after_A": 28,
+      "halt_offset_from_V": -7,
+      "final_word": "13424422"
+    },
+    {
+      "ternary_suffix": "2200202",
+      "residue": 1964,
+      "steps_after_A": 30,
+      "halt_offset_from_V": -7,
+      "final_word": "13424434"
+    },
+    {
+      "ternary_suffix": "21102002",
+      "residue": 5402,
+      "steps_after_A": 53,
+      "halt_offset_from_V": -8,
+      "final_word": "134242424"
+    },
+    {
+      "ternary_suffix": "21102020",
+      "residue": 5406,
+      "steps_after_A": 51,
+      "halt_offset_from_V": -8,
+      "final_word": "134242442"
+    },
+    {
+      "ternary_suffix": "21210202",
+      "residue": 5690,
+      "steps_after_A": 55,
+      "halt_offset_from_V": -8,
+      "final_word": "134242244"
+    },
+    {
+      "ternary_suffix": "22000002",
+      "residue": 5834,
+      "steps_after_A": 35,
+      "halt_offset_from_V": -8,
+      "final_word": "134242224"
+    },
+    {
+      "ternary_suffix": "22000020",
+      "residue": 5838,
+      "steps_after_A": 33,
+      "halt_offset_from_V": -8,
+      "final_word": "134242242"
+    },
+    {
+      "ternary_suffix": "22000200",
+      "residue": 5850,
+      "steps_after_A": 31,
+      "halt_offset_from_V": -8,
+      "final_word": "134242422"
+    },
+    {
+      "ternary_suffix": "22000202",
+      "residue": 5852,
+      "steps_after_A": 33,
+      "halt_offset_from_V": -8,
+      "final_word": "134242434"
+    },
+    {
+      "ternary_suffix": "22001102",
+      "residue": 5870,
+      "steps_after_A": 43,
+      "halt_offset_from_V": -8,
+      "final_word": "134244244"
+    },
+    {
+      "ternary_suffix": "22002000",
+      "residue": 5886,
+      "steps_after_A": 29,
+      "halt_offset_from_V": -8,
+      "final_word": "134244222"
+    },
+    {
+      "ternary_suffix": "22002002",
+      "residue": 5888,
+      "steps_after_A": 31,
+      "halt_offset_from_V": -8,
+      "final_word": "134244234"
+    },
+    {
+      "ternary_suffix": "22002020",
+      "residue": 5892,
+      "steps_after_A": 31,
+      "halt_offset_from_V": -8,
+      "final_word": "134244342"
+    }
+  ]
+}

@@ -105,7 +105,7 @@ def generate():
         raise ValueError('line 4 return differs from its timed recurrence')
     consider(4, p['machine'], steps, path, 'Timed A(6,b) returns')
 
-    path = RUNS/'line26-width205.json'
+    path = RUNS/'line26-record99.json'
     doc = json.loads(path.read_text())
     p = doc['payload']
     if checksum(p) != doc['sha256']:
@@ -160,7 +160,7 @@ def generate():
               4: '[> 10^1,719,137](line4-scalar.md)',
               5: f'[≥ 2^{exponent:,}](accelerator-results/arithmetic5-100k.json)',
               17: '[> 10^36](marked-register.md)',
-              26: f'[≥ {bound26:,}](column-records.md#a-lower-bound-beyond-the-fully-timed-tape)',
+              26: f'[≥ {bound26:,}](column-gap-paths.md#the-next-two-blank-records)',
               36: '[Unbounded (proved nonhalting)](line36-nonhalting.md)',
               37: '[≥ 39,999,600,001](line37-header.md)'}
     reports = {7: ('> 10^1,140,000,000', OCTOBER), 13: ('≈ 10^17.50888', COMMUNITY),

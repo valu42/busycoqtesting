@@ -1,0 +1,81 @@
+{
+  "machine": "1RB---3RA2LA2RB_2LB3LA4LB4RA0RA",
+  "start_epochs": 9728,
+  "end_epochs": 10000,
+  "start_sha256": "cf2a332114dc85e6524c156a60152069fa9f7961698ef663abd67ee97a1cbad0",
+  "end_sha256": "4005eb03e199201b0ce597e825578e7d230a73533072d9cd854f637540beb999",
+  "status": "unknown",
+  "counts": {
+    "outer": {
+      "first_A_on_virgin": 180,
+      "open_prefix": 92
+    },
+    "internal": {
+      "child_0": 432,
+      "terminal_32": 216,
+      "child_2": 2350483,
+      "ordinary_prefix": 138
+    }
+  },
+  "first_examples": {
+    "outer_first_A_on_virgin": {
+      "epoch": 9729,
+      "guard_coordinate": -9728,
+      "distance_to_virgin": 40315,
+      "projected_count_bits": 2
+    },
+    "outer_open_prefix": {
+      "epoch": 9731,
+      "guard_coordinate": -9730,
+      "prefix": "3222222222222222222222222222222222222222222222222222222222222222",
+      "local_steps": 64
+    }
+  },
+  "guard3_reply_rounds": {
+    "outer": {
+      "BB": 272
+    },
+    "internal": {
+      "AB": 216,
+      "BB": 138
+    }
+  },
+  "first_round": {
+    "internal_AB": {
+      "epoch": 9729,
+      "guard_coordinate": 30587
+    },
+    "internal_BB": {
+      "epoch": 9729,
+      "guard_coordinate": 1690
+    },
+    "outer_BB": {
+      "epoch": 9729,
+      "guard_coordinate": -9728
+    }
+  },
+  "internal_literal_prefixes": [],
+  "root_ranks": {
+    "counts": {
+      "two_complete_blocks": 272
+    },
+    "rank_transcript_sha256": "b84199eafdb422047e6378242cc6ce67783ed3809a23702de2699bac54db89c8",
+    "closest_relative_to_block": null,
+    "rank_residues": {
+      "compatible": 272
+    },
+    "first_residue_examples": {
+      "compatible": {
+        "epoch": 9729,
+        "leading_twos": 9647,
+        "pairs": 1,
+        "low_bits_hex": "0x1",
+        "target_residue_hex": "0x1"
+      }
+    },
+    "exceptional_returns": [],
+    "family_parity": {
+      "odd": 272
+    }
+  }
+}

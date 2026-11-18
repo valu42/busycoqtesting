@@ -1,5 +1,7 @@
 # Line 26 at successive dangerous-carry records
 
+The [continuation to width 207](column-gap-paths.md) includes later records, the exact local gap formulas and two comparison counterexamples. The figures below describe the earlier width-205 checkpoint.
+
 The blank run of `1RB2RB4LA2RA1LA_2LA4RA3LA---3RA` reaches width **205** at tick **1,145,205,194,028**. Every potential halting width through 205 is excluded. The decision for all widths remains open. The following exact recurrence gives one integer to bound per new record. [Physical reduction](column-frontier.md) · [Earlier checkpoint and clock](column-time.md)
 
 ## The record-gap criterion

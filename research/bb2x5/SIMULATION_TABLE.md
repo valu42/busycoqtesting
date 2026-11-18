@@ -12,7 +12,7 @@ The endpoint column gives the largest exact raw count indexed in this repository
 | 4 | `1RB3LA1LA1RA3RA_2LB2RA---4RB1LB` | ≈ 5.35561 × 10^1802 | [> 10^1,719,137](line4-scalar.md) | — | [Timed A(6,b) returns](frontiers/runs/line4-return.json) |
 | 5 | `1RB3LA1LA1RA1RA_2LB2RA---4RB1LB` | ≈ 1.99499 × 10^104610 | [≥ 2^173,753](accelerator-results/arithmetic5-100k.json) | — | [Timed A/B returns](frontiers/runs/line5-timed.json) |
 | 6 | `1RB---3LB4RB0LA_2LB3LA3RB4RA0RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-06.json) |
-| 7 | `1RB---3RA2LA2RB_2LB3LA4LB4RA0RA` | ≈ 5.69453 × 10^3872 | — | [> 10^1,140,000,000](https://wiki.bbchallenge.org/wiki/TMBR:_October_2026#Holdouts) | [Batched suffix calls](frontiers/runs/line7-calls.json) |
+| 7 | `1RB---3RA2LA2RB_2LB3LA4LB4RA0RA` | ≈ 3.85525 × 10^7775 | — | [> 10^1,140,000,000](https://wiki.bbchallenge.org/wiki/TMBR:_October_2026#Holdouts) | [Batched suffix calls](frontiers/runs/line7-calls.json) |
 | 8 | `1RB4LA1RA1RB1LA_2LB3LA---4RA2RB` | ≈ 1.50000 × 10^57 | — | — | [Boundary streams](frontiers/runs/stream-08.json) |
 | 9 | `1RB---4RB2RB4LA_2LB3LA3LB0RA0RB` | 6,755,400,984,549,769 | — | — | [Batched BBA sweeps](frontiers/runs/line9-sweeps.json) |
 | 10 | `1RB2RB3LA4LA1LA_2LB3RA---4RA1RB` | ≈ 2.10250 × 10^22 | — | — | [Boundary streams](frontiers/runs/stream-10.json) |
@@ -31,7 +31,7 @@ The endpoint column gives the largest exact raw count indexed in this repository
 | 23 | `1RB3LA3LB0RB0LA_2LA4RB1LB1RA---` | 100,000,000,000 | — | — | [Paired guard traces](frontiers/runs/spaghetti-23.json) |
 | 24 | `1RB3LA1LA2RB2RA_2LA4RA3LB1RA---` | ≈ 1.77089 × 10^21 | — | — | [Guarded AB sweeps](frontiers/runs/line24-sweeps.json) |
 | 25 | `1RB2LB3LA0RA1LB_2LA4RA3RB3LA---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-25.json) |
-| 26 | `1RB2RB4LA2RA1LA_2LA4RA3LA---3RA` | ≈ 2.51807 × 10^26 | [≥ 252,383,369,057,593,078,165,588,992](column-records.md#a-lower-bound-beyond-the-fully-timed-tape) | — | [Timed pair checkpoint](frontiers/runs/line26-width205.json) |
+| 26 | `1RB2RB4LA2RA1LA_2LA4RA3LA---3RA` | ≈ 9.11675 × 10^26 | [≥ 912,761,290,374,298,539,837,004,992](column-gap-paths.md#the-next-two-blank-records) | — | [Timed pair checkpoint](frontiers/runs/line26-record99.json) |
 | 27 | `1RB3LB---4LA1RB_2LA4LA4LB3RB1RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-27.json) |
 | 28 | `1RB3LB4LA0LB---_2LA0LA1RB0RA3RA` | 1,000,000,000,000,000 | — | — | [Six-cell strides](frontiers/runs/stride-28.json) |
 | 29 | `1RB3RB---3LA1RA_2LA3RA4LB0LB1LB` | ≈ 1.09706 × 10^1030 | — | [≥ 10^13,634](https://wiki.bbchallenge.org/wiki/Bonus_Cryptid) | [Timed cryptid sweeps](frontiers/runs/hydra-29.json) |
