@@ -107,6 +107,7 @@ struct Stream {
     mpz_class copies=0;
     mpz_class size() const { return prefix.size+copies*period.size+suffix.size; }
 };
+#include "line17_rank.hpp"
 struct Piece {
     Word word;
     Count calls=0, interior=0;
@@ -219,10 +220,22 @@ struct PairTransfer {
     }
 };
 
-// Fall back before building a large word. Stream the original input unchanged
-// through every remaining digit; word boundaries survive as state, not padding.
-void finish(const Transfer& tr, const Stream& in, const std::vector<unsigned>& initial,
-            unsigned cut, Count work_limit) {
+// Replay just the first productive chunk one input at a time. Each emitted
+// bit is consumed in order, so the first success identifies its source slot.
+bool reaches_cut(std::vector<unsigned>& states,size_t digit,unsigned bit) {
+    if (digit==states.size()) return true;
+    const auto p=Transfer::compile(states[digit],bit,1);
+    if (p.state==invalid) throw std::runtime_error("overlapping marked bursts");
+    states[digit]=p.state;
+    for (unsigned j=0;j<p.width;++j)
+        if (reaches_cut(states,digit+1,(p.bits>>j)&1)) return true;
+    return false;
+}
+
+// If the periodic word gets too large, stream the input through every remaining
+// digit. Partial words carry their ending digit states into the next chunk.
+std::optional<Count> finish(const Transfer& tr, const Stream& in, const std::vector<unsigned>& initial,
+                            unsigned cut, Count work_limit,bool locate) {
     if (in.size()>work_limit)
         throw std::runtime_error("finite slot budget at pair "+std::to_string(cut)+
                                  ": need "+in.size().get_str()+", budget "+std::to_string(work_limit));
@@ -230,6 +243,9 @@ void finish(const Transfer& tr, const Stream& in, const std::vector<unsigned>& i
     for (unsigned j=cut;j<initial.size();++j) digits.push_back({initial[j]});
     PairTransfer pairs;
     Word a,b;
+    std::vector<unsigned> before(locate ? digits.size() : 0);
+    Count consumed=0;
+    std::optional<Count> match;
     auto feed=[&](const Word& w) {
         for (Count offset=0;offset<w.size;) {
             const Count end=offset+std::min<Count>(65536,w.size-offset);
@@ -237,6 +253,8 @@ void finish(const Transfer& tr, const Stream& in, const std::vector<unsigned>& i
                 auto width=static_cast<unsigned>(std::min<Count>(64,end-j));
                 a.push(w.read(j,width),width,65536);
             }
+            if (locate)
+                for (size_t j=0;j<digits.size();++j) before[j]=digits[j].state;
             size_t i=0;
             for (; i+1<digits.size() && a.size; i+=2) {
                 check_room(digits[i]);
@@ -250,27 +268,41 @@ void finish(const Transfer& tr, const Stream& in, const std::vector<unsigned>& i
                 tr.apply(a,digit.state,b,digit.calls,digit.interior,Count(1)<<28);
                 digit.n+=b.size; b.clear();
             }
+            if (locate && digits.back().n) {
+                for (Count j=offset;j<end;++j) {
+                    if (reaches_cut(before,0,w.read(j,1))) {
+                        match=consumed+j-offset+1;
+                        return true;
+                    }
+                }
+                throw std::logic_error("chunk and single-slot reachability differ");
+            }
+            consumed+=end-offset;
             a.clear(); offset=end;
         }
+        return false;
     };
-    feed(in.prefix);
+    if (feed(in.prefix)) return match;
     if (in.period.size) {
         Count copies=in.copies.get_ui(); // bounded by total size above
         Count block=std::min<Count>(copies,65536/in.period.size);
         if (block>1) {
             Word tile;
             for (Count j=0;j<block;++j) tile.append(in.period,65536);
-            for (Count j=0;j<copies/block;++j) feed(tile);
+            for (Count j=0;j<copies/block;++j) if (feed(tile)) return match;
             copies%=block;
         }
-        for (Count j=0;j<copies;++j) feed(in.period);
+        for (Count j=0;j<copies;++j) if (feed(in.period)) return match;
     }
-    feed(in.suffix);
-    for (const auto& digit:digits) print(digit.state,digit.n,digit.calls,digit.interior);
+    if (feed(in.suffix)) return match;
+    if (!locate)
+        for (const auto& digit:digits) print(digit.state,digit.n,digit.calls,digit.interior);
+    return {};
 }
 
 int main(int argc,char** argv) try {
-    if (argc!=4) throw std::runtime_error("usage: line17-packed ADDITIONAL_EPOCHS WORD_BITS FINITE_SLOTS < register");
+    bool locate=argc==5 && std::string(argv[4])=="first";
+    if (argc!=4 && !locate) throw std::runtime_error("usage: line17-packed ADDITIONAL_EPOCHS WORD_BITS FINITE_SLOTS [first] < register");
     mpz_class epochs(argv[1],10);
     Count limit=number(argv[2]), work_limit=number(argv[3]);
     std::string register_word;
@@ -285,23 +317,40 @@ int main(int argc,char** argv) try {
         initial.push_back(2*(v=='1'?0:(v=='0'?1:2))+pending); pending=f=='3';
     }
     Transfer tr;
+    std::optional<SlotOrigins> origins;
+    if (locate) origins.emplace();
     Stream input;
     input.period.push(2,4,limit); input.copies=epochs;
+    auto finish_stream=[&](unsigned cut) {
+        auto hit=finish(tr,input,initial,cut,work_limit,locate);
+        if (locate) {
+            input=Stream{};
+            if (hit) std::cout<<origins->root(tr,mpz_class(*hit))<<'\n';
+            else std::cout<<"none\n";
+        }
+    };
     for (unsigned i=0;i<initial.size();++i) {
         if (input.period.size>65536 && input.size()<=std::min(limit,work_limit)) {
-            finish(tr,input,initial,i,work_limit);
+            finish_stream(i);
             return 0;
         }
         unsigned state=initial[i];
         Totals tally;
         try {
             auto out=lift(tr,input,state,tally,limit);
-            print(state,out.size(),tally.calls,tally.interior);
+            if (locate) origins->remember(input,initial[i]);
+            else print(state,out.size(),tally.calls,tally.interior);
             input=std::move(out);
         } catch (const WordLimit&) {
-            finish(tr,input,initial,i,work_limit);
+            finish_stream(i);
             return 0;
         }
+    }
+    if (locate) {
+        bool hit=input.size()>0;
+        input=Stream{};
+        if (hit) std::cout<<origins->root(tr,1)<<'\n';
+        else std::cout<<"none\n";
     }
     return 0;
 } catch (const std::exception& e) { std::cerr<<e.what()<<'\n'; return 2; }

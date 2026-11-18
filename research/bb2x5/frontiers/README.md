@@ -139,7 +139,7 @@ c++ -O3 -std=c++17 frontiers/line17_packed.cpp -lgmpxx -lgmp -o /tmp/bb25-packed
 python3 frontiers/line17.py --epochs 10000000000000000000000000000 \
   --packed-engine /tmp/bb25-packed17 --word-bits 2147483648 --finite-slots 180000000000 \
   --depth --checkpoint /tmp/line17.json
-python3 frontiers/line17.py --resume frontiers/runs/line17-epochs.json \
+python3 frontiers/line17.py --resume /tmp/line17.json \
   --epochs 10000100000000000000000000000 --packed-engine /tmp/bb25-packed17 \
   --word-bits 1073741824 --checkpoint /tmp/line17-next.json
 BB25_WINDOW=/tmp/bb25-window BB25_MARK17=/tmp/bb25-marks17 \
@@ -157,7 +157,35 @@ The timestamp and packed workers agree on all 424 pairs and the exact clock at 1
 | 10²⁶ | 159 | 1 |
 | 10²⁷ | 165 | 1 |
 | 10²⁸ | 171 | 1 |
+| 1.5 × 10²⁸ | 172 | 1 |
+| 2 × 10²⁸ | 173 | 1 |
 
-The [literal initialization](../frontier-background.md#configuration-and-entry) visits no cell to the right of coordinate 11. In the header phase the terminal singleton stays at 11 and has received no calls. Thus the first visit to coordinate 12 is later than 1.4 × 10⁵⁷ defined instructions.
+The [literal initialization](../frontier-background.md#configuration-and-entry) visits no cell to the right of coordinate 11. At the [2 × 10²⁸ checkpoint](runs/line17-epochs.json), the terminal singleton at 11 has still received zero calls. Thus the first visit to coordinate 12 is later than 5.6 × 10⁵⁷ defined instructions.
 
 The tests exhaust every normal pair/pulse control case, replay the complete physical tape through 425 epochs with an elementary interpreter, and meet the independent 100-million-step moving-window checkpoint. The Python-only timestamp implementation and a native replay using a different cut produce byte-identical full configurations and time at 10¹⁸ epochs. Independent cut choices also agree at 10²¹ and 10²² epochs. At the published endpoint, advancing another 1,000,001 epochs as one batch or in two parts gives the same full checkpoint.
+
+## Line 17 first arrivals inside a sweep
+
+The first visit here means the first arrival since initialization of the 424-pair register. Pair i begins at coordinate −837 + 2i. Both arrivals below occur on the fourth slot of their sweep and the eleventh raw probe of the fixed register. The head is in B scanning an untouched zero. Each record includes the preceding sweep boundary and the complete tape at arrival. Outside the stored word the tape is blank.
+
+| Pair | First sweep | Raw steps from blank | Tape record |
+|---:|---:|---:|---|
+| 172 | 11840961663945926410138685478 | 1962917223778519152015725775755397582293923538151475191627 | [B at −493](runs/line17-first-172.json) |
+| 173 | 19429584031498541211591659716 | 5285122298918883479636507313442998830910499909878996228407 | [B at −491](runs/line17-first-173.json) |
+
+The packed worker can locate the source of a pair's first input. It saves the unrepeated prefix, period and suffix at each digit. At the finite end it finds the first productive 65,536-slot chunk, then replays that chunk one slot at a time. Working back toward the header, it identifies the parent input of each selected output. At a repeated digit state it skips all complete periods before that output in one multiplication. The worker uses a temporary file for saved words during the search. The ordinary checkpoint worker checks that the target was still untouched at the start of the selected sweep.
+
+Within that sweep the fixed register is small enough to run literally up to the target. Each raw request into it has a finite trace in the innermost `12` pair and one in its parent. Beyond those two, the request number is unchanged through the rest of the pile. Literal two-cell traces give a repeated suspended word of `42`, `04` or `44` and respectively 12, 22 or 26 local instructions per outer pair. The clock adds these instructions, the header's local trace and the fixed register's executed instructions. At both recorded visits the whole pile is `44` repeated once per starting pair. The tests compare both the raw clock and every written cell with an elementary interpreter on small sweeps.
+
+From `research/bb2x5`, the following search resumes the 10²⁸-sweep checkpoint built above. Omit `--resume` to start at the original register. Choose a starting boundary before the target's first visit.
+
+```sh
+python3 frontiers/line17_visit.py find --pair 172 --through 12000000000000000000000000000 \
+  --resume /tmp/line17.json --packed-engine /tmp/bb25-packed17 \
+  --word-bits 2147483648 --finite-slots 300000000000 --output /tmp/first-172.json
+python3 frontiers/line17_visit.py check frontiers/runs/line17-first-172.json
+python3 frontiers/line17_visit.py check frontiers/runs/line17-first-173.json
+BB25_PACK17=/tmp/bb25-packed17 python3 frontiers/test_line17_visit.py
+```
+
+The short `check` command replays the physical arrival from the enclosed boundary. To independently reproduce blank-orbit provenance, rebuild the preceding boundary with the ordinary packed worker and compare it with `before` in the record. For pair 172, bisecting ordinary sweeps and locating the source slot directly gave byte-identical records.

@@ -337,8 +337,7 @@ def save(path, state):
     atomic_json(path,{'payload':state,'sha256':checksum(state)})
 
 
-def load(path):
-    doc = json.loads(Path(path).read_text())
+def validate(doc):
     p = doc['payload']
     if doc['sha256']!=checksum(p) or (p['format'],p['line'],p['machine'])!=('bb2x5-line17-epochs-v1',17,M17):
         raise ValueError('invalid line 17 checkpoint')
@@ -349,6 +348,10 @@ def load(path):
             or set(p['register'][::2])-set('102') or set(p['register'][1::2])-set('23')):
         raise ValueError('invalid line 17 boundary')
     return p
+
+
+def load(path):
+    return validate(json.loads(Path(path).read_text()))
 
 
 def main():
