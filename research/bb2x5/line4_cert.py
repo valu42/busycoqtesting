@@ -77,7 +77,7 @@ def right_to_left(left,right):
     add_run(right,old,ONE)
 
 
-def verify_rule(start,target,duration):
+def verify_rule(start,target,duration,rules=RULES):
     left, right = runs(start[0]), runs(reversed(start[1]))
     state = 'A'
     remaining = duration
@@ -85,7 +85,7 @@ def verify_rule(start,target,duration):
         assert remaining.positive(), remaining
         digit = right[-1][0] if right else 0
         assert digit != 9, "read through an opaque context"
-        write, direction, state2 = RULES[state,digit]
+        write, direction, state2 = rules[state,digit]
         assert direction in "LR", "early halt"
         write = int(write)
         # On a left-moving instruction, the contiguous input starts at the head

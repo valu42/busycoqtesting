@@ -66,3 +66,33 @@ BB25_WINDOW=/tmp/bb25-window python3 frontiers/test_line7.py
 ```
 
 `steps_hex` is the exact unsigned raw time. The checkpoint stores the physically located suffix, head, state and completed left extensions. Use `int(payload['steps_hex'], 16)` in Python. `--every` sets the save interval in epochs and `--work` bounds the number of unit or packet operations in an invocation. Each completed save can be resumed. The external line 7 run linked in the table goes much farther and provides context for this reproducible local run.
+
+## Exact raw timing for line 5
+
+The A and B families below are the two normal forms of mxdys and Racheline. In both families the physical state is A. The initial blank tape reaches A(4,4) in 136 defined instructions. The timed simulator uses the [existing normal-form recurrence](../arithmetic5.py) and [published analysis](https://wiki.bbchallenge.org/wiki/1RB3LA1LA1RA1RA_2LB2RA---4RB1LB).
+
+Let C(a,k,b) have left word `1 4^a 1^k` and right word `1^b 2`, with the head scanning the first symbol of the right word. A(a,b) is C(a,4,b). B(a,b) has left word `1 4^a 1^(b+3)` and right word `11`. All other cells are blank. Each cost below is measured in defined raw instructions, including the final entry into an undefined instruction where applicable. `line5_timed.py` replays the nine local identities symbolically against the literal instructions using affine run lengths and opaque exterior tape. The blank initialization is checked separately.
+
+| Local transition | Raw cost |
+|---|---:|
+| C(a+1,k,b+1) → C(a,k+2,b) | 2k+3 |
+| C(0,k,b+3) → A(k,b) | 2k+15 |
+| C(0,k,2) → B(k−2,3) | 2k+39 |
+| C(0,k,1) → B scanning 2 (halt) | 2k+5 |
+| C(a,k,0) → B(a,k−4) | 1 |
+| B(a+3,b) → B(a,b+5) | 6b+42 |
+| B(0,b) → B(b+3,0) | 2b+24 |
+| B(1,b) → A(4,b+2) | 5b+72 |
+| B(2,b) → B(b+5,2) | 6b+68 |
+
+Here k ≥ 4. Starting at A(a,b), j = min(a,b) applications of the first row cost j(2j+9) and leave k = 4+2j. A complete doubling A(a,b) → A(2a+4,b−a−3) costs 2x²−3x+3 with x = a+4. Over K consecutive doublings put y = 2^K x. Their total cost is 2(y²−x²)/3 − 3(y−x) + 3K. From B(a,b) write a = 3q+r. The q triple reductions cost q(15q+6b+27) and leave B(r,b+5q), where the applicable residue row finishes the event. The Python and GMP engines tally these costs separately from the number of published recurrence events.
+
+```sh
+c++ -O3 -std=c++17 frontiers/line5_timed.cpp -lgmpxx -lgmp -o /tmp/bb25-time5
+python3 frontiers/line5_timed.py --engine /tmp/bb25-time5 --rounds 100000 --checkpoint /tmp/line5-timed.json
+python3 frontiers/line5_timed.py --resume frontiers/runs/line5-timed.json \
+  --rounds 100100 --every 25 --checkpoint /tmp/line5-next.json
+BB25_TIME5=/tmp/bb25-time5 python3 frontiers/test_line5_timed.py
+```
+
+A running snapshot records both integer parameters, the raw time in `steps_hex`, and the separate recurrence count in `events_hex`. The A/B word gives the complete tape up to translation. A physically halting snapshot records the predecessor of the certified terminal rule and the arrival time on B2. The Python engine saves intermediate rounds and resumes exact timing. The GMP engine replays from blank and saves at the requested return.

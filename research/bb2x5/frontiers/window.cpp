@@ -1,5 +1,5 @@
 // Exact simulation of a two-state, five-symbol TM with a moving two-word window.
-// stdin: machine, steps head state, region count, then (start length symbol) rows.
+// stdin: machine, steps head state, then (start length symbol) rows through EOF.
 // stdout: status and the same complete configuration (see survey.py).
 #include <array>
 #include <charconv>
