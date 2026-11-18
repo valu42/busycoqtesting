@@ -23,3 +23,8 @@ verify/verify
 verify/skelet1
 perf.data*
 flamegraph.svg
+verify/Makefile.line36.coq
+verify/Makefile.line36.coq.conf
+verify/Line36CapData.v
+verify/Line36CapData.v.tmp
+verify/.line36-cap-generator

@@ -23,7 +23,26 @@ check: Makefile.coq
 
 %.vo: %.v Makefile.coq
 
+# Individual BB(2,5) proof. The exhaustive checks run on explicit request.
+LINE36_SOURCES := $(sort $(wildcard Line36*.v) Line36CapData.v BB25_Line36.v)
+
+.PHONY: line36
+line36: Makefile.line36.coq
+	$(MAKE) -f Makefile.line36.coq BB25_Line36.vo
+
+Makefile.line36.coq: Makefile $(LINE36_SOURCES)
+	coq_makefile $(COQMFFLAGS) -o $@ $(ALLVFILES) $(LINE36_SOURCES)
+
+.line36-cap-generator: ../tools/line36/line36_right_cap.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -O2 -std=c++17 -o $@ $<
+
+Line36CapData.v: .line36-cap-generator ../tools/line36/BB2x5_Rocq_holdouts_37.txt
+	cd ../tools/line36 && "$(abspath $<)" --rocq-data "$(abspath $@).tmp"
+	mv $@.tmp $@
+
 clean::
+	if [ -e Makefile.line36.coq ]; then $(MAKE) -f Makefile.line36.coq cleanall; fi
+	$(RM) Makefile.line36.coq Makefile.line36.coq.conf .line36-cap-generator Line36CapData.v Line36CapData.v.tmp
 	if [ -e Makefile.coq ]; then $(MAKE) -f Makefile.coq cleanall; fi
 	$(RM) $(wildcard Makefile.coq Makefile.coq.conf) extraction.ml extraction.mli skelet1.mli skelet1.ml *.cmi *.cmx *.o verify skelet1 decider Inductive.mli Inductive.ml
 
