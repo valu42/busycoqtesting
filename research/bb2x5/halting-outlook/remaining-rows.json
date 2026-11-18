@@ -1,0 +1,245 @@
+[
+  {
+    "line": 1,
+    "machine": "1RB---4LB1RA4RA_2LB2LA3RA4LB0RB",
+    "structure": "Nested left/right requests; A1",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "No invariant restricting actual requests",
+    "report": "halting-outlook/remaining.md#line-1"
+  },
+  {
+    "line": 2,
+    "machine": "1RB---4LB0LA4RA_2LB2LA3RA4LB0RB",
+    "structure": "Fixed-cut BA(A retry)B protocol; A1",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "Allowed failure tape is not known blank-reachable",
+    "report": "halting-outlook/remaining.md#line-2"
+  },
+  {
+    "line": 6,
+    "machine": "1RB---3LB4RB0LA_2LB3LA3RB4RA0RA",
+    "structure": "Total recursive word probes; A reply or internal A1",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "Actual residual may differ from safe prefixes",
+    "report": "halting-outlook/remaining.md#line-6"
+  },
+  {
+    "line": 8,
+    "machine": "1RB4LA1RA1RB1LA_2LB3LA---4RA2RB",
+    "structure": "Fresh-cell first inputs BB; B2",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "Specific fresh-cell input phase uncontrolled",
+    "report": "halting-outlook/remaining.md#line-8"
+  },
+  {
+    "line": 9,
+    "machine": "1RB---4RB2RB4LA_2LB3LA3LB0RA0RB",
+    "structure": "Bouncer / aligned-pair counter; A1",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "Return/boundary coupling unresolved",
+    "report": "halting-outlook/remaining.md#line-9"
+  },
+  {
+    "line": 10,
+    "machine": "1RB2RB3LA4LA1LA_2LB3RA---4RA1RB",
+    "structure": "Fresh edge gets AAA before B; B2",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "AAA factors occur; distinguished phase is unresolved",
+    "report": "halting-outlook/remaining.md#line-10"
+  },
+  {
+    "line": 11,
+    "machine": "1RB2LA4LA1RA1LA_2LB3RB4RB---2RA",
+    "structure": "Fresh prefix B A^(3k+2) B; B3",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "Specific fresh-cell input phase uncontrolled",
+    "report": "halting-outlook/remaining.md#line-11"
+  },
+  {
+    "line": 12,
+    "machine": "1RB4RB4RA1LA3LA_1LB2LA3RB2RB---",
+    "structure": "Fresh-cell BA (or fresh-block AA); B4",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "Finite periodic agreement admits halting continuations",
+    "report": "halting-outlook/remaining.md#line-12"
+  },
+  {
+    "line": 14,
+    "machine": "1RB2RA4LA1RB4RB_1LB2LA3RA---0LB",
+    "structure": "No verified reduced halt criterion; B3",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "External \u22655\u00d710^13 is a report, not local certification",
+    "report": "halting-outlook/remaining.md#line-14"
+  },
+  {
+    "line": 15,
+    "machine": "1RB3RB1LA2LA3RA_1LB2RA4RB0LA---",
+    "structure": "Periodic left driver; B4",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "Right-side response compatibility unresolved",
+    "report": "halting-outlook/remaining.md#line-15"
+  },
+  {
+    "line": 16,
+    "machine": "1RB2LA0RB0LB3LB_2LA4RB3RA0RA---",
+    "structure": "No verified reduced halt criterion; B4",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "No complete blank-orbit invariant",
+    "report": "halting-outlook/remaining.md#line-16"
+  },
+  {
+    "line": 18,
+    "machine": "1RB2RA3LB4LA---_2LA0RB1LA2RB0RA",
+    "structure": "No verified reduced halt criterion; A4",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "No complete blank-orbit invariant",
+    "report": "halting-outlook/remaining.md#line-18"
+  },
+  {
+    "line": 19,
+    "machine": "1RB2RA3LA---2LB_2LA4RA4RB0RB0LA",
+    "structure": "Spaghetti dynamics; A3",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "External \u22654\u00d710^13 is a report, not local certification",
+    "report": "halting-outlook/remaining.md#line-19"
+  },
+  {
+    "line": 20,
+    "machine": "1RB2RA3LA4LA2RB_2LA---3LB1RA3RA",
+    "structure": "Bouncer; restricted driver loses return contract; B1",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "Wrong-state return invalidates simple stream model",
+    "report": "halting-outlook/remaining.md#line-20"
+  },
+  {
+    "line": 23,
+    "machine": "1RB3LA3LB0RB0LA_2LA4RB1LB1RA---",
+    "structure": "Spaghetti-family dynamics; B4",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "Family resemblance does not decide this string",
+    "report": "halting-outlook/remaining.md#line-23"
+  },
+  {
+    "line": 24,
+    "machine": "1RB3LA1LA2RB2RA_2LA4RA3LB1RA---",
+    "structure": "Longitudinal dynamics; B4",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "No complete blank-orbit invariant",
+    "report": "halting-outlook/remaining.md#line-24"
+  },
+  {
+    "line": 25,
+    "machine": "1RB2LB3LA0RA1LB_2LA4RA3RB3LA---",
+    "structure": "No verified reduced halt criterion; B4",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "No complete blank-orbit invariant",
+    "report": "halting-outlook/remaining.md#line-25"
+  },
+  {
+    "line": 26,
+    "machine": "1RB2RB4LA2RA1LA_2LA4RA3LA---3RA",
+    "structure": "Competing carries; least fixed point of p",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "No proof p(j)>j; fixed points below142 excluded",
+    "report": "halting-outlook/remaining.md#line-26"
+  },
+  {
+    "line": 27,
+    "machine": "1RB3LB---4LA1RB_2LA4LA4LB3RB1RA",
+    "structure": "Potential cryptid; A2",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "No complete blank-orbit invariant",
+    "report": "halting-outlook/remaining.md#line-27"
+  },
+  {
+    "line": 28,
+    "machine": "1RB3LB4LA0LB---_2LA0LA1RB0RA3RA",
+    "structure": "No verified reduced halt criterion; A4",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "No complete blank-orbit invariant",
+    "report": "halting-outlook/remaining.md#line-28"
+  },
+  {
+    "line": 31,
+    "machine": "1RB3RB---4RA2RA_2LA2RA3LB4LB1LB",
+    "structure": "Fresh-cell first inputs BA; A2",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "Exact driver; uncontrolled right-side phase",
+    "report": "halting-outlook/remaining.md#line-31"
+  },
+  {
+    "line": 32,
+    "machine": "1RB3RB1LB2RA---_2LA2RB1LA4LB0RA",
+    "structure": "No verified reduced halt criterion; A4",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "No complete blank-orbit invariant",
+    "report": "halting-outlook/remaining.md#line-32"
+  },
+  {
+    "line": 33,
+    "machine": "1RB2LA0RB4LB1RA_1LA3RA1RA---0LA",
+    "structure": "Mixed-digit shift-overflow counter; B3",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "Overflow reset reachability unresolved",
+    "report": "halting-outlook/remaining.md#line-33"
+  },
+  {
+    "line": 34,
+    "machine": "1RB2LA4RA1LA3LA_0LA2RB3RB2LB---",
+    "structure": "Ternary matching sweeps; six excess closings",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "Actual growing prefix may exhaust guard",
+    "report": "halting-outlook/remaining.md#line-34"
+  },
+  {
+    "line": 35,
+    "machine": "1RB2LA4RA1LA3LA_0LA3RB3LB2RB---",
+    "structure": "Ternary matching sweeps; six excess closings",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "Actual growing prefix may exhaust guard",
+    "report": "halting-outlook/remaining.md#line-35"
+  },
+  {
+    "line": 36,
+    "machine": "1RB2LA1LA4RA2LA_0LA3RB3LB2RB---",
+    "structure": "Parity matching sweeps; six excess closings",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "Boundary-free Rule90 does not control finite suffix",
+    "report": "halting-outlook/remaining.md#line-36"
+  },
+  {
+    "line": 37,
+    "machine": "1RB2LA3LA4RA1LA_0LA3LB3RB1RB---",
+    "structure": "Ternary/Pascal sweeps; two excess closings",
+    "outlook": "Unknown",
+    "estimate": "No defensible estimate",
+    "evidence": "Need all-time d(45)\u22644; observed max2",
+    "report": "halting-outlook/remaining.md#line-37"
+  }
+]

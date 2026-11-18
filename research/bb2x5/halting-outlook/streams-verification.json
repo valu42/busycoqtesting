@@ -1,0 +1,31 @@
+{
+  "verification": [
+    {
+      "line": 13,
+      "raw_steps": 246446,
+      "groups": 127,
+      "full_configuration": true,
+      "streams": true,
+      "local_words_checked": 2047,
+      "negative_clock_formula_checked_through": 10000
+    },
+    {
+      "line": 21,
+      "raw_steps": 864752,
+      "groups": 127,
+      "full_configuration": true,
+      "streams": true,
+      "local_words_checked": 2047,
+      "negative_clock_formula_checked_through": 10000
+    },
+    {
+      "line": 22,
+      "raw_steps": 860448,
+      "groups": 127,
+      "full_configuration": true,
+      "streams": true,
+      "local_words_checked": 2047,
+      "negative_clock_formula_checked_through": 10000
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "starting_commit": "2ab106f706cb1715d494c7f67464e9222092058f",
+  "research_date": "2026-11-18",
+  "verification": {
+    "auxiliary_full_configuration_and_clock_cases": 1173,
+    "blank_comparison_raw_steps": 200086,
+    "blank_compared_jumps": 785
+  },
+  "clock_checks": {
+    "line5_literal_full_configuration_and_clock_cases": 192,
+    "line5_inherited_universal_symbolic_timing_rules": "passed"
+  },
+  "line3": {
+    "zero_checkpoints": 300,
+    "odd_zero_checkpoints": 198,
+    "raw_steps_hex": "0xc78dfbc3c198f14bf88bee89062db38f39f2468bd1c4c215b7d4cf68b1bc5f10db0210f3dec7b4388604291b2f0cd1bd6b9fbc96afc5fe17ebebc6b6c95799d5ed1af697649005621dbbd9e9ee4ed3e7ad05cf8beb52ec7e7128f20d4321d889870668d904ee39e88d2b8105d8c7ffa7ade65f031546221",
+    "raw_step_decimal_digits": 288,
+    "final_X_hex": "0x18f0f9d584aaf1aca8856c1012ef102fc3ef30d317ae8c95187033e76dfe8f1e247bcbac355ccf7ff9379b20e67b8f95f59217a25cd1aaaf33ef6ab5005467996e8a06ca4b2423bf7c32d92bd7875b858b31a85b88cb71c9bb7a18d22931d1eebecc78cb181f2523b70f7469b54ae490be01f525edef16b",
+    "final_d": 601,
+    "final_pad": 1,
+    "operations": 477589,
+    "trailing_one_histograms_first_second_halves": [
+      {
+        "0": 47,
+        "1": 25,
+        "2": 19,
+        "3": 3,
+        "4": 2,
+        "5": 1,
+        "6": 1,
+        "9": 1
+      },
+      {
+        "0": 53,
+        "1": 28,
+        "2": 9,
+        "3": 2,
+        "4": 7
+      }
+    ],
+    "trailing_one_transitions": {
+      "0,0": 48,
+      "0,1": 28,
+      "0,2": 15,
+      "0,3": 2,
+      "0,4": 5,
+      "0,5": 1,
+      "0,9": 1,
+      "1,0": 32,
+      "1,1": 11,
+      "1,2": 6,
+      "1,3": 2,
+      "1,4": 2,
+      "2,0": 13,
+      "2,1": 7,
+      "2,2": 4,
+      "2,3": 1,
+      "2,4": 1,
+      "2,6": 1,
+      "3,0": 1,
+      "3,1": 3,
+      "3,4": 1,
+      "4,0": 3,
+      "4,1": 3,
+      "4,2": 3,
+      "5,0": 1,
+      "6,0": 1,
+      "9,1": 1
+    }
+  },
+  "line5_inverse": {
+    "candidate_exponents_through": 200000,
+    "classes_mod20": [
+      13,
+      18
+    ],
+    "tested": 20000,
+    "possible_lower_width_escape": [],
+    "excluded_targets": 20000,
+    "direct_return_identity_checked": 16659
+  }
+}
