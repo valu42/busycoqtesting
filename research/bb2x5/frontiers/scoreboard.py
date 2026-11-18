@@ -3,10 +3,12 @@
 import argparse
 import json
 import re
+from decimal import Decimal
 
 from checkpoints import ROOT, checksum, holdouts
 from longitudinal import DRIVERS, Driver
 import survey
+import line7
 
 RUNS = ROOT / 'frontiers' / 'runs'
 COMMUNITY = 'https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved'
@@ -14,10 +16,10 @@ OCTOBER = 'https://wiki.bbchallenge.org/wiki/TMBR:_October_2026#Holdouts'
 
 
 def display(n):
-    digits = str(n)
-    if len(digits) <= 20:
+    if n < 10**20:
         return f'{n:,}'
-    return f'≈ {digits[0]}.{digits[1:6]} × 10^{len(digits)-1}'
+    mantissa, exponent = format(Decimal(n), '.5E').split('E')
+    return f'≈ {mantissa} × 10^{int(exponent)}'
 
 
 def generate():
@@ -43,6 +45,10 @@ def generate():
         path = RUNS/f'stream-{line:02}.json'
         p = Driver(line).load(path)
         consider(line, p['machine'], p['steps'], path, 'Boundary streams')
+
+    path = RUNS/'line7-calls.json'
+    p = line7.load(path)
+    consider(7, p['machine'], int(p['steps_hex'], 16), path, 'Batched suffix calls')
 
     from line4_orbit import blank_returns
     path = RUNS/'line4-return.json'

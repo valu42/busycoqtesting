@@ -39,3 +39,28 @@ BB25_WINDOW=/tmp/bb25-window BB25_STREAM=/tmp/bb25-stream python3 frontiers/test
 ```
 
 The tests compare full tapes and raw times with the literal interpreter on all seven lines. They check batch splitting both at blank and beyond each published endpoint. A separate comparison runs line 13 to 81,648 groups, expands the entire physical tape and advances it with the moving-window simulator to its independently saved 100-billion-step checkpoint.
+
+## Line 7 and exceptional returns
+
+At the start of a blank-tape epoch, A scans a fresh zero to the left of a finite word. A0 writes a guard 1 and sends B into that word. A return to the guard in B writes 3 and starts the next epoch one cell to the left. A return in A reaches the undefined A1. The recorded word gives every cell to the right of the fresh head. Epoch zero is the initial blank tape.
+
+The line 7 simulator counts a batch of N calls having the same entry state into a suffix. Its result gives the number of completed B replies and the first exceptional A reply or physical halt, if present. The following calculation applies until an exception from the right.
+
+| Entry and initial digit | Child requests | Digit after N successful calls |
+|---|---|---|
+| A on 2 | 3N calls in A | 2 |
+| A on 4 | N calls in B | 4 |
+| B on 2 or 4 | ⌊(N + [digit = 4])/2⌋ calls in A | Toggles between 2 and 4 on each call |
+
+If M child calls all reply in B, the parent executes N+M instructions. In a packet with d divisions by two, write N = 2^d h+r. The descendant count and sum of local instruction counts are affine in h, and all final digits depend only on r. Their coefficients are cached against the complete initial packet, state and residue. A run of k twos entered in A sends 3^k N calls into its suffix, with local cost 2N(3^k−1).
+
+An exceptional child is handled in chronological order. After j ordinary child replies, A on 2 has completed ⌊j/3⌋ parent calls and is waiting on digit 3, 4 or 0 according to j mod 3. A on 4 has completed j and is waiting on 2. B has completed 2j+[initial digit = 2] and is waiting on 0. For p completed parent calls add p+j+1 local steps to include the outstanding request. A returning child resumes the actual suspended instruction, and an undefined entry at any depth immediately propagates its physical halt coordinate. Nonordinary symbols use the literal transition table. The implementation keeps the active calls on an explicit stack.
+
+```sh
+python3 frontiers/line7.py --epochs 4096 --checkpoint /tmp/line7.json
+python3 frontiers/line7.py --resume frontiers/runs/line7-calls.json \
+  --epochs 10000 --checkpoint /tmp/line7-next.json
+BB25_WINDOW=/tmp/bb25-window python3 frontiers/test_line7.py
+```
+
+`steps_hex` is the exact unsigned raw time. The checkpoint stores the physically located suffix, head, state and completed left extensions. Use `int(payload['steps_hex'], 16)` in Python. `--every` sets the save interval in epochs and `--work` bounds the number of unit or packet operations in an invocation. Each completed save can be resumed. The external line 7 run linked in the table goes much farther and provides context for this reproducible local run.
