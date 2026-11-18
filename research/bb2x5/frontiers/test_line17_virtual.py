@@ -67,6 +67,26 @@ class FusedTests(unittest.TestCase):
         self.assertNotEqual(bad.returncode,0)
         self.assertIn('index checksum',bad.stderr)
 
+    def test_observed_phases_replay_the_ordered_output(self):
+        from checkpoints import checksum
+        path = self.root/'observed.json'
+        self.compare(31,3,4,'learned','--phase-counts',path)
+        saved = json.loads(path.read_text())
+        self.assertGreater(len(saved['payload']['rows']),0)
+        self.compare(31,3,3,'reused','--phase-counts',path)
+        self.assertEqual(json.loads(path.read_text()),saved)
+        # Even a rechecksummed incorrect last-cut tally must disagree with the
+        # physical bytes entering the remainder of the actual tape.
+        for row in saved['payload']['rows']:
+            row[-1] += 1
+        saved['sha256'] = checksum(saved['payload'])
+        path.write_text(json.dumps(saved))
+        target = self.meta['origin'] + 2*self.meta['root_period']
+        bad = self.worker('advance','--epochs',target,'--digits',3,'--phase-counts',path,
+                          '--checkpoint',self.root/'incorrect.json',check=False)
+        self.assertNotEqual(bad.returncode,0)
+        self.assertIn('emitted physical output',bad.stdout+bad.stderr)
+
     def test_lifted_period_matches_blank_export(self):
         lifted, direct = self.root/'lifted60.code', self.root/'direct60.code'
         self.worker('lift', '--output', lifted)

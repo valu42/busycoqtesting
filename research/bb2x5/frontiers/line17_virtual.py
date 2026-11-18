@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Build a certified blank-orbit pulse period and advance complete line-17 checkpoints."""
 import argparse
+import fcntl
 import hashlib
 import json
 import os
@@ -8,7 +9,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 
-from checkpoints import atomic_json
+from checkpoints import atomic_json, checksum
 from line17 import Counts, DATA, M17, digits, literal_counts, load, native_counts, record, replay, save
 
 
@@ -147,6 +148,68 @@ def atomic_text(path, text):
         tmp.unlink(missing_ok=True)
 
 
+class PhaseCounts:
+    """Totals observed for one complete source word at a physical fused-block seam."""
+    def __init__(self, path, meta, depth):
+        self.path = path
+        self.cut = meta['cut']
+        self.depth = depth
+        self.identity = dict(format='bb2x5-line17-phase-counts-v1', source_sha256=meta['sha256'],
+                             cut=self.cut, depth=depth, root_period=meta['root_period'])
+        self.rows = {}
+        self.merge_disk_rows()
+
+    def merge_disk_rows(self):
+        if not self.path.exists():
+            return
+        doc = json.loads(self.path.read_text())
+        payload = doc.get('payload', {})
+        if doc.get('sha256') != checksum(payload) or payload.get('source') != self.identity:
+            raise ValueError('phase counts checksum, depth or source mismatch')
+        seen = set()
+        for row in payload['rows']:
+            if (len(row) != 2+2*self.depth or any(type(x) is not int or x < 0 for x in row)
+                    or max(row[:2]) >= 6**self.depth or row[0] in seen):
+                raise ValueError('invalid stored phase counts')
+            seen.add(row[0])
+            if self.rows.setdefault(row[0],row) != row:
+                raise ValueError('conflicting counts for one physical phase')
+
+    def state(self, register):
+        data = digits(register)
+        return sum(6**j*(2*data[i][0]+(data[i-1][1] if i else 0))
+                   for j,i in enumerate(range(self.cut,self.cut+self.depth)))
+
+    def tally(self, rows):
+        return [x for r in rows[self.cut:self.cut+self.depth] for x in (r.slots,r.interior//2-r.slots)]
+
+    def note(self, start, end, old, new):
+        delta = [b-a for a,b in zip(old,new)]
+        if len(delta) != 2*self.depth or min(delta) < 0:
+            raise ValueError('nonmonotone physical phase counts')
+        row = [start,end,*delta]
+        if start in self.rows:
+            if self.rows[start] != row:
+                raise ValueError('repeated phase has different physical counts')
+            return
+        # Lock the stable directory inode so that atomic replacement of the
+        # count file cannot lose a phase learned by another worker.
+        fd = os.open(self.path.parent,os.O_RDONLY)
+        try:
+            fcntl.flock(fd,fcntl.LOCK_EX)
+            self.merge_disk_rows()
+            if self.rows.setdefault(start,row) != row:
+                raise ValueError('conflicting counts for one physical phase')
+            payload = {'source':self.identity, 'rows':[self.rows[k] for k in sorted(self.rows)]}
+            atomic_json(self.path, {'payload':payload,'sha256':checksum(payload)})
+        finally:
+            os.close(fd)
+
+    def native_input(self):
+        return ('period-counts-v1 '+str(len(self.rows))+'\n'
+                + ''.join(' '.join(map(str,row))+'\n' for row in self.rows.values()))
+
+
 def checkpoint_interval(path, meta, seed, begin, end, counts_before, args):
     header, *tail = path.read_text().splitlines()
     expected = f"base {begin} {end} {meta['slots']} {meta['marks']}"
@@ -166,7 +229,7 @@ def checkpoint_interval(path, meta, seed, begin, end, counts_before, args):
         text += [' '.join(map(str,(*r.state, r.slots, r.calls, r.interior))) for r in totals]
         atomic_text(args.counts,'\n'.join(text)+'\n')
     save(args.checkpoint, found)
-    return found
+    return found, rows
 
 
 def phase_index(args, period, meta):
@@ -199,12 +262,15 @@ def advance(args):
     period = args.period.resolve()
     if args.index:
         outputs += [args.index.resolve(), metadata_path(args.index.resolve())]
+    if args.phase_counts:
+        outputs.append(args.phase_counts.resolve())
     if (len(set(outputs)) != len(outputs)
             or any(path in (period, metadata_path(period)) for path in outputs)):
         raise ValueError('period, index, checkpoint and counts need distinct files')
     if args.seed_counts and not args.counts:
         raise ValueError('seed counts require a cumulative counts destination')
     meta = verified_period(period)
+    observed = PhaseCounts(args.phase_counts,meta,args.digits) if args.phase_counts else None
     seed = load(args.seed) if args.seed else replay(meta['origin'], 6)
     root = meta['root_period']
     begin, remainder = divmod(seed['epochs']-meta['origin'],root)
@@ -229,6 +295,9 @@ def advance(args):
         save(args.checkpoint,seed)
         return
     last = begin
+    if observed:
+        last_state = observed.state(seed['register'])
+        last_tally = [0]*(2*args.digits)
     with tempfile.TemporaryDirectory(dir=period.parent) as folder:
         dest = str(Path(folder)/'period-')
         command = [str(args.engine.resolve()),'virtual',str(period),str(cut),str(args.digits),
@@ -239,6 +308,8 @@ def advance(args):
                               text=True, env=native_env()) as proc:
             try:
                 proc.stdin.write(seed['register']+'\n')
+                if observed:
+                    proc.stdin.write(observed.native_input())
                 proc.stdin.close()
                 for message in proc.stderr:
                     parts = message.split()
@@ -247,7 +318,12 @@ def advance(args):
                         if end != last+1:
                             raise ValueError('missing completed interval')
                         path=Path(dest+str(end)+'.counts')
-                        found=checkpoint_interval(path,meta,seed,begin,end,before,args)
+                        found,rows=checkpoint_interval(path,meta,seed,begin,end,before,args)
+                        if observed:
+                            state = observed.state(found['register'])
+                            tally = observed.tally(rows)
+                            observed.note(last_state,state,last_tally,tally)
+                            last_state,last_tally = state,tally
                         path.unlink()
                         last=end
                         print(f'{found["epochs"]} sweeps, {found["steps"]} raw instructions',flush=True)
@@ -279,6 +355,7 @@ def main():
             sub.add_argument('--digits',type=int,default=5,help='adjacent virtual digits, 1 through 7')
             sub.add_argument('--phase-batch',type=int,default=1,help='source copies per disk pass, 1 through 32')
             sub.add_argument('--index',type=Path,help='reuse or create a checksummed stripe index')
+            sub.add_argument('--phase-counts',type=Path,help='learn and reuse exact pulse totals for recurring physical phases')
             sub.add_argument('--seed',type=Path)
             sub.add_argument('--seed-counts',type=Path)
             sub.add_argument('--counts',type=Path,help='also save cumulative counts from blank')

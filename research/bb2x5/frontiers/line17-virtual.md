@@ -32,6 +32,12 @@ Further down the tape, a table advances three physical pairs per input byte. Eac
 
 On 8,192 genuine cut-110 frames, two threads replayed four different entrance phases in 8.56 seconds with the flat seven-trit emitter and 4.13 seconds with split tables. Both produced the same ordered word and all seven slot and mark totals. In a separate end-to-end test, 160 consecutive copies of the small cut-59 period took 8.03 seconds with the flat emitter, 1.26 seconds with batched split tables and 0.85 seconds after grouping the physical suffix. Every interval's physical rows agreed byte for byte. These shared-host measurements cover the stated inputs and thread counts.
 
+### Reusing a measured phase
+
+For one fixed input period, the entering physical trits and pending flags through a given pair determine its entire output. Farther pairs cannot influence it during an ordinary sweep. The worker remembers the slot and mark counts for each such entry state. Once the first three pairs recur, it can skip their histogram. When all seven recur, it skips both histograms. It still emits the ordered bits, checks the ending phase of each stripe, carries the bits through the rest of the tape and counts what physically entered the suffix. A wrong last-cut tally fails that check even if the count file has a valid checksum.
+
+The optional `--phase-counts FILE` retains each completed observation across runs. It binds the rows to the source checksum, cut and fusion depth. The [saved cut-111 phase counts](runs/line17-phase-counts.json) come from the full blank-tape trajectory. On 900 genuine cut-110 frames at six entrance phases and one thread, the emitter took 1.19 and 1.26 seconds counting both histograms. Supplying both totals reduced the two timings to 0.71 and 0.72 seconds. Both paths produced the same 87,277,433 ordered output slots. These timings exclude the physical suffix and disk spooling.
+
 ## Periods beyond the disk budget
 
 The source at cut 110 contains 187,936,890,096 slots and 23,492,006,848 marks. It repeats every 5,353,035,380,209,578,809,758,951,931,904 root sweeps after sweep two. The following orders were computed by composing exact frame actions. The physical suffix check resolved all 2,187 phases of the seven-digit block. An independent direct computation on the 1,296 physical states of four digits reproduced the first four orders.
@@ -69,6 +75,18 @@ An existing source can advance one physical pair with the following command. The
 ```sh
 python3 frontiers/line17_virtual.py lift --engine /tmp/bb25-line17 \
   --period /tmp/line17-cut110.code --output /tmp/line17-cut111.code --threads 6
+```
+
+To continue the published full-tape run toward $10^{34}$ sweeps, use the checkpoint and matching cumulative counts together. On the measured cut-111 stream, the source occupies 23,494,339,786 bytes and the seven-trit index about 310 MB. During a six-phase batch the other five phase streams occupy about 6.9 GB in the working directory. Keeping the cut-110 source as well uses another 11,749,096,276 bytes.
+
+```sh
+cp frontiers/runs/line17-phase-counts.json /tmp/line17-cut111-d7-counts.json
+python3 frontiers/line17_virtual.py advance --engine /tmp/bb25-line17 \
+  --period /tmp/line17-cut111.code --index /tmp/line17-cut111-d7.index \
+  --seed frontiers/runs/line17-epochs.json --seed-counts frontiers/runs/line17-coded-counts.txt \
+  --phase-counts /tmp/line17-cut111-d7-counts.json \
+  --digits 7 --threads 7 --phase-batch 6 --epochs 10000000000000000000000000000000000 \
+  --checkpoint /tmp/line17-further.json --counts /tmp/line17-further.counts
 ```
 
 The optional stripe index saves the transfer of each piece of the source. Its companion checksum binds it to the exact source file and fusion depth. A resumed worker recomposes the whole action and reconstructs the physical phase from the saved trailing source tokens. Every emitted piece is checked against its expected ending phase.

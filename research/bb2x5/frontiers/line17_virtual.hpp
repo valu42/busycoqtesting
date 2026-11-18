@@ -273,7 +273,8 @@ struct EmitTable {
     }
 };
 struct Raw {unsigned n=0;std::vector<B> data;};
-template<unsigned Width>
+enum class CountMode { all, upper, observed };
+template<unsigned Width, CountMode mode=CountMode::all>
 void emit_together(const Source& source, const std::array<U,Width>& begin,
                    const std::array<U,Width>& expected_end, const std::array<B*,Width>& hist,
                    std::array<Raw*,Width>& output, const EmitTable& table) {
@@ -288,12 +289,14 @@ void emit_together(const Source& source, const std::array<U,Width>& begin,
         std::array<U,Width> upper_row{};
         for(unsigned j=0;j<Width;++j){
             U id=row+lower[j],action=table.lower[id];
-            ++hist[j][id];lower[j]=action&31;upper_row[j]=(action>>5)+upper[j];
+            if constexpr(mode==CountMode::all)++hist[j][id];
+            lower[j]=action&31;upper_row[j]=(action>>5)+upper[j];
         }
         for(unsigned j=0;j<Width;++j){
             U id=upper_row[j];
             B p=table.upper[id];
-            ++hist[j][table.upper_offset+id];upper[j]=p&127;
+            if constexpr(mode!=CountMode::observed)++hist[j][table.upper_offset+id];
+            upper[j]=p&127;
             unsigned width=(p>>8)&63;B bits=p>>16;
             accumulator[j]|=bits<<shift[j];shift[j]+=width;
             if(shift[j]>=64){
@@ -355,6 +358,7 @@ struct PhysicalTail {
         Raw buffer;
     };
     const TailPackets& tables;
+    B received_slots=0,received_marks=0;
     std::vector<U> initial;
     std::vector<Block> blocks;
     PhysicalTail(const std::vector<U>& states,const TailPackets& tab):tables(tab),initial(states) {
@@ -362,6 +366,10 @@ struct PhysicalTail {
         for(size_t j=0;j<states.size();++j)blocks[j/3].state+=states[j]*(j%3==0?1:j%3==1?6:36);
     }
     void feed(const Raw& source){
+        received_slots+=source.n;
+        for(U j=0;j<source.n/64;++j)received_marks+=__builtin_popcountll(source.data[j]);
+        if(unsigned rem=source.n%64)
+            received_marks+=__builtin_popcountll(source.data[source.n/64]&((B(1)<<rem)-1));
         const Raw* input=&source;
         for(size_t k=0;k<blocks.size()&&input->n;++k){
             auto& b=blocks[k];auto& out=b.buffer;
@@ -523,8 +531,65 @@ struct Spool {
     }
 };
 using Histogram=std::vector<std::vector<B>>;
+struct PeriodCounts {
+    std::array<B,7> slots{},marks{};
+};
+// A repeated input word and the same physical prefix determine every emitted
+// pulse in that prefix. The higher pairs never affect these digit transfers.
+class RepeatedCounts {
+    using Pair=std::pair<B,B>;
+    std::array<std::map<U,Pair>,7> known;
+    unsigned depth;
+public:
+    explicit RepeatedCounts(unsigned d):depth(d){}
+    unsigned lookup(U physical,PeriodCounts& out) const {
+        U modulus=1;
+        for(U j=0;j<depth;++j){
+            modulus*=6;
+            auto it=known[j].find(physical%modulus);
+            if(it==known[j].end())return j;
+            out.slots[j]=it->second.first;out.marks[j]=it->second.second;
+        }
+        return depth;
+    }
+    void remember(U physical,const PeriodCounts& costs){
+        U modulus=1;
+        for(U j=0;j<depth;++j){
+            modulus*=6;
+            Pair tally{costs.slots[j],costs.marks[j]};
+            const auto [it,added]=known[j].emplace(physical%modulus,tally);
+            if(!added&&it->second!=tally)throw std::logic_error("repeated physical prefix has different pulse totals");
+        }
+    }
+    void read(const Index& index){
+        std::string tag;
+        if(!(std::cin>>tag))return;
+        U n;
+        if(tag!="period-counts-v1"||!(std::cin>>n)||n>index.inverse.size())
+            throw std::runtime_error("invalid observed phase count header");
+        std::map<U,U> valid;
+        for(U phase=0;phase<index.inverse.size();++phase)
+            valid.emplace(index.inverse[phase],index.inverse[index.whole[phase]]);
+        for(U k=0;k<n;++k){
+            U start,end;PeriodCounts cost;
+            if(!(std::cin>>start>>end)||!valid.count(start)||valid.at(start)!=end)
+                throw std::runtime_error("observed phase endpoints disagree with source");
+            B input=index.slots;
+            for(U j=0;j<depth;++j){
+                if(!(std::cin>>cost.slots[j]>>cost.marks[j])||cost.slots[j]>2*input||cost.marks[j]>cost.slots[j])
+                    throw std::runtime_error("invalid observed phase totals");
+                input=cost.slots[j];
+            }
+            remember(start,cost);
+        }
+        if(std::cin>>tag)throw std::runtime_error("trailing observed phase totals");
+    }
+};
 struct Phase {
     U start=0,state=0;
+    unsigned known=0;
+    CountMode mode=CountMode::all;
+    PeriodCounts costs;
     Histogram hist;
     std::unique_ptr<Spool> spool;
     Debt before,after;
@@ -562,16 +627,20 @@ int virtual_advance(int argc,char**argv){
     if(index.inverse[state]!=s0)throw std::runtime_error("seed is not the specified physical phase");
     if(index.slots && copies>(UINT64_MAX/32)/index.slots) throw std::overflow_error("finite pulse count limit");
     std::cerr<<"indexed "<<index.slots<<" slots and "<<index.marks<<" marks at "<<cut<<" from phase "<<begin<<std::endl;
+    RepeatedCounts remembered(d);remembered.read(index);
     TailPackets physical_tables;
     PhysicalTail tail(std::vector<U>(states.begin()+cut+d,states.end()),physical_tables);
-    std::array<B,7> slots{},marks{};const auto seed_debt=drain(s0,vt);
+    std::array<B,7> slots{},marks{};
     for(B first=0;first<copies;){
         U g=std::min<B>(batch,copies-first);std::vector<Phase> phases(g);
         for(U q=0;q<g;++q){
             auto& p=phases[q];p.state=p.start=state;p.before=drain(index.inverse[state],vt);
+            p.known=remembered.lookup(index.inverse[state],p.costs);
+            if(p.known==d)p.mode=CountMode::observed;
+            else if(p.known>=emitters.lower_depth)p.mode=CountMode::upper;
             state=index.whole[state];p.after=drain(index.inverse[state],vt);
             if(q)p.spool=std::make_unique<Spool>();
-            p.hist.assign(threads,std::vector<B>(emitters.stats.size()));
+            if(p.mode!=CountMode::observed)p.hist.assign(threads,std::vector<B>(emitters.stats.size()));
         }
         auto started=std::chrono::steady_clock::now();size_t cursor=0;
         Pipe pipe(tail);Trim direct(pipe,phases[0].before.bits[d-1],phases[0].after.bits[d-1]);
@@ -595,14 +664,22 @@ int virtual_advance(int argc,char**argv){
                     for(U i=0;i<W;++i){
                         size_t at=(first_phase+i)*b.size()+j;
                         inputs[i]=enter[at];ends[i]=end[at];outputs[i]=&output[at];
-                        hist[i]=phases[first_phase+i].hist[lane].data();
+                        auto& h=phases[first_phase+i].hist;
+                        hist[i]=h.empty()?nullptr:h[lane].data();
                     }
-                    emit_together<W>(b[j],inputs,ends,hist,outputs,emitters);
+                    switch(phases[first_phase].mode){
+                    case CountMode::all: emit_together<W,CountMode::all>(b[j],inputs,ends,hist,outputs,emitters);break;
+                    case CountMode::upper: emit_together<W,CountMode::upper>(b[j],inputs,ends,hist,outputs,emitters);break;
+                    case CountMode::observed: emit_together<W,CountMode::observed>(b[j],inputs,ends,hist,outputs,emitters);break;
+                    }
                 };
-                U q=0;
-                for(;q+4<=g;q+=4)group(std::integral_constant<unsigned,4>{},q);
-                if(q+2<=g){group(std::integral_constant<unsigned,2>{},q);q+=2;}
-                if(q<g)group(std::integral_constant<unsigned,1>{},q);
+                for(U q=0;q<g;){
+                    U end=q+1;
+                    while(end<g&&phases[end].mode==phases[q].mode)++end;
+                    for(;q+4<=end;q+=4)group(std::integral_constant<unsigned,4>{},q);
+                    if(q+2<=end){group(std::integral_constant<unsigned,2>{},q);q+=2;}
+                    if(q<end){group(std::integral_constant<unsigned,1>{},q);++q;}
+                }
             }catch(...){
                 #pragma omp critical(virtual_emit_error)
                 {if(!failure)failure=std::current_exception();}
@@ -624,18 +701,29 @@ int virtual_advance(int argc,char**argv){
                 p.spool->replay(trim,vt);trim.finish();delayed.finish();p.spool.reset();
             }
             B elapsed=first+q+1;
+            PeriodCounts measured;
             for(const auto& h:p.hist)for(size_t id=0;id<h.size();++id)if(h[id]){
                 const auto& c=emitters.stats[id];
-                for(U i=0;i<d;++i){slots[i]+=h[id]*c.slots[i];marks[i]+=h[id]*c.marks[i];}
+                for(U i=0;i<d;++i){measured.slots[i]+=h[id]*c.slots[i];measured.marks[i]+=h[id]*c.marks[i];}
             }
+            U first_measured=p.mode==CountMode::all?0:(p.mode==CountMode::upper?emitters.lower_depth:d);
+            for(U i=first_measured;i<d;++i){
+                const auto& before=p.before.bits[i];const auto& after=p.after.bits[i];
+                B n=measured.slots[i]+before.size(),m=measured.marks[i]+std::count(before.begin(),before.end(),1);
+                B remove_marks=std::count(after.begin(),after.end(),1);
+                if(n<after.size()||m<remove_marks)throw std::logic_error("negative physical interval count");
+                p.costs.slots[i]=n-after.size();p.costs.marks[i]=m-remove_marks;
+            }
+            remembered.remember(index.inverse[p.start],p.costs);
+            for(U i=0;i<d;++i){slots[i]+=p.costs.slots[i];marks[i]+=p.costs.marks[i];}
+            if(tail.received_slots!=slots[d-1]||tail.received_marks!=marks[d-1])
+                throw std::logic_error("emitted physical output disagrees with period counts");
             std::string name=outbase+std::to_string(begin+elapsed)+".counts",tmp=name+".tmp";std::ofstream out(tmp);
             out<<"base "<<begin<<' '<<begin+elapsed<<' '<<index.slots<<' '<<index.marks<<'\n';
             B n=index.slots*elapsed,m=index.marks*elapsed;U e=index.inverse[p.state];
             for(U j=0;j<d;++j){
                 U end=e%6;e/=6;
-                B physical_slots=slots[j]+seed_debt.bits[j].size()-p.after.bits[j].size();
-                B physical_marks=marks[j]+std::count(seed_debt.bits[j].begin(),seed_debt.bits[j].end(),1)-
-                    std::count(p.after.bits[j].begin(),p.after.bits[j].end(),1);
+                B physical_slots=slots[j],physical_marks=marks[j];
                 B scaled=3*physical_slots+end/2-n-states[cut+j]/2;
                 if(scaled%4)throw std::logic_error("virtual endpoint trit balance");
                 tiled::write_row(end,physical_slots,n+2*(scaled/4)+m+states[cut+j]%2-end%2,2*(physical_slots+physical_marks),out);
