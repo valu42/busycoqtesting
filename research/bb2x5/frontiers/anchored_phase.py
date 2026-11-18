@@ -1,6 +1,8 @@
 """Anchored trigger and continuation checks for formal lines 21 and 22."""
 import argparse
 from functools import cache
+import json
+from itertools import product
 from pathlib import Path
 import subprocess
 import sys
@@ -108,6 +110,26 @@ def prefix_status(prefix, patterns):
     return 0 if any(p.startswith(prefix) for p in patterns) else -1
 
 
+def check_cut_263():
+    # The three mature 3s at cuts 263..265 put the A^4 test two images away.
+    # At 264 the exact test is P4, so pull this set through mature 3 at 263.
+    live = [('', 3, '')]
+    hit, clear = set(), set()
+    while live:
+        word, state, sent = live.pop()
+        verdict = prefix_status(sent+('A' if state==1 else ''), a_run(4))
+        if verdict:
+            (hit if verdict==1 else clear).add(word)
+        else:
+            for a in 'AB':
+                end, out = entry(22, state, a)
+                live.append((word+a, end, sent+out))
+    assert (len(hit),len(clear),max(map(len,hit|clear))) == (654,747,29)
+    common = 'ABAAAABAABAAAABAABAAAABAABAA'
+    assert common+'A' in hit and common+'B' in clear
+    assert 'BBBB' in hit and 'AA' in clear
+
+
 def check_grandparents(line):
     # Traverse the product of a prefix trie and the literal one-cell transducer.
     # Compare "does its output begin BAAAAA?" against the 36 input cylinders.
@@ -151,9 +173,29 @@ def check_safe_cycle(line):
     assert feed(line, 3, 'AABAAABA') == (3, 'BABABA')
 
 
+def check_source_phase(line):
+    period = 'ABAABABABAAAB'
+    # At the true phase, the first output period has one extra letter.
+    # The infinite stream at x=1 is precisely the rotation by one.
+    rotated = period[1:] + period[:1]
+    assert feed(line, 0, period) == (1, rotated + rotated[0])
+    assert feed(line, 1, period) == (1, rotated[1:] + rotated[:1])
+    phase, calls, site, ticks = ((8, 17, 6, 118) if line == 21 else (5, 34, 8, 251))
+    machine = TapeMachine(MACHINES[line])
+    for i in range(calls):
+        machine.head, machine.state = 0, period[(phase+i) % len(period)]
+        while machine.head >= 0:
+            if not machine.step():
+                assert (i+1, machine.head, machine.state, machine.tape[machine.head],
+                        machine.steps) == (calls, site, 'B', 2, ticks)
+                return
+    raise AssertionError('expected physical halt with the rotated root source')
+
+
 def check_controls():
     for line in PARENTS:
         check_safe_cycle(line)
+        check_source_phase(line)
         for word in ('', 'A', 'B', 'AB', 'BB', 'BAB'):
             encoded = ''.join('ABA' if x=='A' else 'AA' for x in word)
             assert feed(line, 3, encoded) == (3, word)
@@ -167,6 +209,30 @@ def check_controls():
         assert feed(line, 1, 'B') == (4, 'A' if line==22 else 'B')
         for w in PARENTS[line]:
             assert literal_suffix(line, w) == 1
+    # At the 64-cycle line-22 checkpoint the final three digits are all 3.
+    for letters in product('AB', repeat=4):
+        word = ''.join(letters)
+        state, sent = feed(22, 3, word)
+        forced = sent + ('A' if state == 1 else '')
+        assert forced.startswith('BB') == (word == 'AAAA')
+        assert not 'BB'.startswith(forced) or forced == 'BB'
+    for word, calls, halted, ticks in (('BBBB','BB',True,36), ('AA','A',False,16)):
+        machine = TapeMachine(MACHINES[22], (3,3,3))
+        received = ''
+        alive = True
+        for a in word:
+            machine.head, machine.state = 0, a
+            while machine.head >= 0:
+                old = machine.head
+                alive = machine.step()
+                if not alive:
+                    assert (machine.head, machine.state, machine.tape[machine.head]) == (3,'B',2)
+                    break
+                if (old,machine.head)==(2,3):
+                    received += machine.state
+            if not alive:
+                break
+        assert (received, not alive, machine.steps) == (calls, halted, ticks)
 
 
 def read_report(lines):
@@ -225,14 +291,34 @@ def report(line, path):
             assert all(not p.startswith(grandparent_words()) for p in prefixes)
 
 
+def check_bridge(line, old_path, phase_path, engine):
+    """Replay the overlap from the previous published 200-billion-group run."""
+    old = json.loads(Path(old_path).read_text())
+    records, prefixes = read_report(Path(phase_path).read_text().splitlines())
+    _, groups, steps, tape = records[-1]
+    driver = Driver(line)
+    assert old['machine'] == driver.machine == old['state']['machine']
+    delta = groups - old['state']['groups']
+    state, recent = driver.run_batch(Path(engine).resolve(), old['state'], delta, 1<<28, 18, 1<<36)
+    assert (state['steps'], state['positive_tape']) == (steps, tape)
+    before = [row['prefix'] for row in old['cuts']]
+    for i, prefix in enumerate(prefixes):
+        earlier = before[i] if i < len(before) else ''
+        later = recent[i] if i < len(recent) else ''
+        assert (earlier+later)[:18] == prefix
+    print(f'line {line} agrees at {groups} groups, {steps} steps and all {len(prefixes)} cut histories')
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--workers', nargs=2, metavar=('PHASE_ENGINE','REFERENCE_ENGINE'))
     parser.add_argument('--report', nargs=2, metavar=('LINE','TRANSCRIPT'))
+    parser.add_argument('--bridge', nargs=4, metavar=('LINE','OLD_JSON','PHASE_TRANSCRIPT','REFERENCE_ENGINE'))
     args=parser.parse_args()
     if not __debug__:
         parser.error('run with assertions enabled')
     check_controls()
+    check_cut_263()
     for line in PARENTS:
         print(f'line {line} grandparent equivalence checked on {check_grandparents(line)} prefix-trie nodes')
     if args.workers:
@@ -241,6 +327,9 @@ def main():
     if args.report:
         line,path=args.report
         report(int(line),path)
+    if args.bridge:
+        line,old,phase,reference=args.bridge
+        check_bridge(int(line),old,phase,reference)
 
 
 if __name__=='__main__':

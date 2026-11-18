@@ -20,6 +20,10 @@ constexpr int trace_width = 18;
 constexpr int virgin = 3;
 // Encoded states 0,1,2 are the three mature symbols. 3,4 are the fresh 0,2.
 constexpr char digit[] = "34102";
+const std::string machines[] = {
+    "1RB2RA3LA4LA2RB_2LA3RB---0RA1LA",
+    "1RB2RA3LA4LA2RB_2LA3RA---0RA1LA"
+};
 
 struct Word {
     std::size_t size = 0;
@@ -97,11 +101,28 @@ class Engine {
     }
 public:
     explicit Engine(int line) {
-        cell[0] = {{{1,0,0},{0,2,3}}};  // 3: A is silent, B emits ABA
-        cell[1] = {{{0,1,1},{2,0,0}}};  // 4: A emits B
-        cell[2] = {{{0,0,1},{1,unsigned(line==21),1}}};
-        cell[3] = {{{0,1,2},{4,0,0}}};  // fresh A emits BA
-        cell[4] = {{{0,0,0},{-1,0,0}}};
+        const auto& machine = machines[line-21];
+        for (int s=0; s<5; ++s) for (int input=0; input<2; ++input) {
+            int symbol=digit[s]-'0', control=input;
+            std::array<bool,10> seen{};
+            Entry e{-1,0,0};
+            while (true) {
+                int key=5*control+symbol;
+                if (seen[key]) throw std::runtime_error("local call cycle");
+                seen[key]=true;
+                auto offset=16*control+3*symbol;
+                if (machine[offset]=='-') break;
+                symbol=machine[offset]-'0';
+                if (machine[offset+1]=='L') {
+                    if (machine[offset+2]!='A') throw std::runtime_error("unexpected left return");
+                    e.next=std::string(digit).find(char('0'+symbol));
+                    break;
+                }
+                e.bits |= unsigned(machine[offset+2]=='B') << e.length++;
+                control=0; // The neighbor's successful left exit returns in A.
+            }
+            cell[s][input]=e;
+        }
         for (unsigned byte=0; byte<256; ++byte) {
             for (int q=0; q<5; ++q) single[q][byte] = pack(local(q,byte,packet_width));
             for (int q=0; q<81; ++q) group[q][byte] = pack(four(q,byte,packet_width));
@@ -224,6 +245,7 @@ int main(int argc,char** argv) try {
     auto copies=std::stoull(argv[3]);
     auto interval=argc==5 ? std::stoull(argv[4]) : copies;
     if ((line!=21 && line!=22) || cut<0 || !copies || !interval) throw std::runtime_error("invalid run parameters");
+    std::cout<<"line "<<line<<" machine "<<machines[line-21]<<"\n";
     Engine engine(line); Period p;
     // The initial A followed by (BAABABABAAABA)^infinity, grouped at rank zero.
     for (char letter:std::string("ABAABABABAAAB")) p.repeat.push(letter=='B',1);
