@@ -136,6 +136,8 @@ A second worker takes the complete physical register at any saved sweep. For eac
 
 Mark separation leaves only 595 possible 16-slot words. A lookup processes each such word with its digit state, or with both states in the two-pair pass. The byte tables still handle other inputs and incomplete chunks. Compared with the preceding byte worker, the 10¹⁹-sweep replay with `--word-bits 1048576` took 2.1–2.4 seconds versus 3.1–3.3 seconds on the same worker host. Through the first 84 digits alone, the periodic part of a 10⁶⁰-sweep input took about 7 seconds versus 13–14. Both comparisons matched all output counts, clock components and ending states.
 
+In the finite pass, a long period often returns to the same two starting digit states. The worker caches the complete two-digit output and both local clock contributions for that state. A later copy feeds the saved word directly into the third digit. If the target first appears inside a cached word, the worker inverts its rank through those same two digits. Retained words have a combined length of at most four times `--word-bits`, capped at 2³² bits. States that exceed the allowance use the ordinary chunk pass. Caching reduced the same 10¹⁹-sweep replay to about one second with byte-identical results.
+
 ```sh
 c++ -O3 -std=c++17 frontiers/line17_packed.cpp -lgmpxx -lgmp -o /tmp/bb25-packed17
 python3 frontiers/line17.py --epochs 10000000000000000000000000000 \

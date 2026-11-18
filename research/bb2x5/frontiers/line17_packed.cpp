@@ -258,19 +258,41 @@ struct PairTransfer {
         for (size_t j=0;j<words.size();++j)
             for (unsigned state=0;state<36;++state) wide[j][state]=combine(state,words[j]);
     }
-    void apply(const Word& in,Digit& left,Digit& right,Word& out) const {
+    void apply(const Word& in,Digit& left,Digit& right,Word& out,Count limit=Count(1)<<28) const {
         unsigned state=6*left.state+right.state;
         auto take=[&](const PairPacket& p) {
             if (p.state==invalid) throw std::runtime_error("overlapping marked bursts");
             state=p.state;
             left.n+=p.middle; left.calls+=p.left_calls; left.interior+=p.left_inner;
             right.calls+=p.right_calls; right.interior+=p.right_inner;
-            out.push(p.bits,p.width,Count(1)<<28);
+            out.push(p.bits,p.width,limit);
         };
         unsigned tail=apply_chunks(in,state,table,wide,take);
         if (tail) take(compile(state/6,state%6,in.read(in.size-tail,tail),tail));
         left.state=state/6; right.state=state%6;
         right.n+=out.size;
+    }
+
+    // Invert one productive output in a cached two-digit period.
+    Count parent_slot(const Word& in,unsigned state,Count rank) const {
+        for (Count i=0;i<in.size;i+=8) {
+            unsigned n=static_cast<unsigned>(std::min<Count>(8,in.size-i));
+            unsigned bits=static_cast<unsigned>(in.read(i,n));
+            auto p=n==8 ? table[state][bits] : compile(state/6,state%6,bits,n);
+            if (p.state==invalid) throw std::runtime_error("overlapping marked bursts");
+            if (rank<=p.width) {
+                for (unsigned j=0;j<n;++j) {
+                    auto bit=compile(state/6,state%6,(bits>>j)&1,1);
+                    if (rank<=bit.width) return i+j+1;
+                    rank-=bit.width;
+                    state=bit.state;
+                }
+                throw std::logic_error("cached period and single-slot ranks differ");
+            }
+            rank-=p.width;
+            state=p.state;
+        }
+        throw std::logic_error("rank outside cached period");
     }
 };
 
@@ -288,7 +310,7 @@ bool reaches_cut(std::vector<unsigned>& states,size_t digit,unsigned bit,Count& 
 // If the periodic word gets too large, stream the input through every remaining
 // digit. Partial words carry their ending digit states into the next chunk.
 std::optional<Count> finish(const Transfer& tr, const Stream& in, const std::vector<unsigned>& initial,
-                            unsigned cut, Count work_limit,const mpz_class& rank,bool report_counts) {
+                            unsigned cut, Count work_limit,const mpz_class& rank,bool report_counts,Count cache_limit) {
     if (in.size()>work_limit)
         throw std::runtime_error("finite slot budget at pair "+std::to_string(cut)+
                                  ": need "+in.size().get_str()+", budget "+std::to_string(work_limit));
@@ -298,9 +320,7 @@ std::optional<Count> finish(const Transfer& tr, const Stream& in, const std::vec
     Word a,b;
     bool locate=rank>0;
     std::vector<unsigned> before(locate ? digits.size() : 0);
-    Count consumed=0;
-    std::optional<Count> match;
-    auto feed=[&](const Word& w) {
+    auto feed=[&](const Word& w,size_t first) -> std::optional<Count> {
         for (Count offset=0;offset<w.size;) {
             const Count end=offset+std::min<Count>(65536,w.size-offset);
             for (Count j=offset;j<end;j+=64) {
@@ -310,7 +330,7 @@ std::optional<Count> finish(const Transfer& tr, const Stream& in, const std::vec
             if (locate)
                 for (size_t j=0;j<digits.size();++j) before[j]=digits[j].state;
             Count previous=digits.back().n;
-            size_t i=0;
+            size_t i=first;
             for (; i+1<digits.size() && a.size; i+=2) {
                 check_room(digits[i]);
                 check_room(digits[i+1]);
@@ -327,31 +347,63 @@ std::optional<Count> finish(const Transfer& tr, const Stream& in, const std::vec
                 mpz_class ordinal=rank-previous;
                 Count remaining=ordinal.get_ui();
                 for (Count j=offset;j<end;++j) {
-                    if (reaches_cut(before,0,w.read(j,1),remaining)) {
-                        match=consumed+j-offset+1;
-                        return true;
-                    }
+                    if (reaches_cut(before,first,w.read(j,1),remaining)) return j+1;
                 }
                 throw std::logic_error("chunk and single-slot reachability differ");
             }
-            consumed+=end-offset;
             a.clear(); offset=end;
         }
-        return false;
+        return {};
     };
-    if (feed(in.prefix)) return match;
+    Count consumed=0;
+    auto root_word=[&](const Word& w) -> std::optional<Count> {
+        if (auto hit=feed(w,0)) return consumed+*hit;
+        consumed+=w.size;
+        return {};
+    };
+    if (auto hit=root_word(in.prefix)) return hit;
     if (in.period.size) {
         Count copies=in.copies.get_ui(); // bounded by total size above
+        // Equal incoming states for a whole period give exactly the same
+        // child word, counters, and ending states on the first two digits.
+        if (copies>=3 && in.period.size>=65536 && digits.size()>=3) {
+            struct Cached { Digit left{},right{}; Word word; };
+            std::array<std::optional<Cached>,36> cache;
+            std::array<bool,36> too_large{};
+            auto add=[](Digit& d,const Digit& piece) {
+                check_room(d);
+                d.state=piece.state; d.n+=piece.n; d.calls+=piece.calls; d.interior+=piece.interior;
+            };
+            for (Count j=0;j<copies;++j) {
+                unsigned state=6*digits[0].state+digits[1].state;
+                auto& entry=cache[state];
+                if (!entry && !too_large[state] && cache_limit) {
+                    Cached piece;
+                    piece.left.state=digits[0].state; piece.right.state=digits[1].state;
+                    try {
+                        pairs.apply(in.period,piece.left,piece.right,piece.word,cache_limit);
+                        cache_limit-=piece.word.size;
+                        entry=std::move(piece);
+                    } catch (const WordLimit&) { too_large[state]=true; }
+                }
+                if (entry) {
+                    add(digits[0],entry->left); add(digits[1],entry->right);
+                    if (auto hit=feed(entry->word,2)) return consumed+pairs.parent_slot(in.period,state,*hit);
+                    consumed+=in.period.size;
+                } else if (auto hit=root_word(in.period)) return hit;
+            }
+            copies=0;
+        }
         Count block=std::min<Count>(copies,65536/in.period.size);
         if (block>1) {
             Word tile;
             for (Count j=0;j<block;++j) tile.append(in.period,65536);
-            for (Count j=0;j<copies/block;++j) if (feed(tile)) return match;
+            for (Count j=0;j<copies/block;++j) if (auto hit=root_word(tile)) return hit;
             copies%=block;
         }
-        for (Count j=0;j<copies;++j) if (feed(in.period)) return match;
+        for (Count j=0;j<copies;++j) if (auto hit=root_word(in.period)) return hit;
     }
-    if (feed(in.suffix)) return match;
+    if (auto hit=root_word(in.suffix)) return hit;
     if (report_counts)
         for (const auto& digit:digits) print(digit.state,digit.n,digit.calls,digit.interior);
     return {};
@@ -387,7 +439,8 @@ int main(int argc,char** argv) try {
     Stream input;
     input.period.push(2,4,limit); input.copies=epochs;
     auto finish_stream=[&](unsigned cut) {
-        auto hit=finish(tr,input,initial,cut,work_limit,rank,report_counts);
+        Count cache_limit=std::min(4*limit,Count(1)<<32);
+        auto hit=finish(tr,input,initial,cut,work_limit,rank,report_counts,cache_limit);
         if (locate) {
             input=Stream{};
             if (hit) std::cout<<origins->root(tr,mpz_class(*hit))<<'\n';

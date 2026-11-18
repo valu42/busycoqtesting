@@ -11,6 +11,7 @@ import survey
 import line7
 import line5_timed
 import line17
+import line17_visit
 
 RUNS = ROOT / 'frontiers' / 'runs'
 COMMUNITY = 'https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved'
@@ -68,6 +69,10 @@ def generate():
     path = RUNS/'line17-epochs.json'
     register = line17.load(path)
     consider(17, register['machine'], register['steps'], path, 'Timed register sweeps')
+    for path in sorted(RUNS.glob('line17-first-*.json')):
+        doc = json.loads(path.read_text())
+        arrival = line17_visit.verify(doc)
+        consider(17, doc['payload']['machine'], arrival['steps'], path, f"First visit to pair {doc['payload']['pair']}")
 
     mixed = (ROOT/'mixed-verification.txt').read_text()
     b3 = int(re.search(r'lower bound as an integer: (\d+)', mixed).group(1))

@@ -5,6 +5,7 @@ from pathlib import Path
 import subprocess
 import unittest
 
+import line17
 from line17_edge import (DATA, DIGITS, LOCKED, ROOT_PERIOD, ZERO, bits, branch_witnesses,
                          cut_limits, edge_bound, forced_output, initial, packed_source_slot,
                          possible_symbols, source_slot, suffix_event)
@@ -67,6 +68,22 @@ class EdgeTests(unittest.TestCase):
             self.assertEqual(limits[i], 3*limits[i+1]-49)
         self.assertEqual(edge_bound(), edge_bound(53, PACKED, 2**20))
         self.assertEqual(suffix_event(403, b'', bits('000010'))[0], 9058530)
+
+    def test_cached_period_ranks_and_clocks(self):
+        # The narrow pass reaches cut 50 with a repeated 83,556-slot word.
+        # The larger word budget with zero finite slots requires a wholly
+        # periodic transfer through cut 57, independent of the period cache.
+        for start in (0, 123456789):
+            prefix = line17.replay(start, 22)['register'][:2*57]
+            def run(bits, work, *mode):
+                return subprocess.check_output([str(PACKED), str(10**16), str(bits), str(work), *mode],
+                                               input=prefix, text=True)
+            reference = run(2**23, 0)
+            self.assertEqual(run(2**17, 20000000), reference)
+            size = int(reference.splitlines()[-1].split()[2])
+            for rank in (1, size//3, size-1, size, size+1):
+                self.assertEqual(run(2**17, 20000000, 'select', str(rank)),
+                                 run(2**23, 0, 'select', str(rank)))
 
     def test_three_branches_against_literal_suffix(self):
         cases = list(branch_witnesses())
