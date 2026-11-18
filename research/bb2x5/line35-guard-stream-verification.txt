@@ -1,0 +1,13 @@
+Cut 8: 71 prefixes, 616 successful inputs, 561 distinct edges; 71 first-failure B4 replays.
+Prefix counts at debt thresholds 5 through 13: 4 6 5 24 6 13 9 2 2
+Epoch 513: width 1043, chronological prefix 274, period 1024.
+Checked 32 literal blank epochs, 520 word updates and 513 complete eight-sample forecasts.
+Pascal tails: debt at most 1 at every cell in all 9 adjacent-center pairs, both phases.
+Fixed-column history: 10034 surviving history/debt cases checked through three updates.
+Survivor runs: spacing criterion agrees with the next sweep, including a physical failing word.
+Blank epochs 5..25000: 32 prefixes, 35 prefix/debt pairs; maximum cut-8 debt 2, least slack 3 at epoch 46.
+Quarter bound: last failed test at epoch 443; smallest later margin through 25000 is 16 at epoch 495.
+Splices: recipient 181+7, donors 1204+516 (four shared letters) and 3118+452 (same two residues mod 89).
+Physical splice: seven matching samples; the 27-cell altered tape reaches B4 after 1169 instructions.
+Delayed-debt blocks: k = 2, 4, ..., 256; literal B4 after 791 and 2645 steps on altered tapes.
+Epoch-181 extension: 63 unchanged guards; on the next sweep 273 copies give 5, 274 copies give 6, blank gives 0.
