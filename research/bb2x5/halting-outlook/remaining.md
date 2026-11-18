@@ -78,6 +78,8 @@ The inherited fixed cut receives B,A,A (with one permitted retry),B per three le
 
 ### Line 6
 
+**Latest pass.** [Updated blank-run evidence and proof obligations](probe6.md). The earlier investigation follows.
+
 `1RB---3LB4RB0LA_2LB3LA3RB4RA0RA`
 
 **Inherited floor:** 10^10. **Outlook:** Unknown. **Estimated halting time:** none justified.
@@ -262,6 +264,8 @@ Only A4 is undefined. The community links Peacemaker II analysis; the original w
 
 ### Line 31
 
+**Latest pass.** [Updated blank-run evidence and proof obligations](edge31.md). The earlier investigation follows.
+
 `1RB3RB---4RA2RA_2LA2RA3LB4LB1LB`
 
 **Inherited floor:** ≈5.00000×10^27. **Outlook:** Unknown. **Estimated halting time:** none justified.
@@ -282,6 +286,8 @@ Only A4 is undefined. The community links Legion/dyuan analysis, but the origina
 
 ### Line 33
 
+**Latest pass.** [Updated blank-run evidence and proof obligations](neglected33.md). The earlier investigation follows.
+
 `1RB2LA0RB4LB1RA_1LA3RA1RA---0LA`
 
 **Inherited floor:** 10^10. **Outlook:** Unknown. **Estimated halting time:** none justified.
@@ -291,6 +297,8 @@ Only B3 is undefined. The community calls this a shift-overflow mixed-digit coun
 **Next concrete step:** Derive and literally verify the exact reset map before predicting overflow outcomes.
 
 ### Line 34
+
+**Latest pass.** [Updated blank-run evidence and proof obligations](target34.md). The earlier investigation follows.
 
 `1RB2LA4RA1LA3LA_0LA2RB3RB2LB---`
 

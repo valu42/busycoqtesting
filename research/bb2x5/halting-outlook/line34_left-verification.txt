@@ -1,0 +1,5 @@
+Tuple: states, safe edges, choices, halting choices, least balance, largest intrinsic debt, least peak.
+width 9, seed epoch 7 / step 109 / head -7: (65, 346, 390, 0, 0, 1, 1)
+width 12, seed epoch 10 / step 210 / head -10: (352, 3452, 4099, 352, 0, 2, 0)
+width 16, seed epoch 13 / step 361 / head -13: (2149, 25135, 29111, 2149, -2, 2, 1)
+Literal canonical-completion checks: 4489; all 29111 width-16 cases compared to word_sweep.

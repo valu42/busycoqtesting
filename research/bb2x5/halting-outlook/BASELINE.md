@@ -33,6 +33,20 @@ python3 frontiers/line17_visit.py check frontiers/runs/line17-first-173.json
 python3 frontiers/line17_edge.py bound
 ```
 
+## Additional results of this research pass
+
+The table keeps the reviewed earlier outlooks for the open machines. On line 36, the later formal theorem changes the earlier table’s **Unknown** to **Proven nonhalting**. The following results narrow specific open questions.
+
+| Line | New result |
+| --- | --- |
+| [6](probe6.md) | Exact literal floor 10,087,506,894. Reordering a real checkpoint preserves all factor counts through length seven but can produce A1. |
+| [21, 22](target21_22.md) | Four possible input prefixes at a fresh parent cause the child's BB on 21. Only BAAAAA does so on 22. The sampled streams contain dangerous words at safe internal offsets. |
+| [31](edge31.md) | Odd cells are permanently safe. Two input prefixes decide a halt at the even grandchild. The earliest open candidate coordinate is 142. |
+| [33](neglected33.md) | A timed word recurrence reaches the 33rd left extension after about 6.00151 × 10^12573 raw instructions. A nested 21 that receives a B reply halts. An outer B return would enter a proven infinite family of sweeps. |
+| [34](target34.md) | All 352 possible twelve-cell prefixes in the finite proof have nonnegative balance. A halt would require at least six units of debt from the remaining suffix on that sweep. Exact blank clock 33,919,375,494. |
+
+The next proof target is **34**. Its unresolved claim is a single inequality on the actual tape at a fixed cut. The public branches and recent commits at intake included active work on 13, 17, 26 and 35–37. This pass used a separate research branch and left the simulation table intact. The search identifies public work only.
+
 ## Historical intake at 2ab106f
 
 The following sections describe the **earlier** outlook pass at 680c696. In these historical sections, “new”, “this pass” and the transcript results refer to that work. Current labels and bounds are in the [outlook table](../HALTING_OUTLOOK.md).

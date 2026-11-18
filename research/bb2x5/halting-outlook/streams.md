@@ -104,6 +104,8 @@ body of a stream.
 
 ## Lines 21 and 22
 
+The [current upstream test](target21_22.md) identifies four dangerous parent prefixes for line 21 and one for line 22. It compares their starting positions with occurrences inside the actual streams.
+
 **The inherited exact trigger remains open.**
 
 The inherited one-cell table gives `B0 -> 2` with no right call. A second B at

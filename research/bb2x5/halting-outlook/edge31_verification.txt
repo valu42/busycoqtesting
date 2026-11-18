@@ -1,0 +1,8 @@
+Reachable local states satisfying the weighted inequality: 8
+Literal supplied words: {'cases': 4095, 'literal halts': 199}
+Four blank-run comparisons matched head, state, both tape halves, cut histories and clock.
+Through 10000000000000 source groups: 138 cuts, 5000000000000629129529402408 raw steps.
+Even coordinates starting ABAB: [(82, 'ABABBAAB')]
+Final even and odd prefixes: ['ABA', 'BBB']
+Interior target occurrences among the 32-letter even-cut samples: 22
+Through 18000000000000 groups: 16200000000001132433153618030 steps; next candidate A2 at 142 or farther.
