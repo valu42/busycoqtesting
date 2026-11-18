@@ -2,7 +2,7 @@
 
 [Simulation table for all 37 holdouts](SIMULATION_TABLE.md) · [Run and resume the simulators](frontiers/README.md)
 
-These notes record results on the November 3, 2026 list of 37 formal holdouts. Each machine is identified by its full transition string. All line numbers here are **one-based positions in that exact file**. The scripts use an initially blank, two-way infinite tape, state A and head coordinate zero. An undefined instruction halts on arrival. Line 36 has a computer-assisted proof of blank-tape nonhalting. Its Rocq formalization remains open. [Proof and reproduction](line36-nonhalting.md) · [Reduced certificates and verification](line36-cap-blocks.md)
+These notes record results on the November 3, 2026 list of 37 formal holdouts. Each machine is identified by its full transition string. All line numbers here are **one-based positions in that exact file**. The scripts use an initially blank, two-way infinite tape, state A and head coordinate zero. An undefined instruction halts on arrival. Line 36 has a kernel-checked Rocq proof of blank-tape nonhalting. [Formal theorem and build instructions](line36-rocq.md) · [Proof and reproduction](line36-nonhalting.md) · [Reduced certificates and verification](line36-cap-blocks.md)
 
 | Formal line | Machine | Result to continue from |
 |---:|---|---|
@@ -12,7 +12,7 @@ These notes record results on the November 3, 2026 list of 37 formal holdouts. E
 | 2 | `1RB---4LB0LA4RA_2LB2LA3RA4LB0RB` | A fixed-cut protocol replaces the growing left half. The negative prefix is exact through 2,400 extensions from blank. |
 | 10 | `1RB2RB3LA4LA1LA_2LB3RA---4RA1RB` | Three leading A entries at the fresh edge halt. Cyclic period counts are known. The starting position matters. |
 | 3 | `1RB---0RB0LA2RA_2LB2LA3RA4LB0LB` | Mixed binary/ternary macros give a lower bound exceeding 10¹⁵⁰ defined steps from blank. Higher reset branches remain open. |
-| 36 | `1RB2LA1LA4RA2LA_0LA3RB3LB2RB---` | **Runs forever from blank.** Two integer certificates keep every sweep away from B4. [Proof](line36-nonhalting.md) |
+| 36 | `1RB2LA1LA4RA2LA_0LA3RB3LB2RB---` | **Runs forever from blank.** Two integer certificates keep every sweep away from B4. [Rocq theorem](../../verify/Line36Nonhalting.v) · [Proof](line36-nonhalting.md) |
 
 The first four rows are developed in [the research log](research-log.md). The earlier [frontier derivations](frontier-background.md) give the raw pair tables and the initial blank checkpoint. The [mixed-counter and sweep notes](mixed-and-sweeps.md) also record results on lines 12, 21 and 22 and list the exact identities used for the left-half certificates.
 

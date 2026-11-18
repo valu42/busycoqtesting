@@ -24,6 +24,7 @@ is split into two parts:
 Apart from deciders, the repository includes manual proofs for some machines
 considered hard to decide automatically. At the moment, these include:
 
+ - [BB(2,5) holdout line 36](research/bb2x5/line36-rocq.md), proved to run forever from blank in Rocq
  - [Skelet #1](https://www.sligocki.com/2023/03/13/skelet-1-infinite.html)
     (due to the nature of the proof, the final computation is done by an
     extracted OCaml program)
