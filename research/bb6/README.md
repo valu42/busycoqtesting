@@ -1,6 +1,6 @@
 # BB(6) holdout research
 
-[Machine table](MACHINES.csv) · [Claim board and handoffs](ROADMAP.md) · [Original 608 entries](BB6_holdouts_608.txt)
+[Machine approach rankings](RANKINGS.md) · [Machine table](MACHINES.csv) · [Claim board and handoffs](ROADMAP.md) · [Original 608 entries](BB6_holdouts_608.txt)
 
 Each row is a six-state, two-symbol machine started in state A at coordinate zero on an all-zero, two-way infinite tape. The six blocks of its transition string are states A–F. Each block gives the instructions for reading 0 and 1 in that order. Reaching `---` halts.
 
