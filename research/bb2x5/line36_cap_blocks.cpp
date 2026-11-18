@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <unordered_map>
@@ -80,12 +81,16 @@ void step(Moves& next, Move input, unsigned length) {
     }
 }
 
-Moves block(Word visible) {
+Moves block(Word visible, int& prefix_minimum) {
+    prefix_minimum = 0;
     Moves current{{visible,0},{visible|(Word(1)<<width),0}};
     for (unsigned t = 0; t < ticks; ++t) {
         Moves next;
         for (auto source : current) step(next,source,width+extra);
         current.swap(next);
+        if (t+1 < ticks)
+            for (auto move : current)
+                prefix_minimum = std::min(prefix_minimum,3*move.cost-int(t+1));
     }
     Moves output;
     for (auto move : current) keep_minimum(output,move.word&visible_mask,move.cost);
@@ -95,12 +100,13 @@ Moves block(Word visible) {
 struct Edge { unsigned to; int cost; };
 
 int main(int argc, char** argv) {
-    assert(argc == 2);
+    assert(argc == 2 || argc == 3);
     const Word seed = std::stoull(argv[1]);
     assert(seed <= visible_mask);
     std::unordered_map<Word,unsigned> index;
     std::vector<Word> words;
     std::vector<Edge> edges;
+    std::vector<int> prefix_minima;
     std::vector<std::size_t> end{0};
     auto insert = [&](Word word) {
         auto [entry,fresh] = index.emplace(word,static_cast<unsigned>(words.size()));
@@ -109,7 +115,9 @@ int main(int argc, char** argv) {
     };
     insert(seed);
     for (std::size_t i = 0; i < words.size(); ++i) {
-        for (auto move : block(words[i])) edges.push_back({insert(move.word),move.cost});
+        int minimum;
+        for (auto move : block(words[i],minimum)) edges.push_back({insert(move.word),move.cost});
+        prefix_minima.push_back(minimum);
         end.push_back(edges.size());
     }
     assert(words.size() == 62671 && edges.size() == 200597);
@@ -118,7 +126,7 @@ int main(int argc, char** argv) {
     for (;;) {
         assert(rounds < 40);
         for (std::size_t i = 0; i < words.size(); ++i) {
-            int best = 0;
+            int best = prefix_minima[i];
             for (std::size_t j = end[i]; j < end[i+1]; ++j) {
                 auto edge = edges[j];
                 best = std::min(best,3*edge.cost-int(ticks)+value[edge.to]);
@@ -137,4 +145,47 @@ int main(int argc, char** argv) {
             assert(value[i] <= 3*edges[j].cost-int(ticks)+value[edges[j].to]);
     std::cout << words.size() << " block states, " << edges.size() << " edges, "
               << rounds << " changing rounds, potential [-16,0], seed " << value[0] << '\n';
+
+    // Reconstruct intermediate potentials with at most seven one-sweep lookups.
+    // The endpoint table is the sole numeric input needed by a replay checker.
+    std::vector<std::unordered_map<Word,int>> intermediate(ticks);
+    auto lift = [&](auto& self, unsigned phase, Word cap) -> int {
+        if (phase == ticks) return value[index.at(cap & visible_mask)];
+        auto& cache = intermediate[phase];
+        if (phase) {
+            auto found = cache.find(cap);
+            if (found != cache.end()) return found->second;
+        }
+        Moves moves;
+        step(moves,{cap,0},width+extra);
+        int best = 0;
+        for (auto move : moves)
+            best = std::min(best,3*move.cost-1+self(self,phase+1,move.word));
+        if (phase) cache.emplace(cap,best);
+        return best;
+    };
+    for (std::size_t i = 0; i < words.size(); ++i) {
+        const int a = lift(lift,0,words[i]);
+        const int b = lift(lift,0,words[i]|(Word(1)<<width));
+        assert(value[i] == std::min(a,b));
+    }
+    int overall_minimum = *std::min_element(value.begin(),value.end());
+    std::size_t count = 0;
+    for (unsigned phase = 1; phase < ticks; ++phase) {
+        count += intermediate[phase].size();
+        for (auto [cap,h] : intermediate[phase]) {
+            overall_minimum = std::min(overall_minimum,h);
+            assert(h <= 0);
+        }
+    }
+    assert(count == 769600 && overall_minimum == -21);
+    std::cout << count << " intermediate phase/cap pairs, one-sweep potential [-21,0]\n";
+    if (argc == 3) {
+        std::vector<Word> sorted = words;
+        std::sort(sorted.begin(),sorted.end());
+        std::ofstream output(argv[2]);
+        for (Word word : sorted) output << word << '\t' << value[index.at(word)] << '\n';
+        output.close();
+        if (!output) return 1;
+    }
 }

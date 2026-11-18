@@ -1,6 +1,6 @@
 # A smaller right-hand certificate for line 36
 
-The machine `1RB2LA1LA4RA2LA_0LA3RB3LB2RB---` runs forever from blank by the computer-assisted argument committed by valu42 in `077b13b`. The construction below replaces its 50-cell, 16,939,461-state right-hand calculation with **62,671 states and 200,597 edges**. The initial tape, physical sweep, six-phase tile identities, and left certificate come from that proof. This is a refinement of the existing nonhalting argument. The Rocq proof remains outstanding. [Original proof](line36-nonhalting.md) · [Original commit](https://github.com/valu42/busycoqtesting/commit/077b13b031a44944f6689a6058511ec435dc1dee)
+The machine `1RB2LA1LA4RA2LA_0LA3RB3LB2RB---` runs forever from blank by the computer-assisted argument committed by valu42 in `077b13b`. The construction below replaces its 50-cell, 16,939,461-state right-hand calculation with **62,671 states and 200,597 edges**. The initial tape, physical sweep, six-phase tile identities, and left certificate come from that proof. This is a refinement of the existing nonhalting argument. A separate Rocq development now covers the literal sweep, the seed, the reserve inequality, and the original 50-cell right certificate. The complete concrete theorem remains outstanding. [Formalization status](line36-rocq.md) [Original proof](line36-nonhalting.md) · [Original commit](https://github.com/valu42/busycoqtesting/commit/077b13b031a44944f6689a6058511ec435dc1dee)
 
 ## The exact loss forced by a known suffix
 
@@ -46,6 +46,22 @@ $$x_t-4A_t\ge530-28-110/6-4(63/6)=441\tfrac23.$$
 
 This suffices for the original induction. The tiled interval $[200,x_t)$ has balance at least $(x_t-222)/2$, strictly greater than both $A_t+1$ and 11. It absorbs the actual incoming debt and the reference debt before the guard. The next sweep has the safe reference header and finishes in positive finite time. The cut retains enough complete pieces for the left certificate, and $x'\le x+h$ keeps at least 502 cells outside the next halo. This proves the same blank-tape conclusion with the smaller right certificate. [Left finite cases, large debts and the blank bootstrap](line36-nonhalting.md#induction-on-the-actual-computation)
 
+## A one-sweep potential for the Rocq ledger
+
+Only the 62,671 values at block boundaries need to be supplied as a certificate. The existing `credit36_step` theorem asks for a potential on individual sweeps with values in $[-21,0]$. The following construction gives exactly that range. [Rocq ledger](../../verify/Line36Safety.v)
+
+For each visible boundary state $v$, also compute $F(v)$, the minimum of zero and $3c-i$ on all proper prefixes of an enumerated block, where $c$ is the forced cost and $1\le i<8$. In the boundary relaxation, include $F(v)$ as an alternative alongside every complete edge continuation $3c_e-8+H(w)$. The resulting boundary values still range from $-16$ through zero and the seed has value $-2$.
+
+At phase eight read $H$ for the 41-bit projection of the current cap. At phases one through seven, recursively assign
+
+$$H_i(C)=\min\bigl(0,\ \min_{C\to D} (3c(C,D)-1+H_{i+1}(D))\bigr).$$
+
+At phase zero use the boundary value. The check verifies that it is at most each corresponding right-hand side for both possible 42nd digits. Indeed it equals the minimum obtained by unrolling the eight sweeps with the option to stop at any intermediate time. The seven intermediate layers have 769,600 reachable phase/cap pairs in total. Direct evaluation gives minima $-21,-20,-19,-18,-17,-18,-17$ respectively, and all values are nonpositive. Thus the original one-sweep inequality $H_{\rm old}\le3c-1+H_{\rm new}$ and its original range apply at every individual sweep. This gives the original reserve using `credit36_step`; the fragment estimate above also proves safety independently.
+
+An external program may propose any table with entries in $[-21,0]$. To verify it, check the literal seed, both possible 42nd digits for every listed state, the cap-matching conditions, the recursive minima and their range, and membership of every possible next boundary in the table. This argument uses no assumption about how the candidate values were found. The independent Python replay implements these checks using left-to-right opening stacks. Its only file input is the exported table. The first checker uses right-to-left debt. The sorted TSV for the supplied certificate has SHA-256 `c59a2f78e20ea9135a3428e05c54a7c6a209fa2316469a1dc72ffac2634c3530`. [Table replay](line36_cap_replay.py)
+
+In the current Rocq source, $L(W)$ is exactly `cap_loss W` and its defining identity is `cap_loss_exact`. To prove the context minimum, use `matching_charge` on a prefix whose removal splits an optimal tiling. In the recursive definition of `monomers`, prepending one closing or one full dimer gives such a split. Strip these pieces from the unknown prefix, leaving either $C$ or `1` followed by $C$. The present `halo_moving_cut` uses a cap loss anchored after a specified closing. For this certificate its charge premise can instead use the loss of the whole aligned suffix, via `cap_loss_exact`, and then the context minimum just proved mathematically. For this optional smaller certificate, the finite replay and the stronger loss bound still require kernel verification. The repository already supplies kernel verification of its original 50-cell alternative. [Matching and cap loss](../../verify/Line36Right.v) · [Moving cut](../../verify/Line36Halo.v)
+
 ## The left potential needs fewer states
 
 The previous complete piece's choice affects the enumeration of local histories. Its value can be forgotten when indexing the potential. Project each of the 28,704 original states to its phase, next piece index, literal partial piece, and three remembered bits. Enumerate *every* original edge as before. For each ordered pair of projections keep the least weight $6\Delta x-24C-4$. The resulting 14,352 states and 657,878 weighted pairs admit a potential in $[-110,0]$ after 17 changing relaxations. The checker pulls the potential back through the projection and checks each of the 1,752,900 original finite edges. The original analytic bound for debts above 28 covers the same potential range. This removes one piece choice from the potential lookup while retaining all of its physical effects.
@@ -58,7 +74,8 @@ Run from `research/bb2x5` with Python 3.10 or later, C++17, and assertions enabl
 
 ```sh
 c++ -std=c++17 -O2 line36_cap_blocks.cpp -o line36-cap-blocks
-python3 line36_cap_blocks.py ./line36-cap-blocks
+python3 line36_cap_blocks.py ./line36-cap-blocks cap36.tsv
+python3 line36_cap_replay.py cap36.tsv
 c++ -std=c++17 -O2 line36_left.cpp -o line36-left
 python3 line36_left.py ./line36-left --projected
 ```

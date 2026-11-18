@@ -27,8 +27,8 @@ def loss(word):
 
 def main():
     assert __debug__ and LIST[35] == PARITY == '1RB2LA1LA4RA2LA_0LA3RB3LB2RB---'
-    if len(sys.argv) != 2:
-        raise SystemExit('Pass the path to the compiled line36_cap_blocks executable.')
+    if len(sys.argv) not in (2,3):
+        raise SystemExit('Pass the compiled checker path and optionally an output TSV path.')
     prefixes = [''.join(w) for n in range(6) for w in product('12',repeat=n)]
     comparisons = 0
     for n in range(1,9):
@@ -48,7 +48,7 @@ def main():
     for digit in word[-41:]:
         seed = (seed<<1) | (digit == 2)
     print('Literal epoch 32, width',len(word),'and 41-bit seed',seed,flush=True)
-    subprocess.run([str(Path(sys.argv[1]).resolve()),str(seed)],check=True)
+    subprocess.run([str(Path(sys.argv[1]).resolve()),str(seed),*sys.argv[2:]],check=True)
 
 
 if __name__ == '__main__':
