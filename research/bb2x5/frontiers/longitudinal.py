@@ -180,26 +180,49 @@ class Driver:
 
     def advance(self,engine,state,groups,max_bits):
         """Compute a complete batch, leaving the incoming state intact on failure."""
+        return self.run_batch(engine,state,groups,max_bits)[0]
+
+    def run_batch(self,engine,state,groups,max_bits,prefix_length=0,finite_slots=0):
+        """Return the checkpoint and the first requested entry letters at each cut."""
         if type(groups) is not int or groups < 1:
             raise ValueError('batch size must be a positive integer')
+        if not 0 <= prefix_length <= 65536:
+            raise ValueError('entry prefix length must be between 0 and 65536')
+        if not 0 <= finite_slots < 2**64:
+            raise ValueError('invalid finite slot budget')
         protocol=' '.join((self.machine,self.prefix or '.',self.period,self.usual,self.first,state['positive_tape'] or '.'))+'\n'
-        proc=subprocess.run([str(Path(engine).resolve()),str(groups),str(max_bits)],
-                            input=protocol,text=True,capture_output=True)
+        cmd=[str(Path(engine).resolve()),str(groups),str(max_bits)]
+        if prefix_length or finite_slots:
+            cmd.append(str(prefix_length))
+        if finite_slots:
+            cmd.append(str(finite_slots))
+        proc=subprocess.run(cmd,input=protocol,text=True,capture_output=True)
         if proc.returncode:
             detail = proc.stderr.strip() or f'worker failed ({proc.returncode})'
             if detail.startswith('candidate undefined instruction at cell '):
                 raise CandidateUndefined(detail)
             raise RuntimeError(detail)
         tape,*raw=proc.stdout.splitlines()
-        calls=list(map(int,raw))
+        prefixes=[]
+        if prefix_length:
+            calls=[]
+            for row in raw:
+                count, word = row.split()
+                n = int(count)
+                if len(word)!=min(n,prefix_length) or set(word)-{'A','B'}:
+                    raise ValueError('inconsistent entry prefix')
+                calls.append(n)
+                prefixes.append(word)
+        else:
+            calls=list(map(int,raw))
         old=state['groups']; new=old+groups
         before, after = self.excursions(old), self.excursions(new)
         if not calls or calls[0]!=after-before or min(calls)<=0 or len(tape)!=max(len(calls),len(state['positive_tape'])):
             raise ValueError('inconsistent worker result')
         right_cost=2*sum(calls)-calls[0]
         left_cost=self.left(after)[0]-self.left(before)[0]
-        return {**state,'groups':new,'steps':state['steps']+left_cost+right_cost,
-                'positive_tape':tape,'state':self.period[-1]}
+        return ({**state,'groups':new,'steps':state['steps']+left_cost+right_cost,
+                 'positive_tape':tape,'state':self.period[-1]},prefixes)
 
 
 def literal_group(driver, state, work):
@@ -233,7 +256,7 @@ def literal_group(driver, state, work):
             'state': driver.letter(target-1), 'steps': state['steps']+elapsed+driver.left(target)[0]-old_left}
 
 
-def resolve_candidate(driver, engine, state, groups, max_bits, literal_work, progress):
+def resolve_candidate(driver, engine, state, groups, max_bits, literal_work, progress, finite_slots=0):
     """Bisect in chronological order, keeping every completed prefix on disk."""
     pending = []
     count = groups  # the caller has already observed a candidate in this interval
@@ -249,7 +272,7 @@ def resolve_candidate(driver, engine, state, groups, max_bits, literal_work, pro
         while pending:
             count = pending.pop()
             try:
-                state = driver.advance(engine, state, count, max_bits)
+                state, _ = driver.run_batch(engine,state,count,max_bits,finite_slots=finite_slots)
             except CandidateUndefined:
                 break
             progress(state)
@@ -268,6 +291,8 @@ def main():
     p.add_argument('--groups',type=int,required=True,help='additional source periods per batch')
     p.add_argument('--batches',type=int,default=1)
     p.add_argument('--max-bits',type=int,default=2**30,help='maximum materialized bits in any one word')
+    p.add_argument('--trace-prefix',type=int,default=0,help='include this many initial rightward entry letters per cell of each successful native batch')
+    p.add_argument('--finite-slots',type=int,default=0,help='stream a finite suffix up to this many entries if its periodic word exceeds --max-bits')
     p.add_argument('--literal-work', type=int, default=10**7, help='positive raw steps allowed when resolving a candidate')
     p.add_argument('--resume',type=Path)
     p.add_argument('--checkpoint',type=Path,required=True,help='atomically saved after each complete batch')
@@ -278,18 +303,23 @@ def main():
         d=Driver(args.line)
         state=d.load(args.resume) if args.resume else d.blank()
         for _ in range(args.batches):
+            traced = {}
             try:
-                state = d.advance(args.engine, state, args.groups, args.max_bits)
+                prior = state['groups']
+                state, prefixes = d.run_batch(args.engine,state,args.groups,args.max_bits,args.trace_prefix,args.finite_slots)
+                if prefixes:
+                    traced = {'from_groups':prior,'entry_prefixes':prefixes}
             except CandidateUndefined:
                 state = resolve_candidate(d, args.engine, state, args.groups, args.max_bits,
-                                          args.literal_work, lambda current: save(args.checkpoint, current))
+                                          args.literal_work, lambda current: save(args.checkpoint, current),
+                                          args.finite_slots)
                 if state['format'] == HALTED:
                     print(json.dumps({'status':'halt', 'line':d.line, 'steps':state['steps'],
                                       'head':state['head'], 'state':state['state']}))
                     return
             save(args.checkpoint,state)
             print(json.dumps({'status':'unknown','line':d.line,'groups':state['groups'],'steps':state['steps'],
-                              'positive_cells':len(state['positive_tape'])}),flush=True)
+                              'positive_cells':len(state['positive_tape']),**traced}),flush=True)
     except (OSError,ValueError,RuntimeError,KeyError,TypeError) as error:
         p.exit(2,f'Batch stopped: {error}\n')
 

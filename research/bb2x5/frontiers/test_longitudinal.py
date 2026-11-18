@@ -27,6 +27,70 @@ def cells(driver, state):
 
 
 class LongitudinalTests(unittest.TestCase):
+    def test_entry_prefixes_against_physical_crossings(self):
+        for line in DRIVERS:
+            driver=Driver(line)
+            machine=TapeMachine(driver.machine)
+            seed=driver.blank()
+            for groups in (1,17,7):
+                final, prefixes=driver.run_batch(ENGINE,seed,groups,1<<20,23)
+                words={}
+                if machine.steps==0:
+                    words[0]='A'
+                else:
+                    # The current crossing into coordinate zero belongs to this batch.
+                    words[0]=machine.state
+                while machine.steps<final['steps']:
+                    prior=machine.head
+                    self.assertTrue(machine.step())
+                    if machine.head>prior and machine.head>=0 and machine.steps<final['steps']:
+                        words[machine.head]=words.get(machine.head,'')+machine.state
+                self.assertEqual(prefixes,[words[i][:23] for i in range(len(words))])
+                self.assertEqual(final,driver.advance(ENGINE,seed,groups,1<<20))
+                seed=final
+
+    def test_finite_streaming_preserves_counts_and_first_letters(self):
+        for line in DRIVERS:
+            driver=Driver(line)
+            for seed in (driver.blank(),driver.load(ROOT/'frontiers/runs'/f'stream-{line:02}.json')):
+                # Exercise repeated short periods, offset suffixes, and final partial chunks.
+                for width in (16,137):
+                    args=(ENGINE,seed,300017)
+                    reference=driver.run_batch(*args,1<<27,37)
+                    self.assertEqual(driver.run_batch(*args,width,37,10**7),reference)
+        driver=Driver(13)
+        with self.assertRaisesRegex(RuntimeError,'finite slot budget'):
+            driver.run_batch(ENGINE,driver.blank(),10**7,16,0,1)
+
+    def test_line13_fresh_cell_halting_condition(self):
+        driver=Driver(13)
+        for leading in range(19):
+            machine=TapeMachine(driver.machine)
+            for index,entry in enumerate('B'*leading+'A'):
+                machine.head,machine.state=0,entry
+                if entry=='A': before=machine.steps
+                while machine.head>=0 and machine.step():
+                    self.assertLess(machine.steps,100)
+                halt=machine.head>=0
+                self.assertEqual(halt,entry=='A' and leading>0 and leading%2==0)
+                if halt:
+                    self.assertEqual((machine.steps-before,machine.head,machine.state,machine.tape[0]),
+                                     (2,0,'B',3))
+                elif entry=='B':
+                    self.assertEqual(machine.state,'B' if index==0 else 'A')
+        machine=TapeMachine(driver.machine)
+        child_entries=[]
+        for entry in 'ABBAAA':
+            machine.head,machine.state=0,entry
+            while machine.head>=0:
+                prior=machine.head
+                if not machine.step():
+                    break
+                if prior==0 and machine.head==1:
+                    child_entries.append(machine.state)
+        self.assertEqual(''.join(child_entries),'BBA')
+        self.assertEqual((machine.head,machine.state,machine.tape[1]),(1,'B',3))
+
     def test_literal_and_negative_driver(self):
         for line in DRIVERS:
             with self.subTest(line=line):
