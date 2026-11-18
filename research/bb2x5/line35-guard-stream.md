@@ -80,6 +80,8 @@ A description that accepts all true iterates using only their pooled length-five
 
 There is an infinite family behind this obstruction. For every power of two $k\ge2$, an explicit right extension of any normalized word that survives $2k-1$ sweeps can preserve the entire original word and all those guard readings, then force B4 on the following sweep. [Construction and proof](line35-delayed-debt.md)
 
+The [28-cell closure and five-sweep interval theorem](line35-chronological-strip.md) extend the guaranteed left prefix and bound how often a long interval can have nonpositive balance. Repeating a block of ten genuine blank digits at epoch 83 tests the missing restriction on multiplicity.
+
 **Next proof obligation.** Prove that the actual finite transients generated from $222\ldots$ always avoid the seven anchored pairs above, or generate a violated pair from that seed and replay the corresponding blank sweep. An invariant that follows the parental column through its birth and subsequent samples must in particular explain why epoch 181 supplies letter 1 at offset seven despite both donor histories. The independent `35-MIDDLE` campaign has bounded the intervening spatial word, giving the [quarter-tape induction target](#a-sufficient-test-using-the-left-quarter). [Live claims](ROADMAP.md#claim-board)
 
 Run `python3 research/bb2x5/line35_guard_stream.py` from the repository root. It checks the literal guard graph, compares chronological forecasts to independent word sweeps, tests 10,034 finite-history cases, and replays the blank observations and the splices. [Checker](line35_guard_stream.py) · [Verification transcript](line35-guard-stream-verification.txt)
