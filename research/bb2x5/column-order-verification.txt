@@ -1,0 +1,7 @@
+inverse checked on all 5461 words of widths 0..6; 1798 have physical predecessors
+tick 8 0102201000 -> 0012210000 same four single and sixteen ordered-pair counts
+tick 16 0113330100000 -> 1130303001000 same four single and sixteen ordered-pair counts
+tick 24 10033321330000 -> 13303021030003 same four single and sixteen ordered-pair counts
+tick 27 200232212301032 -> 022210303222301 same four single and sixteen ordered-pair counts
+last replacement reaches B3 in 10842 defined instructions at coordinate 39
+total defined instructions along the path with replacements: 159465

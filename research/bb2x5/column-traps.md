@@ -47,3 +47,5 @@ Indeed $X^2(vw)=vY(w)$ for either $v$. If the first bit is one under $Y$, the fo
 The binary form retains bit order and gives short recursions for composing arbitrarily many ticks. A use of these recursions in a blank decision would still have to control physical right-end allocation and the first dangerous arrival there. [Counter and literal checks](column_phases.py) · [Observed output](phase-verification.txt)
 
 The [exact carry accounting](column-reserve.md) gives the sharp all-one suffix threshold for any prescribed low word, an order-sensitive first-arrival test, and the change of a dyadic sum under each type of token.
+
+Four count-preserving replacements give a stronger obstruction for every function of all ordered-pair counts. The same certificate also derives the unique physical predecessor of any checkpoint that has one. [Ordered subsequences and the inverse map](column-order.md)
