@@ -22,7 +22,7 @@ The endpoint column gives the largest exact raw count indexed in this repository
 | 14 | `1RB2RA4LA1RB4RB_1LB2LA3RA---0LB` | 10,000,000,000 | — | [≥ 5 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Moving window](frontiers/runs/window-14.json) |
 | 15 | `1RB3RB1LA2LA3RA_1LB2RA4RB0LA---` | 10,000,000,000 | — | [≥ 2 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Moving window](frontiers/runs/window-15.json) |
 | 16 | `1RB2LA0RB0LB3LB_2LA4RB3RA0RA---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-16.json) |
-| 17 | `1RB2RA3LB---2LB_2LA0LA4RB0RB1LA` | ≈ 5.04000 × 10^58 | [> 10^36](marked-register.md) | — | [Timed register sweeps](frontiers/runs/line17-epochs.json) |
+| 17 | `1RB2RA3LB---2LB_2LA0LA4RB0RB1LA` | ≈ 7.21992 × 10^58 | [> 10^36](marked-register.md) | — | [Timed register sweeps](frontiers/runs/line17-epochs.json) |
 | 18 | `1RB2RA3LB4LA---_2LA0RB1LA2RB0RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-18.json) |
 | 19 | `1RB2RA3LA---2LB_2LA4RA4RB0RB0LA` | 10,000,000,000 | — | [≥ 4 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Moving window](frontiers/runs/window-19.json) |
 | 20 | `1RB2RA3LA4LA2RB_2LA---3LB1RA3RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-20.json) |
@@ -45,6 +45,8 @@ The endpoint column gives the largest exact raw count indexed in this repository
 | 37 | `1RB2LA3LA4RA1LA_0LA3LB3RB1RB---` | 10,000,000,000 | [≥ 39,999,600,001](line37-header.md) | — | [Moving window](frontiers/runs/window-37.json) |
 
 Line 3’s transcript gives its lower bound in full. Line 4’s lower bound uses the millionth return, while its saved raw clock is at return 1,024. Line 5’s timed replay reaches the same A(4,b) and recurrence count as the earlier checkpoint, which contains b consecutive nonzero cells. Each required a write, so its 173,754-bit b gives the displayed bound. The 8,684,421,216 recurrence events have a separate count. Line 17’s bound uses the distance travelled in its verified header epochs. On line 37 the successful sweeps from epochs 1 through 199,999 each traverse the old word, whose width starts at one and grows by at least two per sweep. Summing the minimum widths gives 199,999² raw steps.
+
+The [line 17 first-visit records](frontiers/README.md#line-17-first-arrivals-inside-a-sweep) give exact clocks inside a header sweep. Two input slots determine the first return from coordinate +12. [Decision rule and time bounds](line17-edge-time.md#the-return-depends-on-two-bits)
 
 The community describes line 7 as expected to halt, line 13 as a possible halter, line 17 as likely to halt and line 26 as likely nonhalting. [Community holdout notes](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) · [October research report](https://wiki.bbchallenge.org/wiki/TMBR:_October_2026#Holdouts)
 

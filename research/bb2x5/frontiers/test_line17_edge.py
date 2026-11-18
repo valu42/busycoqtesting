@@ -32,6 +32,22 @@ class EdgeTests(unittest.TestCase):
                     _, minimum = marks_on_word((v, p), bytes(8))
                     self.assertLessEqual(len(minimum), count)
 
+    def test_corrupted_clock_components(self):
+        epochs = 100
+        word = ROOT_PERIOD*epochs
+        rows = []
+        for i in range(len(DIGITS)):
+            rows.append(line17.literal_counts(initial(i), word))
+            _, word = marks_on_word(initial(i), word)
+        line17.check_pulse_counts(epochs, DIGITS, rows)
+        rows[0].calls += 1
+        with self.assertRaises(ValueError):
+            line17.check_pulse_counts(epochs, DIGITS, rows)
+        rows[0].calls -= 1
+        rows[0].interior += 2
+        with self.assertRaises(ValueError):
+            line17.check_pulse_counts(epochs, DIGITS, rows)
+
     def test_rank_at_chunk_and_period_boundaries(self):
         epochs = 130
         for depth in (1, 2, 7, 11):

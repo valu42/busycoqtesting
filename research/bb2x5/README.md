@@ -6,7 +6,7 @@ These notes record results on the November 3, 2026 list of 37 formal holdouts. E
 
 | Formal line | Machine | Result to continue from |
 |---:|---|---|
-| 17 | `1RB2RA3LB---2LB_2LA0LA4RB0RB1LA` | The first visit to coordinate +12 occurs after 5.04 × 10⁵⁸ and before 3.176 × 10³⁴⁴ elementary steps. 6 × 10²⁸ sweeps have reached pair 173. The return depends on whether cut 418 marks slot 9 or 10. [Two-bit decision and bounds](line17-edge-time.md) · [First-visit tapes](frontiers/README.md#line-17-first-arrivals-inside-a-sweep) |
+| 17 | `1RB2RA3LB---2LB_2LA0LA4RB0RB1LA` | The first visit to coordinate +12 occurs after 7.2199 × 10⁵⁸ and before 3.176 × 10³⁴⁴ elementary steps. The first visit to pair 174 has an exact tape and clock. The return depends on whether cut 418 marks slot 9 or 10. [Two-bit decision and bounds](line17-edge-time.md) · [First-visit tapes](frontiers/README.md#line-17-first-arrivals-inside-a-sweep) |
 | 13 | `1RB3RA3RB4LA1LA_1LB2LA1LA---1RB` | A halt requires an odd coordinate to receive an initial positive even number of B entries followed by A. Every odd coordinate below 155 is permanently clear. [Edge test and blank-orbit traces](line13-edge.md) |
 | 26 | `1RB2RB4LA2RA1LA_2LA4RA3LA---3RA` | The blank machine halts exactly at the least fixed point of a monotone integer function. All widths through 173 are excluded. Its blank run exceeds $3.77\times10^{23}$ steps. [Bounds and calendar](column-phases.md) · [Halting permutations](column-traps.md) · [Exact carry accounting](column-reserve.md) |
 | 2 | `1RB---4LB0LA4RA_2LB2LA3RA4LB0RB` | A fixed-cut protocol replaces the growing left half. The negative prefix is exact through 2,400 extensions from blank. |

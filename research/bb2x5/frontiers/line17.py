@@ -151,10 +151,29 @@ def once_counts(slots, marks, state):
     return result
 
 
+def check_pulse_counts(epochs, initial, counts):
+    """Cross-check slot, mark and raw-clock flow between adjacent pairs."""
+    slots, marks, pending = 4*epochs, epochs, 0
+    for i, ((v, flag), c) in enumerate(zip(initial, counts)):
+        final, final_pending = c.state
+        compound, residue = divmod(3*c.slots+final-slots-v, 4)
+        # Every entering mark starts a burst; its trit-zero C clears it.
+        c0 = marks+pending-final_pending
+        # Among C pulses, only trit one emits a mark to the next digit.
+        c1, odd = divmod(c.interior-2*c.slots, 2)
+        ordinary_at_two = c.slots-2*compound+c0
+        if (residue or odd or not 0 <= compound <= slots or c0 < 0 or c1 < 0
+                or c0+c1 > compound or not 0 <= ordinary_at_two <= slots-compound
+                or c.calls != slots+2*compound+c0):
+            raise ValueError(f'inconsistent pulse or clock totals at pair {i}')
+        slots, marks, pending = c.slots, c1, flag
+
+
 def record(epochs, counts, register=DATA, base_steps=2308940, base_head=-844, start_epoch=0):
     initial = digits(register)
     if len(counts)!=len(initial):
         raise ValueError('incomplete digit tally')
+    check_pulse_counts(epochs,initial,counts)
     if counts[-1].slots:
         raise ReachesTerminal('a call reaches the old right boundary; stop before this epoch')
     # Header = 58 + outgoing raw probes. Every ordinary pair contributes its
