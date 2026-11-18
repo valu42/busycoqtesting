@@ -1,5 +1,6 @@
 """Independently replay a line 18 suffix clock with literal, variable-width strips."""
 import argparse
+from bisect import bisect_right
 from functools import lru_cache
 from pathlib import Path
 
@@ -56,12 +57,22 @@ def cycle(word):
         return (phases[i], calls[i] + repeats * (calls[-1] - calls[start]),
                 costs[i] + repeats * (costs[-1] - costs[start]))
 
-    return after
+    def before_exception(passed):
+        """Number of parent calls completed before child request passed+1."""
+        if passed < calls[start]:
+            return bisect_right(calls, passed) - 1
+        # Here the requested child lies in the period, so its call count
+        # is positive. A zero-output period can never produce an exception.
+        repeats, residual = divmod(passed - calls[start], calls[-1] - calls[start])
+        index = bisect_right(calls, residual + calls[start], start, len(phases)) - 1
+        return repeats * (len(phases) - start) + index
+
+    return after, before_exception
 
 
 class StripReplay:
     def __init__(self, suffix):
-        self.tape = list(map(int, suffix))
+        self.tape = bytearray(map(int, suffix))
         self.steps = 0
 
     def literal(self, pos, state, left):
@@ -79,14 +90,14 @@ class StripReplay:
         raise ValueError('literal strip replay work limit')
 
     def width(self, pos):
-        # Group up to three 2- or 3-cell tiles. Only the literal trace of
+        # Group up to five 2- or 3-cell tiles. Only the literal trace of
         # the resulting strip determines its emitted calls and costs.
         size = 0
-        for _ in range(3):
+        for _ in range(5):
             i = pos + size
-            if self.tape[i:i+1] != [3] or self.tape[i+1:i+2] not in ([1], [2]):
+            if i + 1 >= len(self.tape) or self.tape[i] != 3 or self.tape[i+1] not in (1, 2):
                 break
-            size += 3 if self.tape[i+2:i+4] == [3, 3] else 2
+            size += 3 if i + 3 < len(self.tape) and self.tape[i+2] == self.tape[i+3] == 3 else 2
         return size
 
     def batch(self, pos, count):
@@ -95,13 +106,14 @@ class StripReplay:
         while done < count:
             width = self.width(pos)
             edge = pos + width
-            prefix = cycle(tuple(self.tape[pos:edge])) if width else None
-            if prefix is None:
+            transfer = cycle(tuple(self.tape[pos:edge])) if width else None
+            if transfer is None:
                 if self.literal(pos, 'B', pos) == 'A':
                     return done
                 done += 1
                 continue
 
+            prefix, before_exception = transfer
             remaining = count - done
             word, requests, elapsed = prefix(remaining)
             passed = yield self.batch(edge, requests)
@@ -112,13 +124,7 @@ class StripReplay:
 
             # Locate the suspended parent call. Fast-forward the strip to
             # its start, then inspect the actual A return in physical order.
-            low, high = 0, remaining
-            while low + 1 < high:
-                mid = (low + high) // 2
-                if prefix(mid)[1] <= passed:
-                    low = mid
-                else:
-                    high = mid
+            low = before_exception(passed)
             word, earlier, elapsed = prefix(low)
             self.tape[pos:edge] = word
             self.steps += elapsed
@@ -154,13 +160,21 @@ class StripReplay:
         return result
 
 
-def check(path):
+def check(path, first_edge=None):
+    if first_edge is not None and first_edge < 1:
+        raise ValueError('right-edge threshold must be positive')
     verify()
     target = load(path)
     seed = blank_entry()
     machine = StripReplay(seed['suffix'])
     raw = int(seed['steps_hex'], 16)
+    prior_max = None
     for k in range(1, target['record']):
+        if first_edge is not None:
+            edge = k + 2 + len(machine.tape.rstrip(b'\0'))
+            if edge >= first_edge:
+                raise ValueError(f'record {k} already reached right edge +{edge}')
+            prior_max = edge if prior_max is None else max(prior_max, edge)
         if machine.literal(0, 'A', 0) != 'B':
             raise ValueError(f'exceptional A call at record {k}')
         n = 1 << (k - 1)
@@ -171,10 +185,20 @@ def check(path):
     suffix = ''.join(map(str, machine.tape)).rstrip('0')
     if (suffix, hex(raw + machine.steps)) != (target['suffix'], target['steps_hex']):
         raise ValueError('strip replay disagrees with the saved tape or clock')
+    if first_edge is not None:
+        edge = target['record'] + 2 + len(suffix)
+        if edge < first_edge:
+            raise ValueError(f'target right edge +{edge} lies below +{first_edge}')
+        message = f"First record at or past +{first_edge} has right edge +{edge}."
+        if prior_max is not None:
+            message += f' Largest earlier right edge was +{prior_max}.'
+        print(message)
     print(f"Strip replay matched the full suffix and raw clock at record {target['record']}.")
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('checkpoint', type=Path)
-    check(parser.parse_args().checkpoint)
+    parser.add_argument('--first-edge', type=int, help='also verify the first record at this right edge or beyond')
+    args = parser.parse_args()
+    check(args.checkpoint, args.first_edge)

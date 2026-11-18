@@ -21,18 +21,46 @@ A child batch returns the number of leading B replies and the first different re
 
 A changed reply at the outer cut invalidates the header hypothesis. An undefined instruction within the suffix or exhaustion of the work budget also stops the run. Only completed records advance the table clock.
 
-At record **3,136** the rightmost nonzero cell is at **+10,005**. Among the odd left records, this is the first with a nonzero cell at or beyond +10,000. The largest right edge across records 1 through 3,135 was +9,997. At record k the right edge is k+2 plus the length of the suffix trimmed of trailing zeros. The checkpoint has 6,867 suffix cells, head −6,273, and a 3,166-bit raw clock. [Physical record](runs/line18-returns.json)
+At record **9,333**, the rightmost nonzero cell is **+30,001**. Across records
+1 through 9,332 the largest right edge was +29,993. At record k the edge is
+k+2 plus the length of the suffix trimmed of trailing zeros. The saved
+suffix has 20,666 cells, with A at −18,667 and a 9,410-bit raw clock
+(approximately $4.86750\times10^{2832}$). The previous +10,000 milestone
+occurred at record 3,136. [Physical record](runs/line18-returns.json)
+
+### Internal A replies
+
+For the 256 complete epochs starting at records 3,136 through 3,391, the
+two- and three-cell batching algorithm encountered 322 internal A replies in
+238 epochs. All 256 initial A requests and
+$(2^{256}-1)2^{3135}$ outer B requests returned B. These internal counts
+refer to the cuts exposed by this batching algorithm. Each witness below
+starts in B on the leftmost listed cell and returns A one cell to its left.
+The five-tile replay independently observed the same local trajectories.
+[Reply audit](runs/line18-replies.json) · [Interface conditions](line18-interfaces.md)
+
+| Record | Left coordinate | Offset from suffix cut | Before | After | Raw steps |
+|---:|---:|---:|---|---|---:|
+| 3,136 | +3,689 | 550 | `331313132` | `132323231` | 17 |
+| 3,136 | +10,006 | 6,867 | `0` | `2` | 1 |
+| 3,153 | +3,677 | 521 | `332` | `131` | 5 |
+
+Offset 521 was the closest internal A reply to the suffix cut in this sample.
+When a child returns A, the parent resumes on its concrete modified tape.
+These executions completed their outer requests in B.
 
 ## Reproduction
 
-An independent suffix replay groups up to three tiles into a strip. It traces the literal instructions until the full strip state repeats, counts the child requests, and resolves the first exceptional reply in chronological order. This reconstructs the saved suffix and raw clock using the same verified left header. The command below checks any saved odd-record checkpoint.
+An independent suffix replay groups up to five tiles into a strip. It traces the literal instructions until the full strip state repeats, counts the child requests, and resolves the first exceptional reply in chronological order. This reconstructs the saved suffix and raw clock using the same verified left header. The command below checks any saved odd-record checkpoint.
 
 From `research/bb2x5`, replay the endpoint from the initial blank tape.
 
 ```sh
-python3 frontiers/line18.py --record 3136 --checkpoint /tmp/line18.json
+python3 frontiers/line18.py --record 9333 --checkpoint /tmp/line18.json
 cmp /tmp/line18.json frontiers/runs/line18-returns.json
-python3 frontiers/check_line18_strips.py frontiers/runs/line18-returns.json
+python3 frontiers/check_line18_strips.py frontiers/runs/line18-returns.json --first-edge 30000
+python3 frontiers/line18_replies.py --from-record 3136 --epochs 256 --output /tmp/line18-replies.json
+cmp /tmp/line18-replies.json frontiers/runs/line18-replies.json
 c++ -O3 -std=c++17 frontiers/window.cpp -o /tmp/bb25-window
 BB25_WINDOW=/tmp/bb25-window python3 frontiers/test_line18.py
 ```
