@@ -61,6 +61,10 @@ def generate():
         label = 'Guarded boundary streams' if line in GUARDED_DRIVERS else 'Boundary streams'
         consider(line, p['machine'], p['steps'], path, label)
 
+    path = RUNS/'line31-phase.json'
+    p = Driver(31).load(path)
+    consider(31, p['machine'], p['steps'], path, 'Aligned boundary streams')
+
     path = RUNS/'line3-timed.json'
     p = line3_timed.load(path)
     consider(3, p['machine'], int(p['steps_hex'], 16), path, 'Timed mixed-counter probes')
