@@ -42,3 +42,10 @@ PArray.array : Type -> Type
 All six entries above are built-in primitives for machine integers and arrays.
 The separate standalone-checker command used by the linked job is
 coqchk -bytecode-compiler yes -Q verify BusyCoq BusyCoq.Line36Nonhalting
+
+The standalone checker completed successfully on 2026-11-18 at 16:31:55 UTC.
+Its last two lines, with only the runner timestamps removed, were
+  checking cst:BusyCoq.Line36Nonhalting.line36_nonhalting
+Modules were successfully checked
+
+GitHub Actions marked both the complete job and the workflow run successful.
