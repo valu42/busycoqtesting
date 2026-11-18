@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parent
 BASELINE_SHA256 = "a5229ff6abd03dd30c59784c0d4e1465754991d197878c139951860ddcab556a"
 FIELDS = "line machine_id machine status same_as_line evidence_date source simulation_log notes".split()
 STATUSES = (
-    "OPEN", "HALT_PR", "NONHALT_PR", "SIMULATED_HALT",
+    "OPEN", "HALT_PR", "NONHALT_PR", "PARTIAL_PR", "SIMULATED_HALT",
     "EQUIVALENCE_PR", "EQUIVALENT", "HALTS", "NONHALTS",
 )
 
