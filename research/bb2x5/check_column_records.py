@@ -202,6 +202,15 @@ def main():
         assert size>new
         gains.append(size-new-(width-old))
         previous_tick,previous,width = tick,new,size
+    total = residue = 0
+    for n, (_, _, b, j, w) in enumerate(records, 1):
+        total += b
+        residue += (b+1)%4
+        assert 4*(w-j-1) == total-3*n-residue
+        assert 2*total >= 15*n
+        if n==2:
+            assert 2*total == 15*n
+    assert (total,residue)==(715,104)
     minima = [min(sum(gains[i:i+h]) for i in range(len(gains)-h+1)) for h in range(1,7)]
     assert (len(gains),minima)==(61,[-1,-2,-2,-1,-1,1])
     period=[9]

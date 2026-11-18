@@ -19,6 +19,10 @@ Let b be the number of P arriving at j strictly after its record Q and before th
 
 Thus **ΔC=floor((b+1)/4)−1**. Only b=0,1,2 cost a unit. Gaps 3 through 6 break even. Larger gaps buy at least one unit. A gap cannot cost more than one. From the seed C=1, blank nonhalting is equivalent to every prefix sum of these changes being nonnegative. The first negative prefix reaches C=0 exactly and the physical Q reaches the undefined B3. This criterion uses the actual chronological gaps at successively changing cuts.
 
+### A sufficient prefix average
+
+Let Bₙ be the sum of the first n actual record gaps and Rₙ the sum of their residues (b+1) mod 4. Summing the exact changes gives **4(Cₙ−1)=Bₙ−3n−Rₙ**. Since Rₙ≤3n, an all-depth proof that **Bₙ≥6n for every n** would settle blank nonhalting. This allows short losing windows and uses one fixed numerical threshold. The least observed prefix average Bₙ/n is **7.5**, attained at n=2. At n=61 the sum is 715, the residue sum is 104 and the margin is 108. A dip below an average of six would require returning to the residue-sensitive test.
+
 ## The relevant phase is fixed at every depth
 
 In the ordinary calendar at full cut j, write gⱼ for the number of P before its **first** Q, and bⱼ for the number of P between its **first and second** Q. Read across the periodic boundary where necessary. Both are defined even if the physical machine were eventually to halt.
