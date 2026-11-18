@@ -1,0 +1,33 @@
+name: Replay the line 36 nonhalting proof
+on:
+  push:
+    branches: [research/line36-kernel-replay]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    container: debian:trixie-slim
+    timeout-minutes: 300
+    steps:
+      - name: Install Coq 8.20.1 and build tools
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates git coq make g++
+          coqc --version
+      - name: Check out the proof at the published commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ae726a19e3cdee85530e19f439e85b4fd3e6d075
+          persist-credentials: false
+      - name: Compile the concrete nonhalting theorem
+        run: make -C verify -j2 line36
+      - name: Print every dependency on primitives or axioms
+        run: |
+          coqtop -quiet -Q verify BusyCoq <<'END_COQ'
+          From BusyCoq Require Import Line36Nonhalting.
+          Check line36_nonhalting.
+          Print Assumptions line36_nonhalting.
+          END_COQ
+      - name: Replay with the standalone checker
+        run: coqchk -bytecode-compiler yes -Q verify BusyCoq BusyCoq.Line36Nonhalting
