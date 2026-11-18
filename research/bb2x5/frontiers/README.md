@@ -1,6 +1,6 @@
 # Running the BB(2,5) simulations
 
-[The simulation table](../SIMULATION_TABLE.md) tracks the largest counted blank-tape endpoint for each of the 37 encodings. Each file under `runs/` records a complete configuration and its checksum. Simulation can continue from any verified file. Checksums establish file integrity. The experiments use native code and Python.
+[The simulation table](../SIMULATION_TABLE.md) tracks the largest counted blank-tape endpoint for each of the 37 encodings. Each file under `runs/` records a configuration and its checksum. The table links to the corresponding simulator. For the line 17 register the `--epochs` argument replays an absolute target from the checked blank-orbit entry. Checksums establish file integrity. The experiments use native code and Python.
 
 From `research/bb2x5`, build the moving-window simulator with a C++17 compiler and replay or extend any line with Python 3.10 or later.
 
@@ -25,7 +25,7 @@ Lines 8, 10, 11, 12, 13, 21, 22 and 31 have periodic responses from the initiall
 2. For the nonnegative half, each cell translates its incoming requests into the ordered requests it sends to its right neighbor. Cell state includes the symbol and whether the neighbor is still virgin. The first return on a virgin suffix was measured directly. Later returns follow the checked transition-table condition. Input words are stored as a prefix, a repeated word with an arbitrary-precision multiplicity, and a suffix. A whole repeated word can be skipped when the cell returns to the same complete state at the same word boundary.
 3. A successful batch ends at a depth with zero further requests. Induction back from this depth realizes every predicted return on an actual finite tape excursion. With E entries at coordinate zero and S entries summed over all nonnegative cells, those cells execute exactly 2S−E instructions. Every entry exits left once, and each subordinate entry costs one rightward call from its parent. A prospective undefined instruction triggers chronological bisection down to one period. The verifier then executes the actual nonnegative cells instruction by instruction. It sums the proved negative-half costs between excursions, which remain practical even at a huge clock. Only a physically scanned undefined instruction produces a halt checkpoint. A local call cycle, materialization limit or literal-work limit leaves the previous completed checkpoint available for a retry.
 
-For example, after 5q positive excursions and their negative replies on line 13 the negative tape in physical left-to-right order is `(133)^q`. The negative half alone has taken 15q² instructions. At q = 10^16 the run has visited 144 nonnegative cells. The recorded step count includes the exact positive-half time as well.
+For example, after 5q positive excursions and their negative replies on line 13 the negative tape in physical left-to-right order is `(133)^q`. The negative half alone has taken 15q² instructions. At q = 2 × 10^16 the run has visited 150 nonnegative cells. The recorded step count includes the exact positive-half time as well.
 
 The source for line 10 begins `BBA` and then repeats `AB`. Its negative cell after five outside calls has symbol 2, has made four subordinate calls and has spent nine local steps. After seven it returns to 2 with six subordinate calls and thirteen steps. Both source positions and both subordinate positions have the same period phase, so these two-call differences extend indefinitely. The simulator reads the actual transient and tracks the distinguished starting phase at every positive cell. This makes it possible to continue the blank run in the situation described in [the earlier line 10 period calculation](../research-log.md#line-10--exact-periods-lose-the-distinguished-starting-point).
 
@@ -96,3 +96,35 @@ BB25_TIME5=/tmp/bb25-time5 python3 frontiers/test_line5_timed.py
 ```
 
 A running snapshot records both integer parameters, the raw time in `steps_hex`, and the separate recurrence count in `events_hex`. The A/B word gives the complete tape up to translation. A physically halting snapshot records the predecessor of the certified terminal rule and the arrival time on B2. The Python engine saves intermediate rounds and resumes exact timing. The GMP engine replays from blank and saves at the requested return.
+
+## Line 17 and the exact cost of a header sweep
+
+The 424-pair register starts at raw step 2,308,940 with the head at −844. After E successful sweeps its physical word, immediately to the right of the head, is `231302 (12)^E D 2`. The saved checkpoint gives E, D, the head and the exact raw time. Each pair of D consists of a trit and an outgoing flag. The first call to the terminal singleton changes the return behavior. The timed simulator requires every output prefix at that cut to be empty. The register, pulse rules, and first-edge argument come from [the two-cell derivation](../frontier-background.md) and [the integer-register calculation](../marked-register.md).
+
+For a digit i let Rᵢ count raw probes entering its pair, and let Iᵢ count moves between the two cells of that pair. Rᵢ₊₁ counts raw probes it sends to its child. Each completed incoming probe makes one left exit, each outgoing probe makes one right exit, and all remaining instructions move inside the pair. Thus its local cost is Rᵢ + Rᵢ₊₁ + Iᵢ. A simple pulse U always consists of one raw probe. The compound pulse C takes four probes for initial trit 0 and three otherwise. Literal two-cell traces give the following internal move counts for every possible normal return.
+
+| Pulse | Trit 0 | Trit 1 | Trit 2 |
+|---|---:|---:|---:|
+| U | 0 | 0 | 2 |
+| C | 2 | 6 | 4 |
+
+The header uses 58 instructions plus its number of outgoing probes. Each leading `12` relays the four slots `0100`, takes nine raw input probes and makes ten internal moves. Its trit and flag reset at the end of the epoch. Summing the pair and header costs cancels the need to match individual probe positions. For E completed epochs the time from blank is
+
+```
+2,308,940 + 58E + 14E(E−1) + sum(2Rᵢ + Iᵢ over the 424 fixed data pairs).
+```
+
+The 14E(E−1) term sums 28k over pile lengths k = 0,…,E−1. On the fixed pairs, each unmarked run advances a trit modulo three. A mark at trit r starts a burst of r+1 compound pulses. The digit emits its child mark precisely when a compound pulse runs at trit 1. The simulator truncates a burst at the requested slot and retains its pending bit. The pending bit of digit i+1 gives the final outgoing flag of digit i. The last digit keeps its flag since the singleton receives no calls during a successful replay.
+
+The first six digits use their complete finite-state transfers. Subsequent homogeneous digits skip complete input periods at equal trit and pending bit. After the selected cut, the native worker feeds bounded chunks of mark timestamps through the remaining homogeneous digits. Each digit retains its last mark until either another arrives or its precise end time becomes known. This supports finite prefixes that end midway through a burst. Arbitrary-precision Python counters cover the root clock and periodic part. The native worker bounds the size and arithmetic of finite timestamp lists, and the Python tail reads the final 21 nonhomogeneous pairs directly.
+
+From `research/bb2x5`, replay the saved result from the blank-orbit entry or choose another absolute epoch target. The `--cut` parameter trades periodic-word size against the number of marks processed in the finite part.
+
+```sh
+c++ -O3 -std=c++17 frontiers/line17_marks.cpp -o /tmp/bb25-marks17
+python3 frontiers/line17.py --epochs 1000000000000000000000 --cut 64 \
+  --mark-budget 900000000 --engine /tmp/bb25-marks17 --checkpoint /tmp/line17.json
+BB25_WINDOW=/tmp/bb25-window BB25_MARK17=/tmp/bb25-marks17 python3 frontiers/test_line17.py
+```
+
+The tests exhaust every normal pair/pulse control case, replay the complete physical tape through 425 epochs with an elementary interpreter, and meet the independent 100-million-step moving-window checkpoint. The Python-only timestamp implementation and a native replay using a different cut produce byte-identical full configurations and time at 10¹⁸ epochs.

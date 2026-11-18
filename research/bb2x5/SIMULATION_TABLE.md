@@ -9,7 +9,7 @@ The endpoint column gives the largest exact raw count indexed in this repository
 | 1 | `1RB---4LB1RA4RA_2LB2LA3RA4LB0RB` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-01.json) |
 | 2 | `1RB---4LB0LA4RA_2LB2LA3RA4LB0RB` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-02.json) |
 | 3 | `1RB---0RB0LA2RA_2LB2LA3RA4LB0LB` | 100,000,000 | [≥ 10^151](mixed-verification.txt) | — | [Moving window](frontiers/runs/window-03.json) |
-| 4 | `1RB3LA1LA1RA3RA_2LB2RA---4RB1LB` | ≈ 5.35561 × 10^1802 | — | — | [Timed A(6,b) returns](frontiers/runs/line4-return.json) |
+| 4 | `1RB3LA1LA1RA3RA_2LB2RA---4RB1LB` | ≈ 5.35561 × 10^1802 | [> 10^1,719,137](line4-scalar.md) | — | [Timed A(6,b) returns](frontiers/runs/line4-return.json) |
 | 5 | `1RB3LA1LA1RA1RA_2LB2RA---4RB1LB` | ≈ 1.99499 × 10^104610 | [≥ 2^173,753](accelerator-results/arithmetic5-100k.json) | — | [Timed A/B returns](frontiers/runs/line5-timed.json) |
 | 6 | `1RB---3LB4RB0LA_2LB3LA3RB4RA0RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-06.json) |
 | 7 | `1RB---3RA2LA2RB_2LB3LA4LB4RA0RA` | ≈ 5.69453 × 10^3872 | — | [> 10^1,140,000,000](https://wiki.bbchallenge.org/wiki/TMBR:_October_2026#Holdouts) | [Batched suffix calls](frontiers/runs/line7-calls.json) |
@@ -18,11 +18,11 @@ The endpoint column gives the largest exact raw count indexed in this repository
 | 10 | `1RB2RB3LA4LA1LA_2LB3RA---4RA1RB` | ≈ 2.10250 × 10^22 | — | — | [Boundary streams](frontiers/runs/stream-10.json) |
 | 11 | `1RB2LA4LA1RA1LA_2LB3RB4RB---2RA` | ≈ 2.81543 × 10^50 | — | — | [Boundary streams](frontiers/runs/stream-11.json) |
 | 12 | `1RB4RB4RA1LA3LA_1LB2LA3RB2RB---` | ≈ 2.67029 × 10^82 | — | — | [Boundary streams](frontiers/runs/stream-12.json) |
-| 13 | `1RB3RA3RB4LA1LA_1LB2LA1LA---1RB` | ≈ 1.50000 × 10^33 | — | [≈ 10^17.50888](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Boundary streams](frontiers/runs/stream-13.json) |
+| 13 | `1RB3RA3RB4LA1LA_1LB2LA1LA---1RB` | ≈ 6.00000 × 10^33 | — | [≈ 10^17.50888](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Boundary streams](frontiers/runs/stream-13.json) |
 | 14 | `1RB2RA4LA1RB4RB_1LB2LA3RA---0LB` | 10,000,000,000 | — | [≥ 5 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Moving window](frontiers/runs/window-14.json) |
 | 15 | `1RB3RB1LA2LA3RA_1LB2RA4RB0LA---` | 10,000,000,000 | — | [≥ 2 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Moving window](frontiers/runs/window-15.json) |
 | 16 | `1RB2LA0RB0LB3LB_2LA4RB3RA0RA---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-16.json) |
-| 17 | `1RB2RA3LB---2LB_2LA0LA4RB0RB1LA` | 100,000,000 | [> 10^36](marked-register.md) | — | [Moving window](frontiers/runs/window-17.json) |
+| 17 | `1RB2RA3LB---2LB_2LA0LA4RB0RB1LA` | ≈ 1.40000 × 10^43 | [> 10^36](marked-register.md) | — | [Timed register sweeps](frontiers/runs/line17-epochs.json) |
 | 18 | `1RB2RA3LB4LA---_2LA0RB1LA2RB0RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-18.json) |
 | 19 | `1RB2RA3LA---2LB_2LA4RA4RB0RB0LA` | 10,000,000,000 | — | [≥ 4 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Moving window](frontiers/runs/window-19.json) |
 | 20 | `1RB2RA3LA4LA2RB_2LA---3LB1RA3RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-20.json) |
@@ -44,7 +44,7 @@ The endpoint column gives the largest exact raw count indexed in this repository
 | 36 | `1RB2LA1LA4RA2LA_0LA3RB3LB2RB---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-36.json) |
 | 37 | `1RB2LA3LA4RA1LA_0LA3LB3RB1RB---` | 10,000,000,000 | [≥ 39,999,600,001](line37-header.md) | — | [Moving window](frontiers/runs/window-37.json) |
 
-Line 3’s transcript gives its lower bound in full. Line 5’s timed replay reaches the same A(4,b) and recurrence count as the earlier checkpoint, which contains b consecutive nonzero cells. Each required a write, so its 173,754-bit b gives the displayed bound. The 8,684,421,216 recurrence events have a separate count. Line 17’s bound uses the distance travelled in its verified header epochs. On line 37 the successful sweeps from epochs 1 through 199,999 each traverse the old word, whose width starts at one and grows by at least two per sweep. Summing the minimum widths gives 199,999² raw steps.
+Line 3’s transcript gives its lower bound in full. Line 4’s lower bound uses the millionth return, while its saved raw clock is at return 1,024. Line 5’s timed replay reaches the same A(4,b) and recurrence count as the earlier checkpoint, which contains b consecutive nonzero cells. Each required a write, so its 173,754-bit b gives the displayed bound. The 8,684,421,216 recurrence events have a separate count. Line 17’s bound uses the distance travelled in its verified header epochs. On line 37 the successful sweeps from epochs 1 through 199,999 each traverse the old word, whose width starts at one and grows by at least two per sweep. Summing the minimum widths gives 199,999² raw steps.
 
 The community describes line 7 as expected to halt, line 13 as a possible halter, line 17 as likely to halt and line 26 as likely nonhalting. [Community holdout notes](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) · [October research report](https://wiki.bbchallenge.org/wiki/TMBR:_October_2026#Holdouts)
 

@@ -10,6 +10,7 @@ from longitudinal import DRIVERS, Driver
 import survey
 import line7
 import line5_timed
+import line17
 
 RUNS = ROOT / 'frontiers' / 'runs'
 COMMUNITY = 'https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved'
@@ -64,6 +65,10 @@ def generate():
     timed = line5_timed.load(path)
     consider(5, timed['machine'], int(timed['steps_hex'],16), path, 'Timed A/B returns')
 
+    path = RUNS/'line17-epochs.json'
+    register = line17.load(path)
+    consider(17, register['machine'], register['steps'], path, 'Timed register sweeps')
+
     mixed = (ROOT/'mixed-verification.txt').read_text()
     b3 = int(re.search(r'lower bound as an integer: (\d+)', mixed).group(1))
     a5 = json.loads((ROOT/'accelerator-results'/'arithmetic5-100k.json').read_text())['payload']
@@ -73,6 +78,7 @@ def generate():
         raise ValueError('line 5 identity')
     exponent = int(a5['state']['b_hex'], 16).bit_length()-1
     bounds = {3: f'[≥ 10^{len(str(b3))-1}](mixed-verification.txt)',
+              4: '[> 10^1,719,137](line4-scalar.md)',
               5: f'[≥ 2^{exponent:,}](accelerator-results/arithmetic5-100k.json)',
               17: '[> 10^36](marked-register.md)',
               37: '[≥ 39,999,600,001](line37-header.md)'}
@@ -88,7 +94,7 @@ def generate():
         n, path, label = best[line]
         report = f'[{reports[line][0]}]({reports[line][1]})' if line in reports else '—'
         lines.append(f'| {line} | `{machine}` | {display(n)} | {bounds.get(line, "—")} | {report} | [{label}]({path.relative_to(ROOT)}) |')
-    lines += ['', 'Line 3’s transcript gives its lower bound in full. Line 5’s timed replay reaches the same A(4,b) and recurrence count as the earlier checkpoint, which contains b consecutive nonzero cells. Each required a write, so its 173,754-bit b gives the displayed bound. The 8,684,421,216 recurrence events have a separate count. Line 17’s bound uses the distance travelled in its verified header epochs. On line 37 the successful sweeps from epochs 1 through 199,999 each traverse the old word, whose width starts at one and grows by at least two per sweep. Summing the minimum widths gives 199,999² raw steps.', '',
+    lines += ['', 'Line 3’s transcript gives its lower bound in full. Line 4’s lower bound uses the millionth return, while its saved raw clock is at return 1,024. Line 5’s timed replay reaches the same A(4,b) and recurrence count as the earlier checkpoint, which contains b consecutive nonzero cells. Each required a write, so its 173,754-bit b gives the displayed bound. The 8,684,421,216 recurrence events have a separate count. Line 17’s bound uses the distance travelled in its verified header epochs. On line 37 the successful sweeps from epochs 1 through 199,999 each traverse the old word, whose width starts at one and grows by at least two per sweep. Summing the minimum widths gives 199,999² raw steps.', '',
               'The community describes line 7 as expected to halt, line 13 as a possible halter, line 17 as likely to halt and line 26 as likely nonhalting. [Community holdout notes]('+COMMUNITY+') · [October research report]('+OCTOBER+')', '',
               'Run `python3 frontiers/scoreboard.py --check` from this directory to verify the table. [Simulation and continuation commands](frontiers/README.md)']
     return '\n'.join(lines)+'\n'
