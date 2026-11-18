@@ -464,11 +464,11 @@
   {
     "line": 34,
     "machine": "1RB2LA4RA1LA3LA_0LA2RB3RB2LB---",
-    "structure": "Six unmatched closings. Halt requires \u22656 beyond cell 12",
+    "structure": "Six unmatched closings at the guard",
     "outlook": "Unknown",
     "floor": "135,652,670,312 (N)",
     "estimate": "Uncalibrated",
-    "evidence": "Cut 100: eight digits suffice if they capture every debt above one (N)",
+    "evidence": "Eight-cell condition suffices. Five consecutive deficit-increasing groups excluded (N)",
     "report": "cut100.md",
     "baseline_endpoint": "10,000,000,000",
     "baseline_bound": "\u2014",

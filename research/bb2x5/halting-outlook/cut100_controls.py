@@ -1,5 +1,5 @@
 """Check phase slips on blank and perturbations of the cut-100 proof hypotheses."""
-from collections import deque
+from collections import Counter, deque
 import json
 
 from cut100 import CUT, HERE, SEED, WIDTHS, allowance, first_digits
@@ -80,8 +80,80 @@ def changed_tape():
     print('All 14 altered sweeps agree with literal tape and raw clock through:', elapsed)
 
 
+def changed_spatial_window():
+    """Check a permutation outside the first 113 cells and its next physical sweep."""
+    word = list(first_digits(SEED['width']))
+    tape = TapeMachine(TERNARY, word, head=SEED['head'], left=SEED['head']+1)
+
+    def advance(machine, before):
+        timed, _, _, _ = analyze(encode(before), ())
+        assert timed is not None
+        after, shift, ticks = timed
+        head, clock = machine.head, machine.steps
+        actual = direct_epoch(machine, (1, 2, 3))
+        assert actual is not None and encode(actual) == after
+        assert (machine.head, machine.state, machine.steps) == (head-shift, 'A', clock+ticks)
+        assert machine.tape == {machine.head+1+i: digit for i, digit in enumerate(actual)}
+        return actual
+
+    def measure(current, epoch):
+        phase = epoch % 52
+        _, guard, (inner, debt), _ = analyze(encode(current), (WIDTHS[phase], CUT))
+        assert inner <= allowance(phase)
+        balance = 0
+        heights = [0]
+        for digit in current[CUT:]:
+            balance += (digit == 3) - (digit == 1)
+            heights.append(balance)
+        h8 = max(heights[:9])
+        assert debt == max(heights)
+        first = next((i for i, excess in enumerate(heights) if excess > max(1, h8)), None)
+        return guard, debt, h8, first
+
+    for _ in range(1300, 1339):
+        word = advance(tape, word)
+    precursor = word[:111] + [1, 1, 2, 3, 1] + word[111:]
+    test = TapeMachine(TERNARY, precursor, head=tape.head, left=tape.head+1)
+    history = []
+    costs = []
+    for epoch in range(1339, 1342):
+        history.append(measure(precursor, epoch))
+        before = test.steps
+        precursor = advance(test, precursor)
+        costs.append(test.steps - before)
+    assert [entry[:3] for entry in history] == [(0, 0, 0), (1, 1, 1), (1, 2, 0)]
+    assert [entry[3] is None for entry in history] == [True, True, False]
+    print('Inserted 11231 after 111 cells at epoch 1339: (guard, debt, h8, first violating length)',
+          history, 'literal sweep costs', costs)
+
+    word = advance(tape, word)
+    clock = SEED['raw_steps'] + tape.steps
+    altered = word.copy()
+    assert altered[112:117] == [1, 1, 2, 3, 1]
+    altered[113:117] = [2, 1, 1, 3]
+    assert word[:113] == altered[:113] and Counter(word) == Counter(altered)
+    assert word[117:] == altered[117:]
+
+    for name, current in [('blank', word), ('edited', altered)]:
+        machine = TapeMachine(TERNARY, current, head=tape.head, left=tape.head+1)
+        old = measure(current, 1340)
+        following = advance(machine, current)
+        new = measure(following, 1341)
+        ticks = machine.steps
+        assert old[0] == new[0] == 1 and old[3] is None
+        if name == 'blank':
+            assert new[3] is None
+        else:
+            assert old[1] == 1 and new == (1, 2, 0, 16)
+            assert ''.join(map(str, following[100:116])) == '2131232132321323'
+        advance(machine, following)
+        print(f'{name} from epoch 1340, clock {clock}: (guard, debt, h8, first violating length) '
+              f'{old} -> {new}; literal sweep costs {ticks}, {machine.steps-ticks}.')
+
+
 if __name__ == '__main__':
     if not __debug__:
         raise SystemExit('enable assertions')
     compare_blank()
     changed_tape()
+    changed_spatial_window()

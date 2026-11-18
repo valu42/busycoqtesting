@@ -1,0 +1,10 @@
+Actual older factors retained in forward matching controls: 12237
+Depth 1: 33 candidate interiors
+Depth 2: 2 candidate interiors
+  111121111311112111131111211 complete zero gaps [5, 5]
+  111131111211113111121111311 complete zero gaps [5, 5]
+Depth 3: 0 candidate interiors
+Eight periodic ordinary sweeps: 21111323111 -> 23121111311 -> 11323112132 -> 11111312111 -> 11112132311 -> 11121111131 -> 11123111213 -> 31211311211 -> 13232131232
+Copies 0: ninth input (guard, cut-100 debt) (1, 0), ending state A, head -1309, elapsed defined instructions 51255
+Copies 881: ninth input (guard, cut-100 debt) (5, 61), ending state A, head -1313, elapsed defined instructions 10293619
+Copies 882: ninth input (guard, cut-100 debt) (6, 62), ending state B, head -1310, elapsed defined instructions 10293928

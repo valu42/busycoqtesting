@@ -4,3 +4,6 @@ Blank epochs 11823, 12395: common prefix 201, cut-100 inputs 1, 1.
 Blank epochs 12566, 13138: common prefix 89, cut-100 inputs 1, 2.
 Changed 101st digit 1 to 2 at epoch 1300. Pulses (epoch, first three digits, elapsed raw steps): [(1309, '232', 51247), (1313, '323', 74041)]
 All 14 altered sweeps agree with literal tape and raw clock through: 79832
+Inserted 11231 after 111 cells at epoch 1339: (guard, debt, h8, first violating length) [(0, 0, 0, None), (1, 1, 1, None), (1, 2, 0, 16)] literal sweep costs [5829, 5797, 5905]
+blank from epoch 1340, clock 3891404: (guard, debt, h8, first violating length) (1, 1, 1, None) -> (1, 1, 0, None); literal sweep costs 5781, 5861.
+edited from epoch 1340, clock 3891404: (guard, debt, h8, first violating length) (1, 1, 1, None) -> (1, 2, 0, 16); literal sweep costs 5779, 5889.
