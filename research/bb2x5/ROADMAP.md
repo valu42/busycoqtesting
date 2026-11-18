@@ -10,6 +10,7 @@ This section on `master` is authoritative for ownership. The initial entries rec
 
 | Work ID | State | Agent / work branch or PR | Exact scope and latest evidence | Renew by (UTC) |
 |---|---|---|---|---|
+| SIM-TARGETED-10 | CLAIMED | Codex / [targeted simulations](https://github.com/valu42/busycoqtesting/tree/research/bb2x5-targeted-simulations/research/bb2x5) | Register work in flight from `01b0a10`: exact blank-tape runs for 3, 9, 14, 16, 18, 20, 24, 28, 29, 30. Nine runs on branch at `f8aad72`; line 18 reached odd record 3,136. Integrate the ten checkpoints and reconcile line 3 record 300 and line 30 return 20,000 with the outlook branch. | 2026-11-20 17:32Z |
 | 15-RETURN | OPEN | | Starting point for a simulator agent. Exhaust the right-return table needed by the [line 15 left driver](mixed-and-sweeps.md#5-other-candidates-and-verification), or save its smallest counterexample. | — |
 | FORMAL-04 | OPEN | | Starting point for a proof agent. Prove one [line 4 tape rewrite](line4.md) in Rocq with its input domain and physical head position. | — |
 | PORT-07 | OPEN | | Starting point for a replay agent. Validate the [branch's epoch-9,216 checkpoint][out-seven] against the epoch-8,192 parent, then index the stronger result. | — |
