@@ -5,7 +5,7 @@ import subprocess
 from pathlib import Path
 import unittest
 
-from line17 import (DATA, HEAD, M17, ROOT, literal_counts, once_counts,
+from line17 import (DATA, HEAD, M17, ROOT, ReachesTerminal, advance, load, literal_counts, once_counts,
                     mark_image, periodic_counts, replay, word_counts)
 from prior_frontier import T17, header17, mark_step
 from prior_sweeps import TapeMachine
@@ -121,6 +121,40 @@ class Line17Tests(unittest.TestCase):
         for n in (187,10000,10**7,10**11):
             reference=replay(n,27)
             self.assertEqual(reference,replay(n,34,engine=WORKER))
+
+    def test_arbitrary_epoch_resume(self):
+        for start, more in ((0,0),(1,1),(7,100),(9999,12345),(10**9,7000000),(10**11,10**7)):
+            saved = replay(start,27)
+            expected = replay(start+more,27)
+            self.assertEqual(advance(saved,more,WORKER),expected)
+            if more < 20000:
+                self.assertEqual(advance(saved,more,None),expected)
+        deep = load(ROOT/'frontiers/runs/line17-epochs.json')
+        direct = advance(deep, 1000001, WORKER)
+        split = advance(advance(deep, 317801, WORKER), 682200, WORKER)
+        self.assertEqual(direct, split)
+        self.assertEqual(advance(deep,0,WORKER),deep)
+        # A rightward carry through 424 trits of value two reaches the
+        # singleton on the very first U, providing a concrete stop control.
+        altered = {**deep,'register':'22'*424}
+        with self.assertRaises(ReachesTerminal):
+            advance(altered,1,WORKER)
+        with self.assertRaises(ValueError):
+            advance(deep,-1,WORKER)
+
+    def test_native_period_lifting_and_budget(self):
+        # Check every count and child word for several copy phases, including
+        # a marked burst split between the last complete copy and the suffix.
+        for period, marks in ((6,[5]), (7,[1,4]), (28,[3,7,14,23])):
+            source = ' '.join(map(str,marks))
+            for n in (0, 11, 97, 1007):
+                cmd = [str(WORKER),str(n),str(period),'8','100000','3']
+                reference = subprocess.check_output(cmd+['0'],input=source,text=True)
+                for levels in (1,3,6):
+                    self.assertEqual(reference,subprocess.check_output(cmd+[str(levels)],input=source,text=True))
+        result=subprocess.run([str(WORKER),'1000','7','3','2'],input='1 4',text=True,capture_output=True)
+        self.assertNotEqual(result.returncode,0)
+        self.assertIn('budget',result.stderr)
 
     def test_independent_window_at_100_million(self):
         ref=survey.load(ROOT/'frontiers/runs/window-17.json',17,M17)

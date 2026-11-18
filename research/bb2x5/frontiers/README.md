@@ -1,6 +1,6 @@
 # Running the BB(2,5) simulations
 
-[The simulation table](../SIMULATION_TABLE.md) tracks the largest counted blank-tape endpoint for each of the 37 encodings. Each file under `runs/` records a configuration and its checksum. The table links to the corresponding simulator. For the line 17 register the `--epochs` argument replays an absolute target from the checked blank-orbit entry. Checksums establish file integrity. The experiments use native code and Python.
+[The simulation table](../SIMULATION_TABLE.md) tracks the largest counted blank-tape endpoint for each of the 37 encodings. Each file under `runs/` records a configuration and its checksum. The table links to the corresponding simulator. For the line 17 register `--epochs` is an absolute target, including when resuming a saved file. Checksums establish file integrity. The experiments use native code and Python.
 
 From `research/bb2x5`, build the moving-window simulator with a C++17 compiler and replay or extend any line with Python 3.10 or later.
 
@@ -116,15 +116,19 @@ The header uses 58 instructions plus its number of outgoing probes. Each leading
 
 The 14E(E−1) term sums 28k over pile lengths k = 0,…,E−1. On the fixed pairs, each unmarked run advances a trit modulo three. A mark at trit r starts a burst of r+1 compound pulses. The digit emits its child mark precisely when a compound pulse runs at trit 1. The simulator truncates a burst at the requested slot and retains its pending bit. The pending bit of digit i+1 gives the final outgoing flag of digit i. The last digit keeps its flag since the singleton receives no calls during a successful replay.
 
-The first six digits use their complete finite-state transfers. Subsequent homogeneous digits skip complete input periods at equal trit and pending bit. After the selected cut, the native worker feeds bounded chunks of mark timestamps through the remaining homogeneous digits. Each digit retains its last mark until either another arrives or its precise end time becomes known. This supports finite prefixes that end midway through a burst. Arbitrary-precision Python counters cover the root clock and periodic part. The native worker bounds the size and arithmetic of finite timestamp lists, and the Python tail reads the final 21 nonhomogeneous pairs directly.
+The first six digits use their complete finite-state transfers. Subsequent homogeneous digits skip complete input periods at equal trit and pending bit. After the selected cut, the native worker feeds bounded chunks of mark timestamps through the remaining homogeneous digits. Each digit retains its last mark until either another arrives or its precise end time becomes known. This supports finite prefixes that end midway through a burst. Arbitrary-precision Python counters cover the root clock and early periodic part. Once projected counts fit bounded native arithmetic, the C++ worker can also lift the periods. It evaluates repeated copies at equal trit and pending state and treats a final incomplete burst separately. The Python tail reads the final 21 nonhomogeneous pairs directly.
 
-From `research/bb2x5`, replay the saved result from the blank-orbit entry or choose another absolute epoch target. The `--cut` parameter trades periodic-word size against the number of marks processed in the finite part.
+From `research/bb2x5`, replay the saved result from the blank-orbit entry or resume its complete physical register. The `--cut` parameter trades periodic-word size against the number of marks processed in the finite part.
 
 ```sh
 c++ -O3 -std=c++17 frontiers/line17_marks.cpp -o /tmp/bb25-marks17
-python3 frontiers/line17.py --epochs 1000000000000000000000 --cut 64 \
-  --mark-budget 900000000 --engine /tmp/bb25-marks17 --checkpoint /tmp/line17.json
+python3 frontiers/line17.py --epochs 100000000000000000000000 --cut 70 \
+  --mark-budget 5000000000 --engine /tmp/bb25-marks17 --checkpoint /tmp/line17.json
+python3 frontiers/line17.py --resume frontiers/runs/line17-epochs.json \
+  --epochs 100000000000000001000000 --engine /tmp/bb25-marks17 --checkpoint /tmp/line17-next.json
 BB25_WINDOW=/tmp/bb25-window BB25_MARK17=/tmp/bb25-marks17 python3 frontiers/test_line17.py
 ```
 
-The tests exhaust every normal pair/pulse control case, replay the complete physical tape through 425 epochs with an elementary interpreter, and meet the independent 100-million-step moving-window checkpoint. The Python-only timestamp implementation and a native replay using a different cut produce byte-identical full configurations and time at 10¹⁸ epochs.
+On resume, the stored physical flags initialize the pending bits at each cut. Early digits translate the actual stream in its saved phase until the remaining finite input fits in memory. The worker then processes that prefix with arbitrary initial trits and flags. A request that exceeds the period budget can be retried with fewer additional epochs. For a starting pile of K pairs and D further epochs, the pile contributes 14D(2K+D−1) raw moves.
+
+The tests exhaust every normal pair/pulse control case, replay the complete physical tape through 425 epochs with an elementary interpreter, and meet the independent 100-million-step moving-window checkpoint. The Python-only timestamp implementation and a native replay using a different cut produce byte-identical full configurations and time at 10¹⁸ epochs. Independent cut choices also agree at 10²¹ and 10²² epochs. At the published endpoint, advancing another 1,000,001 epochs as one batch or in two parts gives the same full checkpoint.

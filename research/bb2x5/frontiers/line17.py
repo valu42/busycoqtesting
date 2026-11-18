@@ -151,23 +151,79 @@ def once_counts(slots, marks, state):
     return result
 
 
-def record(epochs, counts, register=DATA, base_steps=2308940, base_head=-844):
+def record(epochs, counts, register=DATA, base_steps=2308940, base_head=-844, start_epoch=0):
     initial = digits(register)
-    if len(counts)!=len(initial) or counts[-1].slots:
-        raise ValueError('a call reaches the old right boundary; stop before this epoch')
+    if len(counts)!=len(initial):
+        raise ValueError('incomplete digit tally')
+    if counts[-1].slots:
+        raise ReachesTerminal('a call reaches the old right boundary; stop before this epoch')
     # Header = 58 + outgoing raw probes. Every ordinary pair contributes its
     # two boundary crossing counts plus its internal moves. At the pile, a
     # reset 12 emits four slots, uses 9 input probes and makes 10 internal
     # moves. The innermost pair emits the data-dependent number of calls.
-    raw = base_steps + 58*epochs + 14*epochs*(epochs-1)
+    new_epoch = start_epoch+epochs
+    raw = base_steps + 58*epochs + 14*epochs*(2*start_epoch+epochs-1)
     raw += sum(2*c.calls+c.interior for c in counts)
     pairs = []
     for i,c in enumerate(counts):
         outgoing = counts[i+1].state[1] if i+1<len(counts) else initial[i][1]
         pairs.append('102'[c.state[0]]+str(2+outgoing))
     return {'format':'bb2x5-line17-epochs-v1','machine':M17,'line':17,
-            'epochs':epochs,'steps':raw,'head':base_head-2*epochs,'state':'A',
-            'header':HEAD,'pile_pairs':epochs,'register':''.join(pairs),'terminal':'2'}
+            'epochs':new_epoch,'steps':raw,'head':base_head-2*epochs,'state':'A',
+            'header':HEAD,'pile_pairs':new_epoch,'register':''.join(pairs),'terminal':'2'}
+
+
+class ReachesTerminal(ValueError):
+    """The cut at the singleton receives a raw probe during the requested interval."""
+
+
+def advance(seed, epochs, engine):
+    """Resume at a physical sweep boundary. Finite arbitrary digit phases are preserved."""
+    if not __debug__:
+        raise ValueError('the register verifier requires Python assertions')
+    if holdouts()[16] != M17 or epochs < 0:
+        raise ValueError('invalid machine or additional epoch count')
+    if epochs == 0:
+        return dict(seed)
+    data = digits(seed['register'])
+    counts = []
+    n = 4*epochs
+    head,period = b'',bytes((0,1,0,0))
+    # A valid continuation is a suffix of the same periodic source at each early
+    # cut. Keep its exact phase until a bounded finite prefix can be materialized.
+    cut = 0
+    while cut < len(data) and (n > 4000000 or cut < 6):
+        state = data[cut][0], data[cut-1][1] if cut else 0
+        counts.append(word_counts(state,head,period,n))
+        n = counts[-1].slots
+        head,period = periodic_marks(state,head,period)
+        cut += 1
+        if len(head)+len(period)>4000000:
+            raise ValueError('resume period budget; choose fewer additional epochs')
+    if cut < len(data):
+        first = head[:n]
+        cycles,tail = divmod(n-len(first),len(period))
+        word = first + period*cycles + period[:tail]
+        if engine:
+            # Input is binary, one 0/1 byte per slot. The suffix can begin with
+            # an unfinished burst and digits in any of their physical states.
+            proc = subprocess.run([str(Path(engine).resolve()),'resume',seed['register'],str(cut),str(n)],
+                                  input=word,capture_output=True)
+            if proc.returncode: raise ValueError(proc.stderr.decode().strip() or 'resume worker failed')
+            for row in proc.stdout.splitlines():
+                v,p,count,calls,inner=map(int,row.split())
+                if v not in range(3) or p not in (0,1) or not 0<=count<=2*n or not n<=calls<=4*n or not 0<=inner<=6*n:
+                    raise ValueError('invalid native resumed counts')
+                counts.append(Counts((v,p),count,calls,inner));n=count
+            if len(counts)!=len(data): raise ValueError('incomplete native resumed counts')
+        else:
+            marks = array('Q',(i for i,bit in enumerate(word,1) if bit))
+            for i in range(cut,len(data)):
+                state=data[i][0],data[i-1][1]
+                c=once_counts(n,marks,state)
+                marks=array('Q',(t for t in mark_image(marks,n,state) if t<=c.slots))
+                counts.append(c);n=c.slots
+    return record(epochs,counts,seed['register'],seed['steps'],seed['head'],seed['epochs'])
 
 
 def replay(epochs, periodic_cut=45, mark_budget=10000000, engine=None):
@@ -192,7 +248,13 @@ def replay(epochs, periodic_cut=45, mark_budget=10000000, engine=None):
         raise ValueError('expected pure periodic input at digit six')
     marks = array('Q',(i for i,bit in enumerate(period,1) if bit))
     length = len(period)
+    # Python handles arbitrary-precision early slot counts. The optional native
+    # period lifter takes over once the projected counts fit its integer type.
+    handoff = periodic_cut
     for i in range(6,periodic_cut):
+        if engine and n <= (2**64-1)//16:
+            handoff = i
+            break
         if data[i] != (1,0) or data[i-1][1]:
             raise ValueError('expected homogeneous register')
         c = periodic_counts(length,marks,n)
@@ -200,16 +262,14 @@ def replay(epochs, periodic_cut=45, mark_budget=10000000, engine=None):
         n = c.slots
         if len(marks)*3 > mark_budget: raise ValueError('period mark budget')
         length,marks,_ = lift_period(length,marks,0)
-    whole, tail = divmod(n,length)
-    size = whole*len(marks) + bisect_right(marks,tail)
-    if size > mark_budget: raise ValueError('finite mark budget')
     tail_start = periodic_cut
     if engine:
         # Each digit up to 402 has v=1 and receives a clear initial flag.
-        width = 403-periodic_cut
-        if any(data[i] != (1,0) or data[i-1][1] for i in range(periodic_cut,403)):
+        width = 403-handoff
+        if any(data[i] != (1,0) or data[i-1][1] for i in range(handoff,403)):
             raise ValueError('invalid native homogeneous band')
-        proc = subprocess.run([str(Path(engine).resolve()),str(n),str(length),str(width),str(mark_budget)],
+        proc = subprocess.run([str(Path(engine).resolve()),str(n),str(length),str(width),str(mark_budget),
+                               '65536',str(periodic_cut-handoff)],
                               input=' '.join(map(str,marks)),text=True,capture_output=True)
         if proc.returncode: raise ValueError(proc.stderr.strip() or 'native mark worker failed')
         rows = proc.stdout.splitlines()
@@ -224,9 +284,12 @@ def replay(epochs, periodic_cut=45, mark_budget=10000000, engine=None):
         finite = array('Q',map(int,rows[-1].split()[1:]))
         tail_start = 403
     else:
+        whole, tail = divmod(n,length)
+        size = whole*len(marks) + bisect_right(marks,tail)
+        if size > mark_budget:
+            raise ValueError('finite mark budget')
         finite = array('Q',(base+t for base in range(0,n,length) for t in marks if base+t<=n))
     for i in range(tail_start,len(data)):
-
         state = data[i][0], data[i-1][1]
         c = once_counts(n,finite,state)
         counts.append(c)
@@ -259,10 +322,15 @@ def main():
     parser.add_argument('--cut',type=int,default=45)
     parser.add_argument('--mark-budget',type=int,default=10000000)
     parser.add_argument('--engine',type=Path,help='optional native finite mark worker')
+    parser.add_argument('--resume',type=Path,help='start at this saved boundary; --epochs remains an absolute target')
     parser.add_argument('--checkpoint',type=Path,required=True)
     args=parser.parse_args()
     try:
-        result=replay(args.epochs,args.cut,args.mark_budget,args.engine)
+        if args.resume:
+            seed = load(args.resume)
+            result = advance(seed,args.epochs-seed['epochs'],args.engine)
+        else:
+            result = replay(args.epochs,args.cut,args.mark_budget,args.engine)
         save(args.checkpoint,result)
         print(f"Line 17 at {result['epochs']} epochs and {result['steps']} raw steps.")
     except (ValueError, OverflowError, OSError) as exc:
