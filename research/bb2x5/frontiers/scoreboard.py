@@ -77,11 +77,15 @@ def generate():
             != (timed['rounds'], timed['a_hex'], timed['b_hex'], timed['events_hex'])):
         raise ValueError('line 5 identity')
     exponent = int(a5['state']['b_hex'], 16).bit_length()-1
+    phases = (ROOT/'phase-verification.txt').read_text()
+    tick = int(re.search(r'^p\(84\) = 173, first Q at tick (\d+)$', phases, re.M).group(1))
+    epochs26 = 8*(tick-1)
+    bound26 = 5+2*epochs26*(epochs26+1)
     bounds = {3: f'[≥ 10^{len(str(b3))-1}](mixed-verification.txt)',
               4: '[> 10^1,719,137](line4-scalar.md)',
               5: f'[≥ 2^{exponent:,}](accelerator-results/arithmetic5-100k.json)',
               17: '[> 10^36](marked-register.md)',
-              26: '[≥ 2,752,226,320,489,425,129,509](column-phases.md#a-time-stamped-bound-from-the-actual-blank-tape)',
+              26: f'[≥ {bound26:,}](column-phases.md#extension-through-cut-84)',
               36: '[Unbounded (proved nonhalting)](line36-nonhalting.md)',
               37: '[≥ 39,999,600,001](line37-header.md)'}
     reports = {7: ('> 10^1,140,000,000', OCTOBER), 13: ('≈ 10^17.50888', COMMUNITY),

@@ -22,7 +22,7 @@ The endpoint column gives the largest exact raw count indexed in this repository
 | 14 | `1RB2RA4LA1RB4RB_1LB2LA3RA---0LB` | 10,000,000,000 | — | [≥ 5 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Moving window](frontiers/runs/window-14.json) |
 | 15 | `1RB3RB1LA2LA3RA_1LB2RA4RB0LA---` | 10,000,000,000 | — | [≥ 2 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Moving window](frontiers/runs/window-15.json) |
 | 16 | `1RB2LA0RB0LB3LB_2LA4RB3RA0RA---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-16.json) |
-| 17 | `1RB2RA3LB---2LB_2LA0LA4RB0RB1LA` | ≈ 5.60000 × 10^57 | [> 10^36](marked-register.md) | — | [Timed register sweeps](frontiers/runs/line17-epochs.json) |
+| 17 | `1RB2RA3LB---2LB_2LA0LA4RB0RB1LA` | ≈ 2.24000 × 10^58 | [> 10^36](marked-register.md) | — | [Timed register sweeps](frontiers/runs/line17-epochs.json) |
 | 18 | `1RB2RA3LB4LA---_2LA0RB1LA2RB0RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-18.json) |
 | 19 | `1RB2RA3LA---2LB_2LA4RA4RB0RB0LA` | 10,000,000,000 | — | [≥ 4 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Moving window](frontiers/runs/window-19.json) |
 | 20 | `1RB2RA3LA4LA2RB_2LA---3LB1RA3RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-20.json) |
@@ -31,7 +31,7 @@ The endpoint column gives the largest exact raw count indexed in this repository
 | 23 | `1RB3LA3LB0RB0LA_2LA4RB1LB1RA---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-23.json) |
 | 24 | `1RB3LA1LA2RB2RA_2LA4RA3LB1RA---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-24.json) |
 | 25 | `1RB2LB3LA0RA1LB_2LA4RA3RB3LA---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-25.json) |
-| 26 | `1RB2RB4LA2RA1LA_2LA4RA3LA---3RA` | 100,000,000 | [≥ 2,752,226,320,489,425,129,509](column-phases.md#a-time-stamped-bound-from-the-actual-blank-tape) | — | [Moving window](frontiers/runs/window-26.json) |
+| 26 | `1RB2RB4LA2RA1LA_2LA4RA3LA---3RA` | 100,000,000 | [≥ 377,503,392,604,154,203,337,765](column-phases.md#extension-through-cut-84) | — | [Moving window](frontiers/runs/window-26.json) |
 | 27 | `1RB3LB---4LA1RB_2LA4LA4LB3RB1RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-27.json) |
 | 28 | `1RB3LB4LA0LB---_2LA0LA1RB0RA3RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-28.json) |
 | 29 | `1RB3RB---3LA1RA_2LA3RA4LB0LB1LB` | 4,124,222,829 | — | — | [Block simulator](accelerator-results/line-29-level-12.json) |

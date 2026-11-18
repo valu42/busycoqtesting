@@ -81,7 +81,7 @@ The long run of identical pairs preserves more information than its trits alone.
 
 If a digit starts with `(v,p)=(1,0)` and its first k marks occur at slots 5, 11, …, 6k−1, then its first k output marks occur at exactly those slots. The first four plain inputs supply one generic output. At the mark the trit is 2, so the marked burst on three inputs emits `00`, then `01`, then `0`, ending at trit 2. The next three plain inputs supply one generic slot and restore trit 2 before the next mark. All subsequent groups therefore use six inputs and produce six outputs. Even the last asserted mark has the two following unmarked input slots available by separation. This proves the finite-prefix preservation for arbitrary k and arbitrary valid continuation.
 
-Digits 53 through 402 all start with `(v,p)=(1,0)`. Thus at *every* cut from 53 to 403 inclusive the first four marks occur in the same four positions. This fixes a part of the input on the far side of 350 digits exactly. It does not determine the later marks needed at the exceptional return.
+Digits 53 through 402 all start with `(v,p)=(1,0)`. Thus at *every* cut from 53 to 403 inclusive the first four marks occur in the same four positions. The [edge-time calculation](line17-edge-time.md) extends the forced prefix through slot 26. The genuine first extension takes at most 81,526,541 slots at cut 403.
 
 ### The first return from coordinate 12
 

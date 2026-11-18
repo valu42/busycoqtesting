@@ -220,22 +220,21 @@ struct PairTransfer {
     }
 };
 
-// Replay just the first productive chunk one input at a time. Each emitted
-// bit is consumed in order, so the first success identifies its source slot.
-bool reaches_cut(std::vector<unsigned>& states,size_t digit,unsigned bit) {
-    if (digit==states.size()) return true;
+// Replay the selected chunk, counting both outputs when one input emits two.
+bool reaches_cut(std::vector<unsigned>& states,size_t digit,unsigned bit,Count& remaining) {
+    if (digit==states.size()) return --remaining==0;
     const auto p=Transfer::compile(states[digit],bit,1);
     if (p.state==invalid) throw std::runtime_error("overlapping marked bursts");
     states[digit]=p.state;
     for (unsigned j=0;j<p.width;++j)
-        if (reaches_cut(states,digit+1,(p.bits>>j)&1)) return true;
+        if (reaches_cut(states,digit+1,(p.bits>>j)&1,remaining)) return true;
     return false;
 }
 
 // If the periodic word gets too large, stream the input through every remaining
 // digit. Partial words carry their ending digit states into the next chunk.
 std::optional<Count> finish(const Transfer& tr, const Stream& in, const std::vector<unsigned>& initial,
-                            unsigned cut, Count work_limit,bool locate) {
+                            unsigned cut, Count work_limit,const mpz_class& rank) {
     if (in.size()>work_limit)
         throw std::runtime_error("finite slot budget at pair "+std::to_string(cut)+
                                  ": need "+in.size().get_str()+", budget "+std::to_string(work_limit));
@@ -243,6 +242,7 @@ std::optional<Count> finish(const Transfer& tr, const Stream& in, const std::vec
     for (unsigned j=cut;j<initial.size();++j) digits.push_back({initial[j]});
     PairTransfer pairs;
     Word a,b;
+    bool locate=rank>0;
     std::vector<unsigned> before(locate ? digits.size() : 0);
     Count consumed=0;
     std::optional<Count> match;
@@ -255,6 +255,7 @@ std::optional<Count> finish(const Transfer& tr, const Stream& in, const std::vec
             }
             if (locate)
                 for (size_t j=0;j<digits.size();++j) before[j]=digits[j].state;
+            Count previous=digits.back().n;
             size_t i=0;
             for (; i+1<digits.size() && a.size; i+=2) {
                 check_room(digits[i]);
@@ -268,9 +269,11 @@ std::optional<Count> finish(const Transfer& tr, const Stream& in, const std::vec
                 tr.apply(a,digit.state,b,digit.calls,digit.interior,Count(1)<<28);
                 digit.n+=b.size; b.clear();
             }
-            if (locate && digits.back().n) {
+            if (locate && digits.back().n>=rank) {
+                mpz_class ordinal=rank-previous;
+                Count remaining=ordinal.get_ui();
                 for (Count j=offset;j<end;++j) {
-                    if (reaches_cut(before,0,w.read(j,1))) {
+                    if (reaches_cut(before,0,w.read(j,1),remaining)) {
                         match=consumed+j-offset+1;
                         return true;
                     }
@@ -301,8 +304,14 @@ std::optional<Count> finish(const Transfer& tr, const Stream& in, const std::vec
 }
 
 int main(int argc,char** argv) try {
-    bool locate=argc==5 && std::string(argv[4])=="first";
-    if (argc!=4 && !locate) throw std::runtime_error("usage: line17-packed ADDITIONAL_EPOCHS WORD_BITS FINITE_SLOTS [first] < register");
+    mpz_class rank=0; // Zero selects the ordinary complete-sweep clock.
+    if (argc==5 && std::string(argv[4])=="first") rank=1;
+    else if (argc==6 && std::string(argv[4])=="select") {
+        rank=mpz_class(argv[5],10);
+        if (rank<=0) throw std::runtime_error("the output rank must be positive");
+    } else if (argc!=4)
+        throw std::runtime_error("usage: line17-packed ADDITIONAL_EPOCHS WORD_BITS FINITE_SLOTS [first | select RANK] < register");
+    bool locate=rank>0;
     mpz_class epochs(argv[1],10);
     Count limit=number(argv[2]), work_limit=number(argv[3]);
     std::string register_word;
@@ -322,7 +331,7 @@ int main(int argc,char** argv) try {
     Stream input;
     input.period.push(2,4,limit); input.copies=epochs;
     auto finish_stream=[&](unsigned cut) {
-        auto hit=finish(tr,input,initial,cut,work_limit,locate);
+        auto hit=finish(tr,input,initial,cut,work_limit,rank);
         if (locate) {
             input=Stream{};
             if (hit) std::cout<<origins->root(tr,mpz_class(*hit))<<'\n';
@@ -347,9 +356,9 @@ int main(int argc,char** argv) try {
         }
     }
     if (locate) {
-        bool hit=input.size()>0;
+        bool hit=input.size()>=rank;
         input=Stream{};
-        if (hit) std::cout<<origins->root(tr,1)<<'\n';
+        if (hit) std::cout<<origins->root(tr,rank)<<'\n';
         else std::cout<<"none\n";
     }
     return 0;
