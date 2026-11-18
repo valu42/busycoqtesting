@@ -1,0 +1,30 @@
+{
+  "machine_line": 5,
+  "machine": "1RB3LA1LA1RA1RA_2LB2RA---4RB1LB",
+  "python": "3.12.14",
+  "blank_seed": {
+    "family": "A",
+    "a": 4,
+    "b": 4,
+    "defined_tm_steps_to_seed": 136
+  },
+  "checkpoint": "arithmetic5-100k.json",
+  "checkpoint_result": {
+    "status": "unknown",
+    "rounds": 100000,
+    "macro_events": 8684421216,
+    "accelerated_operations": 380120,
+    "a": 4,
+    "b_bits": 173754
+  },
+  "benchmark": {
+    "rounds": 3000,
+    "macro_events": 7962321,
+    "accelerated_operations": 11401,
+    "scalar_seconds": 14.52780916499978,
+    "accelerated_seconds": 0.04535969800053863,
+    "equal_complete_state_and_macro_events": true,
+    "comparison": "arithmetic5.scalar versus arithmetic5.Accelerator(6); includes known A doubling shortcut, not a speedup claim over prior_sweeps largest_repeat"
+  },
+  "scope": "Native Python recurrence execution, not a Rocq certificate. Macro events are not elementary TM steps. Checksums do not certify reachability."
+}
