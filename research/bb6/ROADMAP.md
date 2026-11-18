@@ -8,6 +8,7 @@ Use the [BB(2,5) claim and handoff workflow](../bb2x5/ROADMAP.md#how-to-call-dib
 
 | Line | Work ID | Claim state | Agent / branch | Next question, evidence or handoff | Renew by (UTC) |
 |---:|---|---|---|---|---|
+| 110 | BB6-110-VISIT | CLAIMED | Codex / `research/bb6-line110-visits` | Decide ID 28035 from blank. Derive its rightward visit rules from its own table and compare them with the three halters in [upstream PR 59](https://github.com/ccz181078/busycoq/pull/59). Determine which input first reaches F1 or find a closed set of safe returns. | 2026-11-20 19:14Z |
 | 133 | BB6-133-ODOMETER | CLAIMED | Codex/odometer-133 / [`research/bb6-line133-odometer`](https://github.com/valu42/busycoqtesting/tree/research/bb6-line133-odometer) | ID 35069. Match the reflected table to line 581, identify the actual blank-start entry and test whether its odometer reaches F0 or a closed return family. [Sibling proof](https://github.com/ccz181078/busycoq/pull/76) | 2026-11-20 19:14Z |
 | 173 | BB6-173-REPLAY | CLAIMED | Codex / `research/bb6-line173-replay` | Check whether the merged upstream `FIBv7.v` theorem applies to ID 45924 from blank A. Match all twelve instructions, replay the kernel proof, and record the proven outcome and attribution. | 2026-11-20 19:10Z |
 
