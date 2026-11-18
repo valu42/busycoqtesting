@@ -7,7 +7,6 @@
 #include <map>
 #include <stdexcept>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -160,14 +159,29 @@ struct Node {
     int a, b, loss;
 };
 
-std::vector<Node> cap_graph(Word seed, int width) {
-    std::unordered_map<Word,int> ids;
+// The table stores one integer index per slot. The 50-cell graph peaks
+// below 500 MB when built with 32-bit int and 64-bit Word.
+std::vector<Node> cap_graph(Word seed, int width, int expected) {
+    std::size_t capacity = 1;
+    while (capacity * 7 < static_cast<std::size_t>(expected) * 10) capacity *= 2;
+    std::vector<int> index(capacity, -1);
     std::vector<Word> words;
     std::vector<Node> graph;
+    words.reserve(expected);
+    graph.reserve(expected);
     auto insert = [&](Word word) {
-        auto result = ids.emplace(word, static_cast<int>(words.size()));
-        if (result.second) words.push_back(word);
-        return result.first->second;
+        Word key = word;
+        key = (key ^ (key >> 30)) * 0xbf58476d1ce4e5b9ULL;
+        key = (key ^ (key >> 27)) * 0x94d049bb133111ebULL;
+        std::size_t slot = (key ^ (key >> 31)) & (capacity - 1);
+        while (index[slot] != -1) {
+            if (words[index[slot]] == word) return index[slot];
+            slot = (slot + 1) & (capacity - 1);
+        }
+        require(words.size() < static_cast<std::size_t>(expected), "larger cap graph than expected");
+        index[slot] = static_cast<int>(words.size());
+        words.push_back(word);
+        return index[slot];
     };
     insert(seed);
     for (std::size_t i = 0; i < words.size(); ++i) {
@@ -176,6 +190,7 @@ std::vector<Node> cap_graph(Word seed, int width) {
         int a = insert(step.first), b = insert(step.second);
         graph.push_back({a, b, step.loss});
     }
+    require(static_cast<int>(graph.size()) == expected, "smaller cap graph than expected");
     return graph;
 }
 
@@ -184,8 +199,7 @@ struct Certificate {
 };
 
 void check(Certificate c) {
-    auto graph = cap_graph(blank_seed(c.width), c.width);
-    require(static_cast<int>(graph.size()) == c.vertices, "unexpected graph size");
+    auto graph = cap_graph(blank_seed(c.width), c.width, c.vertices);
     std::vector<int> value(graph.size()), next(graph.size()), earlier;
     int worst = 0, seed_worst = 0;
     for (int t = 0; t <= c.start+c.period; ++t) {
@@ -213,14 +227,45 @@ void check(Certificate c) {
               << seed_worst << ")/" << c.period << " from epoch 32\n";
 }
 
+void check_one_third() {
+    const int width = 50;
+    auto graph = cap_graph(blank_seed(width), width, 16939461);
+    std::vector<int> value(graph.size()), next(graph.size());
+    // Include the empty path at every vertex. At convergence the resulting
+    // potential is a lower bound for every finite path's 3*cost - length.
+    for (int t = 1; t <= 800; ++t) {
+        bool changed = false;
+        for (std::size_t i = 0; i < graph.size(); ++i) {
+            Node n = graph[i];
+            next[i] = std::min(0, 3*n.loss - 1 + std::min(value[n.a], value[n.b]));
+            changed |= next[i] != value[i];
+        }
+        if (!changed) {
+            require(value[0] == 0 && *std::min_element(value.begin(), value.end()) == -21,
+                    "unexpected potential range");
+            for (std::size_t i = 0; i < graph.size(); ++i) {
+                Node n = graph[i];
+                require(value[i] <= 3*n.loss-1 + value[n.a] &&
+                        value[i] <= 3*n.loss-1 + value[n.b], "invalid potential");
+            }
+            std::cout << "width 50, " << graph.size() << " states, integer potential fixed "
+                      << "at update " << t << ", range [-21,0], seed 0\n";
+            return;
+        }
+        value.swap(next);
+    }
+    throw std::runtime_error("potential did not converge");
+}
+
 int main(int argc, char** argv) {
     check_small_cuts();
     const int width = argc == 2 ? std::stoi(argv[1]) : 36;
+    if (width == 50) { check_one_third(); return 0; }
     for (auto c : std::vector<Certificate>{
             {20,264,15,64,10}, {30,10437,162,8,2}, {36,95863,255,152,46},
             {40,419099,284,152,48}, {44,1833538,594,80,26},
             {46,3840923,353,104,34}}) {
         if (c.width == width) { check(c); return 0; }
     }
-    throw std::runtime_error("choose width 20, 30, 36, 40, 44 or 46");
+    throw std::runtime_error("choose width 20, 30, 36, 40, 44, 46 or 50");
 }

@@ -1,6 +1,6 @@
 # BB(2,5) simulation table
 
-Each row starts on the all-zero, two-way-infinite tape. One raw step is one defined Turing-machine instruction. All 37 runs are still open.
+Each row starts on the all-zero, two-way-infinite tape. One raw step is one defined Turing-machine instruction. Line 36 runs forever by the [blank-tape proof](line36-nonhalting.md).
 
 The endpoint column gives the largest exact raw count indexed in this repository. Follow its source for the full integer and configuration or run record. ≈ marks a shortened display. Bounds, externally reported simulations and exact repository counts have separate columns.
 

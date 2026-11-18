@@ -1,6 +1,6 @@
 # A bound on parity changes entering from the right of line 36
 
-For `1RB2LA1LA4RA2LA_0LA3RB3LB2RB---`, the right end of the blank orbit contributes at most **$(9t+42)/52$** net monomers over the first $t$ successful sweeps starting at epoch 32. Over any later interval of $t$ successful sweeps the bound is **$(9t+361)/52$**. Monomers measure phase changes between runs of data on alternate tape cells. The bound includes the boundary’s additions and the cancellations forced within the final 46 cells. The blank-tape halting decision still depends on the rest of the word.
+For `1RB2LA1LA4RA2LA_0LA3RB3LB2RB---`, the right end of the blank orbit contributes at most **$(t+3)/6$** net monomers over the first $t$ successful sweeps starting at epoch 32. Over any later interval of $t$ successful sweeps the bound is **$(t+45)/6$**. Monomers measure phase changes between runs of data on alternate tape cells. The bound includes the boundary’s additions and the cancellations forced within the final 50 cells. The [blank-tape nonhalting proof](line36-nonhalting.md) combines this estimate with a bound at the left cut.
 
 Use the epoch convention of [the matching sweep](prior_sweeps.py). The word consists of openings 1 and closings 2, with A scanning the blank immediately before it. Epoch zero is empty. A prefix with six more closings than openings halts in that sweep.
 
@@ -50,19 +50,25 @@ $$
 
 This adaptive cut advances by one old data cell on even debt and zero cells on odd debt. It charges the entire closing debt against the right-hand budget.
 
-The natural cut advances by one **old data cell**. Its image may be shorter by one cell. If the application chooses a wider next suffix $XZ$, include its exact additional charge $M(XZ)-M(Z)$. Suppose the first 2 of $Z$ is at position $j$. The charge is the count of odd spacings in the list −1, the positions of all 2s in $X$, $|X|+j$, minus $(j+1)\bmod 2$. In particular prepending any number of ones costs at most one monomer. For a smaller next suffix the exact difference can again be used. Merely deleting a prefix costs at most one because at most one dimer crosses its cut. When the cut varies across $t$ sweeps, the bound in the first paragraph is added to the initial $M$ and the sum of these left-cut charges. Every chosen old suffix must contain the cap. This last term is still required to control the center of the blank orbit.
+The natural cut advances by one **old data cell**. Its image may be shorter by one cell. If the application chooses a wider next suffix $XZ$, include its exact additional charge $M(XZ)-M(Z)$. Suppose the first 2 of $Z$ is at position $j$. The charge is the count of odd spacings in the list −1, the positions of all 2s in $X$, $|X|+j$, minus $(j+1)\bmod 2$. In particular prepending any number of ones costs at most one monomer. For a smaller next suffix the exact difference can again be used. Merely deleting a prefix costs at most one because at most one dimer crosses its cut. When the cut varies across $t$ sweeps, the bound in the first paragraph is added to the initial $M$ and the sum of these left-cut charges. Every chosen old suffix must contain the cap. The [switch calculation](line36-halo-ledger.md) bounds the resulting change at the cut used in the blank proof.
 
 ## An exact finite certificate for cancellations
 
 In a $k$-bit cap number the bits from the right and let bit 1 mean digit 2. Compute the survivor word $S$ and the outgoing matching debt from this cap. If its last tape digit is 1, append shifts the cap image by one. The new integer is $((S\mathbin{\mathrm{xor}}(S\!\gg\!1))\!\ll\!1)\mathbin{\mathrm{or}}1$, truncated to $k$ bits. If its last digit is 2, use $S\mathbin{\mathrm{xor}}(S\!\gg\!1)$. The single bit just beyond the cap could then change only the leftmost output bit, and only when the outgoing debt is zero. Keep both possibilities in that case. These edges include every actual successful sweep, allowing arbitrary exterior behavior. All vertices reached from the actual epoch-32 cap contain a 2.
 
-Let $V_t(v)$ be the minimum total cap cost over all $t$-edge paths from $v$. Start with all entries zero and iterate $V_{t+1}(v)=c(v)+\min_{v\to w}V_t(w)$. For $k=46$ the graph has 3,840,923 vertices. The verifier compares all their integer entries and finds $V_{457}=V_{353}+34$. The recurrence preserves uniform constant shifts, hence $V_{t+104}=V_t+34$ for every $t\ge353$. Through the finite initial range the loss is at least $(34t-670)/104$ from every reachable cap, and $(34t-32)/104$ from the epoch-32 seed. These bounds now hold for all $t$. Adding at most $(t+1)/2$ right-boundary monomers and subtracting these losses gives the two bounds above.
+Let $V_t(v)$ be the minimum total cap cost over all $t$-edge paths from $v$. Start with all entries zero and iterate $V_{t+1}(v)=c(v)+\min_{v\to w}V_t(w)$. For $k=46$ the graph has 3,840,923 vertices. The verifier compares all their integer entries and finds $V_{457}=V_{353}+34$. The recurrence preserves uniform constant shifts, hence $V_{t+104}=V_t+34$ for every $t\ge353$. Through the finite initial range the loss is at least $(34t-670)/104$ from every reachable cap, and $(34t-32)/104$ from the epoch-32 seed. These bounds now hold for all $t$. Adding at most $(t+1)/2$ right-boundary monomers and subtracting these losses gives the corresponding width-46 bounds, $(9t+361)/52$ and $(9t+42)/52$.
+
+At width 50 there are 16,939,461 vertices. Give a cap edge from $v$ to $w$ integer weight $3c(v)-1$. Its total along a path of length $t$ is three times the number of forced cancellations minus $t$. To construct a potential $H$, start every entry at zero and repeatedly replace each entry by
+$$
+\min\left(0,\;3c(v)-1+\min_{v\to w}H(w)\right).
+$$
+The 508th synchronous update leaves all entries unchanged. The checker then verifies on every edge that $H(v)\le3c(v)-1+H(w)$. Its maximum is zero, its minimum is $-21$, and the epoch-32 seed has value zero. Along every path the edge inequalities telescope to give $3\sum c-t\ge H(v_{\rm start})-H(v_{\rm end})\ge -21$. Paths starting at the seed have $3\sum c\ge t$. At most $\lceil t/2\rceil$ boundary units are added because the final digit alternates. Subtract the forced cancellations to obtain the width-50 bounds in the opening paragraph.
 
 From the directory containing the machine list, run
 
 ```sh
 c++ -O2 -std=c++17 line36_right_cap.cpp -o /tmp/line36_right_cap
-/tmp/line36_right_cap 46
+/tmp/line36_right_cap 50
 ```
 
 The checker also compares cap images and the one-sweep inequality with an independent matching stack and tiling algorithm on every binary word of lengths 2 through 11. It obtains the seed by direct tape execution through 32 epochs and reads the exact machine from line 36 of the dataset. For a quicker independent calculation, width 30 uses 10,437 vertices and certifies at least $t/4$ cancellations from the seed. The default width 36 uses 95,863 vertices and yields an asymptotic net right-boundary contribution of at most $15/76$ per sweep.

@@ -1,6 +1,6 @@
 # A six-phase tiling for line 36
 
-The sweep model for `1RB2LA1LA4RA2LA_0LA3RB3LB2RB---` has a family of right-infinite words that repeat after six symbolic updates. Any sequence of 64 distinct finite tiles can follow a 26-cell prefix. On the actual blank orbit, the first 3,319 of 6,336 cells at epoch 2,005 agree with this family. Whether the blank orbit halts remains open.
+The sweep model for `1RB2LA1LA4RA2LA_0LA3RB3LB2RB---` has a family of right-infinite words that repeat after six symbolic updates. Any sequence of 64 distinct finite tiles can follow a 26-cell prefix. On the actual blank orbit, the first 3,319 of 6,336 cells at epoch 2,005 agree with this family. The [blank-tape nonhalting proof](line36-nonhalting.md) uses these tiles.
 
 ## The six phases
 
@@ -44,4 +44,4 @@ These checkpoints use phase 0 at epochs congruent to 1 modulo 6. The matched cel
 | 1,201 | 11 | 1,979 | 3,790 |
 | 2,005 | 19 | 3,319 | 6,336 |
 
-Run `python3 line36_tiles.py` from this directory. The finite identity gives an exact boundary after a known tile sequence. The remaining proof obligation is to control the actual finite suffix. Unmatched closings from that suffix can pair with openings in a preceding tile and change its output. The checkpoints give no guarantee that the matched prefix keeps growing or that the guard always survives.
+Run `python3 line36_tiles.py` from this directory. The finite identity gives an exact boundary after a known tile sequence. The [two finite certificates](line36-nonhalting.md) bound the effect of the actual finite suffix.
