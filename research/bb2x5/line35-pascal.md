@@ -55,6 +55,8 @@ For attainment take the $k+R$ samples $1^R0^k$. Every available $k$-difference w
 
 ## What a halt would require in the middle of the tape
 
+The later [unconditional eight-cell calculation](line35-guard-stream.md#proof-at-the-eight-cell-cut) covers every incoming debt and gives the exact threshold at the current sweep. The bounded calculation below is its sufficient-condition precursor.
+
 Let $d_8$ be the debt sent from the cells strictly after the first eight. **If $d_8\le4$ at every epoch from epoch 5 onward, line 35 never halts.** The finite calculation has 71 prefixes and only 355 cases.
 
 For a given eight-cell prefix $P$, the incoming exterior debt determines which of its openings survive and how much debt reaches the left guard. The resulting header depends only on the guard debt $H$. For $H=0,1,2,3,4,5$ the six physical headers respectively are `2`, `1`, `3`, `1323`, `1313`, `1331`. The virtual left survivor bit for the first old digit is respectively $1,1,0,0,0,0$. In the reset cases the wall and rewritten old guard supply the extra header digits. Applying $D$ to $P$ now determines the entire next eight-cell prefix. Thus one may realize exterior debt $d$ with the canonical completion $P C^d OC$ in matching roles, regardless of the rest of the actual tape.
