@@ -93,6 +93,13 @@ def generate():
         raise ValueError('line 4 return differs from its timed recurrence')
     consider(4, p['machine'], steps, path, 'Timed A(6,b) returns')
 
+    path = RUNS/'line26-record96.json'
+    doc = json.loads(path.read_text())
+    p = doc['payload']
+    if checksum(p) != doc['sha256']:
+        raise ValueError('line 26 checkpoint checksum mismatch')
+    consider(26, p['machine'], p['steps'], path, 'Timed pair records')
+
     path = RUNS/'line5-timed.json'
     timed = line5_timed.load(path)
     consider(5, timed['machine'], int(timed['steps_hex'],16), path, 'Timed A/B returns')

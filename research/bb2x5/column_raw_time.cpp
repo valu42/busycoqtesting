@@ -79,12 +79,14 @@ std::vector<Block> weighted_blocks(unsigned maximum) {
 }
 
 void endpoint(unsigned cut, Integer ticks) {
-    if (cut<3 || cut>18 || !ticks || ticks>54306954019ULL)
+    if (cut<3 || cut>18 || !ticks || ticks>973376362892ULL)
         throw std::invalid_argument("use cut 3..18 and a tick in the certified blank interval");
     auto low = low_prefix(cut,ticks);
     Integer period;
     const auto gaps = calendar(cut,period);
-    const unsigned blocks = (192-cut+3)/4;
+    // The record-96 certificate bounds the tape width by 204 on the new interval.
+    const unsigned accounting_width = ticks<=54306954019ULL ? 192 : 212;
+    const unsigned blocks = (accounting_width-cut+3)/4;
     const unsigned length = cut+4*blocks;
     unsigned largest = low.tail;
     for (auto gap : gaps) largest = std::max(largest,gap.p);
