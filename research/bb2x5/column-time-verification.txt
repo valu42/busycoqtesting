@@ -1,0 +1,23 @@
+$ python3 column_raw_time.py ./column-raw-time
+64 consecutive literal blank checkpoints: 808709 instructions at tick 64
+individual physical trips through tick 12345 agree at 29264811755 instructions
+independent calendar cuts 15 16
+tick 1268654660 width 142 head -10149237281
+weighted ordinary visits over the final physical width: 147164129748
+defined instructions from blank: 309021052528568487769
+paired digits, low first: 0000323330330300022023020330323032020032233200023030223202333223302320021000000000000000000000000000000000000000000000000000000000000000000000
+full packed u and e: 0x9dfef58fcb76b62df0 0x1099c45064156202dd0
+last Q stopped at full pair 72 pre-Q common clock 60746186827087137/281474976710656
+leading gap at the stopping cut: 284
+
+$ python3 column_raw_time.py ./column-raw-time --extended
+64 consecutive literal blank checkpoints: 808709 instructions at tick 64
+individual physical trips through tick 12345 agree at 29264811755 instructions
+independent calendar cuts 17 18
+tick 54306954019 width 173 head -434455632153
+weighted ordinary visits over the final physical width: 6299606942741
+defined instructions from blank: 566255088944246173560939
+paired digits, low first: 00033323003203233202300023232322003323033032303320033333232020002023233333202002003021000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+full packed u and e: 0x1497fd17f9ddbcff1becf8 0x2403e802f8d5ac2a11a4b8
+last Q stopped at full pair 85 pre-Q common clock 9538346798088818315/36028797018963968
+leading gap at the stopping cut: 346
