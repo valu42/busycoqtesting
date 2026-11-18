@@ -19,6 +19,7 @@ import line7
 import line5_timed
 import line17
 import line17_visit
+import line35_isolated_sweep
 
 RUNS = ROOT / 'frontiers' / 'runs'
 COMMUNITY = 'https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved'
@@ -86,6 +87,17 @@ def generate():
     path = RUNS/'line24-sweeps.json'
     p = line24.Line24().load(path)
     consider(24, p['machine'], p['steps'], path, 'Guarded AB sweeps')
+
+    path = RUNS/'line35-isolated.json'
+    state, origin, digest = line35_isolated_sweep.read_checkpoint(path)
+    if origin['kind'] != 'checkpoint':
+        raise ValueError('line 35 requires a blank-orbit checkpoint')
+    path = RUNS/'line35-isolated-forecast.json'
+    record = json.loads(path.read_text())
+    state, replay = line35_isolated_sweep.run(state, record['attempted_sweeps'], origin, digest)
+    if json.loads(json.dumps(replay)) != record or 'halt' in replay:
+        raise ValueError('line 35 continuation disagrees with its saved tape')
+    consider(35, replay['machine'], state.steps, path, 'Timed cut-28 sweeps')
 
     for line in hydra.MACHINES:
         path = RUNS/f'hydra-{line}.json'

@@ -15,19 +15,25 @@ def encode(word):
     return opens, closes
 
 
+def matching_layers(opens, closes):
+    """Yield the remaining openings and occupied cuts at each matching depth."""
+    while closes:
+        # One slot stores a closing until an opening consumes it. The incoming
+        # carry of closes + ~opens is the occupancy just before each cell.
+        occupied = ((closes + ~opens) ^ closes ^ ~opens)
+        closes &= occupied     # A closing that met a full slot goes deeper.
+        opens &= ~occupied     # An opening that met an empty slot goes deeper.
+        yield opens, occupied
+
+
 def match(width, opens, closes, cut):
     """Return survivor bits, total unmatched closings, and suffix debt at cut."""
     end_bit = 1 << width
     cut_bit = 1 << (width - cut)
     guard = cut_debt = 0
-    while closes:
-        # One slot stores a closing until an opening consumes it. The incoming
-        # carry of closes + ~opens is the occupancy just before each cell.
-        occupied = ((closes + ~opens) ^ closes ^ ~opens)
+    for opens, occupied in matching_layers(opens, closes):
         guard += bool(occupied & end_bit)
         cut_debt += bool(occupied & cut_bit)
-        closes &= occupied     # A closing that met a full slot goes deeper.
-        opens &= ~occupied     # An opening that met an empty slot goes deeper.
     return opens, guard, cut_debt
 
 
