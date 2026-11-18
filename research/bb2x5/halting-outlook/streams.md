@@ -51,6 +51,8 @@ estimates of eventual halting. None is a formally verified halting decision.
 
 ## Line 13
 
+The [paired input and period proof](pair13.md) rules out a permanently closed frontier. The [new clock bound](timing13.md) gives a deadline for the current test.
+
 **New established result: the exact fresh-cell trigger.**
 
 Call an entry into a cell from its left A or B according to the control state.

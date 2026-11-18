@@ -1,0 +1,14 @@
+Four literal blank configurations and raw clocks agree.
+154 halts 3 7 AAA
+154 opens 2 6 AB
+153 halts 6 15 AAAAAA
+153 opens 1 4 B
+152 halts 8 48 AABBAABB
+152 opens 1 5 B
+150 halts 12 108 AAAABBBBBBBB
+150 opens 1 9 B
+147 halts 28 291 AAAABBBBBBAABAABAABBAABBBBBB
+147 opens 1 14 B
+144 halts 44 592 AAAAAABBBBBBAABAABBBAABBBBBBBAABBBBBBBAABAAB
+144 opens 1 17 B
+Future batch from 100000000000000000 through 100250000000000000 groups reaches only coordinates 0–127 on the right; raw time 150750937500000003621311950068749360.

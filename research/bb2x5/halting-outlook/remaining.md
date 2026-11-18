@@ -1,6 +1,6 @@
 # Remaining machines: baseline and additional exact tests
 
-The earlier report started at `2ab106f706cb1715d494c7f67464e9222092058f`. The 2026-11-18 update at `01b0a10592b3bf843c0fd5bb1718625c65632830` incorporates the line 26 floor, the line 35 guard reduction, the Rocq proof for line 36 and the owner's report for line 37. This report covers lines 1, 2, 6, 8–12, 14–16, 18–20, 23–28 and 31–37. [Original table](../SIMULATION_TABLE.md) · [Hydra-family report](hydra.md)
+The earlier report started at `2ab106f706cb1715d494c7f67464e9222092058f`. The 2026-11-18 update at `01b0a10592b3bf843c0fd5bb1718625c65632830` incorporates the line 26 floor, the line 35 guard reduction, the Rocq proof for line 36 and an initial attribution for line 37 subsequently corrected by the owner. This report covers lines 1, 2, 6, 8–12, 14–16, 18–20, 23–28 and 31–37. [Original table](../SIMULATION_TABLE.md) · [Hydra-family report](hydra.md)
 
 The current repository establishes nonhalting on line 36. For many other machines the only exact halt test is still the literal missing instruction. The [outlook table](../HALTING_OUTLOOK.md) gives current classifications and separates survival bounds from stopping predictions.
 
@@ -176,6 +176,8 @@ Only B4 is undefined. The current page links Peacemaker II analysis; the linked 
 
 ### Line 18
 
+The current timed header and suffix rules take the blank run through odd record 3,136 and ≈ 9.24569 × 10^952 raw instructions. A return in A can occur within a child. Whether it can propagate all the way to the header remains open. [Actual orbit and controls](https://github.com/valu42/busycoqtesting/blob/04b52137b2de1784986655cb9014c486de4dfd22/research/bb2x5/frontiers/line18.md)
+
 `1RB2RA3LB4LA---_2LA0RB1LA2RB0RA`
 
 **Inherited floor:** 10^10. **Outlook:** Unknown. **Estimated halting time:** none justified.
@@ -244,7 +246,7 @@ Only B4 is undefined. A community analysis link exists, but no accessible substa
 
 `1RB2RB4LA2RA1LA_2LA4RA3LA---3RA`
 
-**Inherited floor:** 377,503,392,604,154,203,337,765 defined steps. **Outlook:** Unknown. **Estimated halting time:** none justified.
+**Inherited floor.** At 566,255,088,944,246,173,560,939 defined steps, A scans −434,455,632,153 with 173 ordinary pairs. The exact tape yields p(85)=173. Two calendar cutoffs agreed on the clock and tape. [Physical checkpoint and literal tests](https://github.com/valu42/busycoqtesting/blob/53418ee1a3cb8cd316cdcb4e2617a4cd3f29de43/research/bb2x5/column-time.md) **Outlook:** Unknown. **Estimated halting time:** none justified.
 
 At cut 84 the first dangerous carry follows 173 wraps. The plateau lemma extends the fixed-point exclusion through width 173. Permuting a genuine checkpoint can produce a halting artificial word, which constrains proofs based on digit counts alone. [Current bound](../column-phases.md#extension-through-cut-84) · [Halting permutations](../column-traps.md)
 
@@ -330,6 +332,8 @@ The inherited matching sweep treats 1 as opening, 3 as closing, 2 as neutral. A 
 
 The inherited matching sweep treats 1 as opening, 2 as closing, 3 as neutral. Six excess closings reaches B4. The ternary return differs from line 34; no all-time guard bound has been proved.
 
+The sharp maximum wait for a neutral center in the first k covered triples is k plus the lowest set bit of k, in paired updates. This constrains the covered right edge while leaving the middle open. [Proof](https://github.com/valu42/busycoqtesting/blob/85ecc03c3e49bce92d2c5958dc398b7879b26429/research/bb2x5/line35-pascal.md#exact-waiting-time-for-a-neutral-center)
+
 The rightmost triples join a Pascal-mod-2 recurrence after a computably bounded number of successful sweeps. At the left, the transition graph on eight-cell prefixes from the actual seed has 71 states when incoming debt is bounded by four. Each of its 355 state/debt pairs completes safely. A true halt therefore requires incoming debt at least five at some epoch. A graph path using that fifth unit is an overapproximation until its exterior is shown reachable. Bound the middle word's debt as the right triples grow. [Derivation, tests and source](../line35-pascal.md)
 
 ### Line 36
@@ -346,6 +350,6 @@ The repository supplies a Rocq formalization, a Coq 8.20.1 rebuild and a standal
 
 `1RB2LA3LA4RA1LA_0LA3LB3RB1RB---`
 
-**Reported outcome.** The project owner reports a completed blank-tape nonhalting proof and asks that work move to a different machine. A proof artifact identifying the argument and its formal status has not been located for this exact string. The outlook label describes the reviewable evidence. This machine is excluded from targeting.
+**Status correction.** The project owner clarified that the completed proof was for line 36. Line 37 remains open. [Owner’s correction on the research board](https://github.com/valu42/busycoqtesting/commit/126961c1be4d1bec9bfa8316d2a604068b297c9e)
 
-**Established in the available sources.** A sweep halts at two unmatched closings. The finite graph proves that an all-time bound of four on the debt after 45 digits implies nonhalting. The maximum observed over 200,000 sweeps was two. The first 199,999 traversals establish the raw floor 39,999,600,001. On continued survival every fixed right suffix eventually obeys a Pascal-mod-2 recurrence. The published fixed-cut proof leaves open whether the middle region can send enough debt on some later sweep. Attaching the author's completed argument or theorem for this string would allow the table to record its proof and formal status. [Fixed-cut argument](../line37-header.md) · [Merged PR](https://github.com/valu42/busycoqtesting/pull/4) · [Right-hand recurrence](../line37-pascal.md)
+**Established in the available sources.** A sweep halts at two unmatched closings. The finite graph proves that an all-time bound of four on the debt after 45 digits implies nonhalting. The maximum observed over 200,000 sweeps was two. The first 199,999 traversals establish the raw floor 39,999,600,001. On continued survival every fixed right suffix eventually obeys a Pascal-mod-2 recurrence. The published fixed-cut proof leaves open whether the middle region can send enough debt on some later sweep. An exact recurrence starts at the constant stream of ones and reaches a halt precisely if some iterate starts with a letter of value at least three. The next step is to bound the actual boundary debt or find such a leading letter. [Stream recurrence](https://github.com/valu42/busycoqtesting/blob/126961c1be4d1bec9bfa8316d2a604068b297c9e/research/bb2x5/line37-stream.md) · [Fixed-cut argument](../line37-header.md) · [Merged PR](https://github.com/valu42/busycoqtesting/pull/4) · [Right-hand recurrence](../line37-pascal.md)

@@ -48,6 +48,8 @@ proof. No Lean or Rocq kernel verification was performed in this pass.
 
 ## Line 3: an exact clock for mixed counter probes
 
+Master now times 320 zero-counter records from blank, reaching ≈ 3.09717 × 10^312 defined instructions. Its literal controls, exact checkpoints and attribution are in the [timed replay](https://github.com/valu42/busycoqtesting/blob/04b52137b2de1784986655cb9014c486de4dfd22/research/bb2x5/frontiers/line3-timing.md).
+
 ### Established structure and halt trigger
 
 Use the inherited `C(X,d,p,v)` representation: `P(X)` is `13` followed by the

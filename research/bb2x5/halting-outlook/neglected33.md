@@ -8,6 +8,8 @@ The blank execution reaches its 33rd left extension after approximately **6.0015
 
 ## Established return rules
 
+The [aligned-block theorem](reserve33.md) and [compressed blank trajectory](compress33.md) advance the continuation.
+
 A word denotes cells from left to right, followed by virgin zeroes. A request starts in A on its first cell and ends on the first move across its left edge. Let F(w) denote the output of the ordinary rules below, all of which return A. Outside that domain the actual machine still has a well-defined execution. The table gives the local cost in addition to all listed child costs. A power of F means successive requests on the evolving suffix.
 
 | Input | Output | Local cost | Instructions responsible |

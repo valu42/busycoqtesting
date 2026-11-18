@@ -1,0 +1,19 @@
+Literal pair classification through 13 entries (counts): {'halt': 2265, 'pending': 147, 'safe': 5779}
+Ordinary initial states × short mixed odd-A period checks: 3054
+Exceptional even-gap parents: [(90, 'ABBABAABAABAABABBA', 'BBBAABAA'), (96, 'ABBBBBBAABAABBABBA', 'BBBABABA')]
+True aligned tail representations (cut, prefix, primitive period)
+0 A BABAB
+1 B ABA
+2 ε ABA
+3 BA B
+4 ε AB
+5 BA BAB
+6 ε ABAAB
+7 BA BBAABAB
+8 ε ABABAABABBB
+9 BA BAABABBABBBABABAB
+10 ε ABAABAABABABABBAABBABABBABB
+Cut 10 at offset 12: ABBAABBABABBABBABAABAABABAB ('halt', 8)
+Four-cell states, completed edges, internal halt edges: 142 273 10
+Potential histogram: [(-19, 1), (-18, 2), (-17, 2), (-16, 3), (-15, 5), (-14, 7), (-13, 8), (-12, 8), (-11, 9), (-10, 11), (-9, 11), (-8, 13), (-7, 12), (-6, 13), (-5, 13), (-4, 11), (-3, 7), (-2, 4), (-1, 1), (0, 1)]
+All edges agree with physical strip replay. Maximum mature-block potential: -2

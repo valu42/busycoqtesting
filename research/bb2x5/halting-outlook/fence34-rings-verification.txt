@@ -1,0 +1,25 @@
+1 cells: fixed=1, period four=0
+2 cells: fixed=1, period four=0
+3 cells: fixed=1, period four=0
+4 cells: fixed=1, period four=1
+5 cells: fixed=1, period four=0
+6 cells: fixed=1, period four=0
+7 cells: fixed=1, period four=0
+8 cells: fixed=1, period four=1
+9 cells: fixed=1, period four=0
+10 cells: fixed=1, period four=0
+11 cells: fixed=1, period four=0
+12 cells: fixed=1, period four=1
+13 cells: fixed=1, period four=0
+14 cells: fixed=1, period four=0
+15 cells: fixed=1, period four=0
+16 cells: fixed=1, period four=1
+17 cells: fixed=1, period four=0
+18 cells: fixed=1, period four=0
+19 cells: fixed=1, period four=0
+20 cells: fixed=1, period four=1
+21 cells: fixed=1, period four=0
+22 cells: fixed=1, period four=0
+23 cells: fixed=1, period four=0
+24 cells: fixed=1, period four=1
+33554430 survivor masks exhausted. No other temporal period dividing 52.

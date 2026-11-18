@@ -8,6 +8,12 @@ At a sweep boundary A is on the blank just before a word of opening (1), neutral
 
 From the actual seed the left prefix has only 65 possibilities in the nine-cell calculation that allows arriving debts zero through five. The prefix is safe on every edge. **If line 34 ever halts, then at some earlier or current sweep the suffix after cell nine has debt at least six.** The [left-boundary report](line34_left.md) also gives a sharper test at cell twelve on the failing sweep itself. The [right-boundary report](line34_right.md) proves a timing law for successive extensions at that end of the tape. All new proofs here are on paper with executable checks. The transfer from the interior to the left cut is the missing step.
 
+## Continuation of the cut-12 investigation
+
+The [transport identity](fold34.md) gives an exact test one sweep earlier in terms of starts of runs of surviving openings. At a fixed material cut, persistently positive debt would produce a corridor of openings growing faster than the right edge. This limits consecutive positive sweeps at that physical cut. The cut after the first twelve cells moves as the word acquires its header.
+
+The [periodic left-prefix calculation](fence34.md) gives a more restrictive 52-phase condition that suffices for survival. The [delayed-debt construction](back34.md) shows why observing a safe guard for many consecutive sweeps cannot certify it. An interior modified at blank epoch 52 can match the guard and cuts 9 and 12 for 2,989 successful sweeps, then reach B4. The true tape completes the same sweep.
+
 ## Exact clock for one successful sweep
 
 Index the old data from 1 to $w$ and the original left guard by 0. Let $S$ be the number of surviving openings. A closing at $i$ matched at $j$ consumes $2(i-j)$ extra instructions on the outward traversal: B moves left over processed cells to the match, then retraces them to resume the rightward scan. Assign unmatched closings temporarily to guard 0. Summing these distances counts each intervening cut once per active match and gives $D=\sum_{j=0}^{w-1} d(j)$. The baseline outward cost is $w+2$, including A0 and the far B0 turn.

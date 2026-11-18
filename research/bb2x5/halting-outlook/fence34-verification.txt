@@ -1,0 +1,7 @@
+literal epoch 1300: raw steps 3661354 head -1300 width 1585 protected prefix 1111111111111111311111232131111111123213111111112311111111213111231
+520 whole residual words matched the full model
+52-phase prefix closes. 3821 canonical debt cases, 156 literal full-config checks.
+guard cycle [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2]
+input epochs 1300 through 49999 ; (allowance, actual debt) counts [((0, 0), 3746), ((1, 0), 31842), ((1, 1), 9365), ((2, 0), 1873), ((2, 1), 1874)] ; final raw step 5430974000
+64 defect fronts on the width-four tail give the predicted rightmost successor.
+Independent three-copy opening-stack enumeration covers widths 1 through 11.

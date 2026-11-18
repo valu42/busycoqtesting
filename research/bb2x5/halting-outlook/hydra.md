@@ -31,6 +31,8 @@ found in these sources.
 
 ## Line 30: exact opportunities and timing
 
+Master independently reproduced the 20,000th return from blank. Its exact raw clock is ≈ 2.85901 × 10^7045. [Timed physical replay](https://github.com/valu42/busycoqtesting/blob/04b52137b2de1784986655cb9014c486de4dfd22/research/bb2x5/frontiers/hydra.md)
+
 Use `C(a,b)=0^∞ [A on 0] 2 0^a 3^b 2 0^∞`, with the head on the blank
 immediately left of the first 2. This is the wiki's C convention; it differs by
 one instruction from the primary article's B-head convention. Literal execution

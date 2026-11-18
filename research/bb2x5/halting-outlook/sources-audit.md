@@ -6,7 +6,7 @@ The current [BB(2,5) page, revision 10980](https://wiki.bbchallenge.org/w/index.
 was last edited 2026-11-17. Its two Cryptids and 35 Unsolved entries match all
 37 complete strings in [the immutable local roster](../BB2x5_Rocq_holdouts_37.txt).
 The page's “Solved with moderate rigor” section is empty; its formal results
-refer to other encodings. The wiki snapshot includes none of the 37 in its solved section. The repository independently formalizes line 36. The owner reports a further line 37 proof. Its public PR #4 states the sufficient fixed-cut criterion and its remaining all-time hypothesis. See the [proof-status audit](remaining.md#line-37).
+refer to other encodings. The wiki snapshot includes none of the 37 in its solved section. The repository independently formalizes line 36. The [owner’s clarification](https://github.com/valu42/busycoqtesting/commit/126961c1be4d1bec9bfa8316d2a604068b297c9e) identifies line 36 as the proved machine. The line 37 public PR #4 gives a sufficient fixed-cut criterion with an open all-time hypothesis. See the [proof-status audit](remaining.md#line-37).
 This is a checked page snapshot, not a claim that every unpublished result is known.
 
 Full-string matching matters particularly for lines 21/22, 29/30 and 34–37.

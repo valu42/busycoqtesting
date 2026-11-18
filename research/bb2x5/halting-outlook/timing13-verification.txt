@@ -1,0 +1,16 @@
+cut 4: 1 A, 1 B in 1 root groups, Fibonacci bound 2
+cut 8: 5 A, 6 B in 16 root groups, Fibonacci bound 13
+cut 12: 31 A, 30 B in 256 root groups, Fibonacci bound 89
+cut 16: 157 A, 162 B in 4096 root groups, Fibonacci bound 610
+cut 20: 813 A, 866 B in 65536 root groups, Fibonacci bound 4181
+cut 24: 4267 A, 4598 B in 1048576 root groups, Fibonacci bound 28657
+cut 28: 22717 A, 24198 B in 16777216 root groups, Fibonacci bound 196418
+cut 32: 119933 A, 127940 B in 268435456 root groups, Fibonacci bound 1346269
+cut 36: 633923 A, 676478 B in 4294967296 root groups, Fibonacci bound 9227465
+cut 4, q=100000000000000: observed 199999999999999, steady-rate prediction 200000000000000.000
+cut 12, q=100000000000000: observed 23828124999995, steady-rate prediction 23828125000000.000
+cut 20, q=100000000000000: observed 2561950683563, steady-rate prediction 2561950683593.750
+cut 28, q=100000000000000: observed 279635190954, steady-rate prediction 279635190963.745
+cut 36, q=100000000000000: observed 30510151011, steady-rate prediction 30510150827.467
+If unresolved at checkpoint, cell 155 first A (or its halt) by root request 42817430781178796431748579083484854091482398716
+Outer raw-step deadline for that opportunity: 1099999427220622486584960671741064206967793040136991697664652479203796559586155299142820157637

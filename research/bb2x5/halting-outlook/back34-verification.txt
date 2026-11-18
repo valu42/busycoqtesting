@@ -1,0 +1,17 @@
+Blank seed epoch 52: head -52, raw clock 5924, width 65.
+11 cells, 50 copies, 10 successful sweeps; final guard debts 19 (altered), 1 (blank); minimum earlier periodic balance 2; final periodic balance -1.
+Common left digits >= 48; surviving raw clock 21810 + 386 per extra copy.
+Final period: 23213123213
+Literal B4 at step 38830 from the altered checkpoint, head -64.
+11 cells, 51 copies, 10 successful sweeps; final guard debts 20 (altered), 1 (blank); minimum earlier periodic balance 2; final periodic balance -1.
+Common left digits >= 48; surviving raw clock 22196 + 386 per extra copy.
+Final period: 23213123213
+Literal B4 at step 39216 from the altered checkpoint, head -64.
+47 cells, 3600 copies, 2989 successful sweeps; final guard debts 480 (altered), 2 (blank); minimum earlier periodic balance 8; final periodic balance -1.
+Common left digits >= 19; surviving raw clock 1816430783 + 498942 per extra copy.
+Final period: 31232131232132321312321312321312321312321312321
+Whole literal replay k=0: exact full successful checkpoint and B4 at 2258780781, head -3043, maximum terminal-sweep coordinate 143739.
+Whole literal replay k=1: exact full successful checkpoint and B4 at 2259279723, head -3043, maximum terminal-sweep coordinate 143739.
+First unverified physical digit after the periodic cut: 166063
+Blank epochs 52..3041: 71 single-period matches; longest (52, (977, 296, 2974, 28)) (length, (epoch, offset, phase, rotation)).
+Epoch 125000: 3 single-period matches; longest (48, (125000, 134501, 2500, 38))

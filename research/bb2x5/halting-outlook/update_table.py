@@ -14,14 +14,15 @@ LABELS = {'Proven halting', 'Probable halting', 'Possible halting', 'Unknown',
 
 def generate():
     baseline = json.loads((HERE / 'baseline.json').read_text())
-    for file, field in [('SIMULATION_TABLE.md', 'simulation_table_sha256'),
+    for file, field in [('halting-outlook/simulation-table-at-intake.txt', 'simulation_table_sha256'),
                         ('BB2x5_Rocq_holdouts_37.txt', 'holdouts_sha256')]:
         assert hashlib.sha256((ROOT / file).read_bytes()).hexdigest() == baseline[field], file
     rows = json.loads((HERE / 'rows.json').read_text())
     originals = [(int(n), m) for n, m in re.findall(
         r'^\| (\d+) \| `([^`]+)`', (ROOT / 'SIMULATION_TABLE.md').read_text(), re.M)]
     assert len(rows) == len(originals) == 37
-    assert [(r['line'], r['machine']) for r in rows] == originals
+    intake = [(r['line'], r['machine']) for r in baseline['rows']]
+    assert [(r['line'], r['machine']) for r in rows] == originals == intake
     out = (HERE / 'table-intro.txt').read_text().rstrip() + '\n'
     for row in rows:
         assert row['outlook'] in LABELS

@@ -1,0 +1,24 @@
+Exhaustive inputs through length 8: 9841; all successful first sweeps checked literally.
+Input epoch 853, blank: threshold 12, first crossing (score, rank, material position) None, first-64 peak 1, overall peak 1.
+Input epoch 853, altered: threshold 12, first crossing (score, rank, material position) (12, 4065, 12192), first-64 peak 1, overall peak 12.
+Nonblank interior length 42, through literal step 2391: [(0, 0), (0, 4), (0, 3), (0, 3), (1, 0), (1, 1), (1, 4), (0, 34)]
+Nonblank interior length 135, through literal step 5432: [(1, 0), (1, 1), (1, 4), (1, 22), (0, 130)]
+Blank epoch 14117: cut 12645 with debt 6 becomes 38 openings; new debt at material cut 0, at their far end 1.
+Blank run: 50000 completed sweeps, raw clock 5430974000, width 61003.
+First streak of each length at material cuts with index >= 11 (length, last epoch, last cut): [(1, 13, 11), (2, 19, 17)]
+Ordered pair counts (old material debt, new cut-12 debt): [((0, 0), 34602), ((0, 1), 3849), ((0, 2), 3843), ((1, 0), 7691), ((1, 1), 1), ((2, 0), 1)]
+First consecutive-positive records (input epoch, old cut): [((1, 1), (36, 11))]
+Run-rank band, minimum signed margin to B4, input epoch, rank, old run-start position:
+(1, 4) (4, 50, 2, 13)
+(5, 8) (9, 74, 7, 30)
+(9, 16) (11, 672, 11, 44)
+(17, 32) (25, 646, 17, 76)
+(33, 64) (61, 1095, 33, 160)
+(65, None) (127, 14792, 65, 325)
+Same margins on held-out input epochs 12000 onward:
+(1, 4) (4, 12010, 2, 13)
+(5, 8) (10, 12008, 5, 25)
+(9, 16) (11, 12008, 11, 44)
+(17, 32) (32, 12051, 17, 78)
+(33, 64) (65, 12327, 33, 164)
+(65, None) (127, 14792, 65, 325)

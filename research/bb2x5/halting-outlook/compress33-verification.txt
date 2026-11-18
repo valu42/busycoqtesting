@@ -1,0 +1,17 @@
+Standard bulk worker controls
+1560 ordinary output/clock matches; 936 matching exceptional flags; 1423 complete literal comparisons.
+Modified extension y=2421: infinite-family entry at raw step 234, head -2, B, word (421)^8.
+Modified extension y=22222421: halt at raw step 39142, head +34, B scanning 3.
+
+Independent shifted-register worker and general ordinary worker, each resumed at extension 33.
+Columns: new extension, physical occupied width, raw clock bit length, maximal terminal 421 count without alignment constraint.
+34 252739 59210 18
+35 359072 84271 19
+36 510187 119765 20
+37 724676 169988 20
+38 1029595 241644 22
+39 1461436 342231 21
+40 2076035 487078 19
+41 2948584 691481 21
+Byte-for-byte comparison of the two complete extension-41 JSON checkpoints: equal.
+At extension 41 the maximal aligned count is 20; its aligned register has 1,474,261 pairs.
