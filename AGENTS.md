@@ -1,3 +1,5 @@
 # Agent instructions
 
 For BB(2,5) research and its related proofs under `verify/`, start at the [machine decision roadmap and claim board](research/bb2x5/ROADMAP.md). The objective is the number of distinct machines fully decided from blank. Pick a machine and claim its resolution campaign or a complementary approach on `master`. Keep that claim across milestones, renew it with evidence, and show which remaining obstacle your next step addresses. Before starting a simulation, tool change or formalization, identify the machine decision it serves. Update the decision tally when the evidence meets the roadmap's verification criteria.
+
+For BB(6) research, start at the [machine register and claim board](research/bb6/ROADMAP.md). Use the permanent line numbers from the 608-machine list when claiming work or recording a decision.
