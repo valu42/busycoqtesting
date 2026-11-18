@@ -266,6 +266,36 @@ def check_ranks(engine):
     print("Pulse ranks and first B3 agree with scalar replay.")
 
 
+def check_batch_counts(seed, target, counts, edge):
+    """Check the recorded elementary clock, frontier history and cellwise balances."""
+    start, end = seed["positive_tape"], target["positive_tape"]
+    packets, expanded = counts["packets"], counts["expanded"]
+    assert counts["first_cell"] == 4 and len(packets) == len(expanded) == len(end) - 4
+    old, new = seed["groups"], target["groups"]
+    assert target["steps"] == seed["steps"] + 15*(new**2 - old**2) + 19*(new-old) + 2*sum(expanded)
+
+    # All A letters toggle the digit-4 class. A transition into that class
+    # emits exactly one single packet. A move out emits zero or one compound.
+    # This recovers the A and B totals using the *neighbor's* recorded counts.
+    next_packets = next_expanded = next_bs = 0
+    for x in reversed(range(4, len(end))):
+        i = x - 4
+        fresh = x >= len(start)
+        born_even, born_odd = fresh and x % 2 == 0, fresh and x % 2 == 1
+        before = "21"[x % 2] if fresh else start[x]
+        # For a new pair, remove the initial A and its forced B at the child.
+        singles = 2*next_packets - next_expanded - born_even
+        a_count = 2*singles + (before == "4") - (end[x] == "4") + born_even
+        b_count = expanded[i] - a_count
+        assert singles >= 0 and 0 <= expanded[i] - packets[i] <= min(a_count, b_count)
+        assert (b_count - born_odd - next_bs + born_even) % 2 == ((before == "2") ^ (end[x] == "2"))
+        if x == edge["cell"]:
+            assert fresh and x == len(end)-1 and a_count == 0
+            assert set(edge["lifetime_entries"]) == {"B"} and len(edge["lifetime_entries"]) == b_count
+        next_packets, next_expanded, next_bs = packets[i], expanded[i], b_count
+    assert packets[0] == b_count == new-old and expanded[0] == 2*(new-old)
+
+
 def saved_record():
     document = json.loads((ROOT / "frontiers/runs/line13-pulses.json").read_text())
     record = document["payload"]
@@ -287,6 +317,8 @@ def saved_record():
         even += 2
     assert record["endpoint"]["groups"] > last
     assert len(record["endpoint"]["positive_tape"]) == even
+    assert record["pending_edge"]["cell"] == even-1
+    check_batch_counts(seed, record["endpoint"], record["batch_entry_counts"], record["pending_edge"])
     return record
 
 
@@ -294,11 +326,17 @@ def verify_native(engine, record):
     """Independent replay with the repository's A/B stream engine and literal final groups."""
     driver = Driver(13)
     state = driver.load(ROOT / "frontiers/runs/stream-13.json")
+
+    def advance(state, target):
+        while state["groups"] < target:
+            count = min(target - state["groups"], 50_000_000_000_000_000)
+            state, _ = driver.run_batch(engine, state, count, 1_400_000_000, 0, 1_000_000_000_000)
+            print(f"A/B replay reached group {state['groups']}.", flush=True)
+        return state
+
     for entry in record["openings"]:
         pulse, cell = entry["pulse"], entry["even_cell"]
-        gap = pulse - state["groups"]
-        if gap:
-            state, _ = driver.run_batch(engine, state, gap, 1_400_000_000, 0, 1_000_000_000_000)
+        state = advance(state, pulse)
         assert len(state["positive_tape"]) == cell
         if "before" in entry:
             assert state == entry["before"]
@@ -310,9 +348,7 @@ def verify_native(engine, record):
         assert state["groups"] == pulse + 1 and state["positive_tape"].endswith("21")
         print(f"Literal opening at cell {cell} on pulse {pulse}. Group ended at {state['steps']} steps.", flush=True)
     target = record["endpoint"]
-    if state["groups"] < target["groups"]:
-        state, _ = driver.run_batch(engine, state, target["groups"] - state["groups"],
-                                    1_400_000_000, 0, 1_000_000_000_000)
+    state = advance(state, target["groups"])
     assert state == target
     print("Full native endpoint agrees.")
 
@@ -323,7 +359,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--native", type=Path, help="Also run the long independent A/B replay")
     parser.add_argument("--rank", type=Path, help="Check the compiled pulse-rank search")
-    parser.add_argument("--until-groups", type=int, help="Continue the rank search from the master checkpoint")
+    parser.add_argument("--until-groups", type=int, help="Replay to this canonical group, resuming from the saved endpoint for larger targets")
     parser.add_argument("--shallow", type=int, default=51, help="Mature cells in the dyadic startup and period")
     args = parser.parse_args()
     if args.until_groups is not None and args.rank is None:
@@ -335,10 +371,18 @@ if __name__ == "__main__":
         check_ranks(args.rank)
         if args.until_groups is not None:
             seed = Driver(13).load(ROOT / "frontiers/runs/stream-13.json")
+            if args.until_groups > record["endpoint"]["groups"]:
+                seed = record["endpoint"]
             extra = args.until_groups - seed["groups"]
             if extra < 0:
                 parser.error("target precedes the starting checkpoint")
-            for line in rank_search(args.rank, seed["groups"], extra, args.shallow, seed["positive_tape"]):
+            depth = min(args.shallow, extra.bit_length())
+            result = rank_search(args.rank, seed["groups"], extra, depth, seed["positive_tape"])
+            if args.until_groups == record["endpoint"]["groups"]:
+                expected = [["A", str(e["even_cell"]), str(e["pulse"])] for e in record["openings"]]
+                expected.append(["last_visited", str(len(record["endpoint"]["positive_tape"]) - 1)])
+                assert result == expected
+            for line in result:
                 print(*line)
     if args.native:
         verify_native(args.native, record)

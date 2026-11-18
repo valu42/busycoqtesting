@@ -8,7 +8,9 @@ The first A entered cell **155** after **564,283,145,741,602,382,792,183,308,072
 
 The existing letter-based native worker advanced the published blank checkpoint to group 150,000,000,000,000,000, then to the canonical group immediately before the opening. Replaying the next five positive requests instruction by instruction gives both arrival clocks above. The complete pre-opening tape and clock are in the [run record](frontiers/runs/line13-pulses.json). An independent packed pulse search from the original checkpoint selected the same pulse.
 
-At group 576,460,752,303,423,489 the blank machine had executed 4,984,604,984,193,434,561,506,482,696,633,003,556 defined instructions. Cell 157 had received just B. Its first A is the next test at that checkpoint.
+The search continued to group **1,152,921,504,606,846,977**. The blank machine had then completed exactly \(2^{60}\) pulses and **19,938,419,936,773,738,169,791,518,345,369,146,404** defined instructions. Cell 157 had received exactly one B. Its right neighbor was still blank. Since the opening at 156, 958,965,642,661,987,234 further pulses have passed without an opening. The opening at 156 had an even absolute pulse number. Consequently an even absolute pulse number for the first entry into 158 would prove a halt at 157. An odd one would clear 157.
+
+A separate run from virgin cells to \(2^{59}\) pulses ended at 4,984,604,984,193,434,561,506,482,696,633,003,556 defined instructions. All 154 available lifetime entry prefixes from cells 4 through 157 agreed over the overlap with the search resumed from the published checkpoint. The complete terminal tape, per-cell counts and final-group replay at 155 are in the run record above.
 
 ## Blank startup and a single repeated input
 
@@ -62,19 +64,22 @@ One attempted induction used a succession of safe binary resets as its hypothesi
 
 From this directory, run `python3 line13_pulses.py` with assertions enabled. The checker derives the packet table from the instruction string, checks the source phase, compares the first eight new-pair arrivals with the literal blank machine, and verifies the altered-tape example.
 
-
 The rank search preserves each output packet's position in the root input. Batch a shallow strip of already mature cells. Starting at source pulse zero, let a depth-\(d\) startup span \(2^d-1\) root slots and the following period span \(2^d\). At the next cell the new startup is the old startup plus one period. The new period consists of the following two old periods. The odd-toggle argument above verifies the repeated boundary state. Each bit in a selection mask records whether that input slot produced a packet. Selecting the ordinal of a child packet and descending the stored masks gives its exact root pulse. Beyond the shallow strip the search processes finite chronological chunks. A fresh pair consumes its first A when it becomes 21. An initial B there identifies B3 at the preceding odd cell.
 
 The C++ checker compares its bit operations and selected positions against the scalar packet table. The Python wrapper also checks multiple shallow-strip widths against direct chronological growth and compares all 64 six-digit binary seeds through 128 pulses, including actual B3 cases on altered tapes. The native A/B replay uses the separate pre-existing implementation and reconstructs the entire positive tape and elementary clock. For \(q\ge1\) the numbers of rightward entries at cells 0–3 are \(5q,3q+1,3q,q+1\). The negative-half cost is \(15q^2\). If \(J_x\) counts expanded A/B entries, positive-half instructions are \(2\sum_x J_x-J_0\). All clocks here count defined instructions.
+
+The short checker also audits the long batch. Cells 4 through 157 took 9,014,488,734,238,432,784 expanded A/B entries during that batch. At each mature cell, let \(S\) be the number of single packets emitted to its child. Every incoming A changes the digit-4 indicator, and exactly the changes into 4 emit a single packet. Thus the number of incoming As is \(2S+[\mathrm{start}=4]-[\mathrm{end}=4]\). A fresh pair first consumes A and sends its mandatory B to the odd child. Accounting for that initialization recovers the separate A and B totals from each neighbor's packet counts. The checker tests the B-parity balance at every cell, the constant input at cell 4, the single B at 157 and the raw clock above.
 
 Run from this directory. The long searches use several GB of memory. The C++ rank worker also has a portable path for processors without the two optional x86 bit instructions.
 
 ```sh
 c++ -std=c++20 -O3 -march=native line13_rank.cpp -o /tmp/bb25-rank13
 python3 line13_pulses.py --rank /tmp/bb25-rank13
-python3 line13_pulses.py --rank /tmp/bb25-rank13 --until-groups 576460752303423489
+python3 line13_pulses.py --rank /tmp/bb25-rank13 --until-groups 1152921504606846977
 c++ -std=c++17 -O3 frontiers/longitudinal.cpp -lgmpxx -lgmp -o /tmp/bb25-stream
 python3 line13_pulses.py --native /tmp/bb25-stream
 ```
+
+The exact endpoint in the command checks the published opening and furthest cell against a replay from the older checkpoint. With a larger group number the rank search resumes from the new terminal tape. The A/B replay checks the terminal clock and tape as well and prints its progress every 50,000,000,000,000,000 groups or sooner at a recorded opening.
 
 The earlier analysis proved that an infinite blank run must keep facing fresh odd cells and derived a deadline for cell 155. [Paired stream analysis](https://github.com/valu42/busycoqtesting/blob/c970885c2e6dce20b0a712d310ba16982660e2f5/research/bb2x5/halting-outlook/pair13.md) · [Earlier clock bound](https://github.com/valu42/busycoqtesting/blob/c970885c2e6dce20b0a712d310ba16982660e2f5/research/bb2x5/halting-outlook/timing13.md)
