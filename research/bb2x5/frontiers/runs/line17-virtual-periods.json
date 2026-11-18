@@ -67,6 +67,34 @@
       "cut": 117,
       "base_copies": 486,
       "sweeps_per_period": 2601575194781855301542850638905344
+    },
+    {
+      "cut": 118,
+      "base_copies": 486,
+      "sweeps_per_period": 2601575194781855301542850638905344
     }
-  ]
+  ],
+  "base_source_bytes": 11749096276,
+  "base_source_framing_sha256": "44449111079010864dc953d9f7d6cfb14f2bdc96215ad40ac28c2d2c838b0eff",
+  "next_source": {
+    "cut": 111,
+    "root_period_sweeps": 16059106140628736429276855795712,
+    "slots": 375872944880,
+    "marks": 46984013696,
+    "bytes": 23494339786,
+    "framing_sha256": "92c7e910f5911d0bf5f5b5a6b68bccc6d7e02788f275ed7bfd037a4488e753a7",
+    "index_stripes": 255192,
+    "physical_suffix_tokens": 128,
+    "fusion_depth": 7,
+    "normalized_states": 2187,
+    "closed_orbit_in_cut111_copies": {
+      "112": 3,
+      "113": 9,
+      "114": 27,
+      "115": 81,
+      "116": 81,
+      "117": 162,
+      "118": 162
+    }
+  }
 }

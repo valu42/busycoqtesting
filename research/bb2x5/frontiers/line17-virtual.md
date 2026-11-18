@@ -45,8 +45,9 @@ The source at cut 110 contains 187,936,890,096 slots and 23,492,006,848 marks. I
 | 115 | 243 | 6,013,954,588,400 |
 | 116 | 243 | — |
 | 117 | 486 | — |
+| 118 | 486 | — |
 
-For each threefold lift every incoming mark sees all three trits, produces two child marks in total, and consumes six compound pulses across the three phases. Writing $L,M$ for the parent's period length and marks gives $L'=L+8M$ and $M'=2M$. This determines the first five lengths in the table. The last two rows record phase orders only. The cut-117 period spans approximately $2.60\times10^{33}$ source sweeps. It describes the prefix under ordinary replies. [Exact integers and check dimensions](runs/line17-virtual-periods.json)
+For each threefold lift every incoming mark sees all three trits, produces two child marks in total, and consumes six compound pulses across the three phases. Writing $L,M$ for the parent's period length and marks gives $L'=L+8M$ and $M'=2M$. This determines the first five lengths in the table. The last three rows record phase orders only. A separate seven-trit index on the newly materialized cut-111 stream reproduced the overlapping orders and established that cut 118 has the same period as cut 117. The cut-117 period spans approximately $2.60\times10^{33}$ source sweeps. It describes the prefix under ordinary replies. [Exact integers and check dimensions](runs/line17-virtual-periods.json)
 
 ## Running the simulator
 
