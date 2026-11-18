@@ -103,6 +103,22 @@ class Suffix:
                 value = None
         return value
 
+    def epoch(self, k):
+        """Complete the suffix transfers for record k and shift to the new cut."""
+        self.work = self.steps = 0
+        try:
+            if self.literal(0, 'A', 0) != 'B':
+                raise RuntimeError('the initial A call returned A')
+            count = 1 << (k-1)
+            done, reply = self.b_calls(0, count)
+            if done != count or reply != 'B':
+                raise RuntimeError(f'B call {done+1} returned A across the suffix cut')
+        except RuntimeError as exc:
+            raise RuntimeError(f'left record {k}, suffix cut {k+3}: {exc}') from exc
+        if not self.cells or self.cells[0] != 3:
+            raise ValueError('completed suffix failed the moving-cut invariant')
+        del self.cells[0]
+
 
 def record(k, steps, suffix):
     return {'format': FORMAT, 'line': 18, 'machine': MACHINE, 'record': k,
@@ -140,19 +156,7 @@ def advance(start, target, limit=10**7, progress=None):
     suffix = Suffix(start['suffix'], limit)
     steps = int(start['steps_hex'], 16)
     while k < target:
-        suffix.work = suffix.steps = 0
-        try:
-            if suffix.literal(0, 'A', 0) != 'B':
-                raise RuntimeError('the initial A call returned A')
-            count = 1 << (k-1)
-            done, reply = suffix.b_calls(0, count)
-            if done != count or reply != 'B':
-                raise RuntimeError(f'B call {done+1} returned A across the suffix cut')
-        except RuntimeError as exc:
-            raise RuntimeError(f'left record {k}, suffix cut {k+3}: {exc}') from exc
-        if not suffix.cells or suffix.cells[0] != 3:
-            raise ValueError('completed suffix failed the moving-cut invariant')
-        del suffix.cells[0]
+        suffix.epoch(k)
         steps += suffix.steps + local_steps(k)
         k += 1
         if progress:

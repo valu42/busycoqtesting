@@ -10,6 +10,7 @@ import zlib
 from checkpoints import ROOT
 from line18 import MACHINE, Suffix, advance, blank_entry, load, save
 from line18_header import verify
+from line18_replies import audit
 from prior_sweeps import TapeMachine
 import survey
 
@@ -22,6 +23,32 @@ def physical(p):
 
 
 class Line18Tests(unittest.TestCase):
+    def test_exception_observed_on_the_blank_tape(self):
+        seed = blank_entry()
+        doc = audit(seed, 8)
+        self.assertEqual(doc['internal_A_replies_at_batch_boundaries'], 7)
+        self.assertEqual(doc['outer_B_requests_returning_B_hex'], '0xff')
+        first = doc['witnesses']['first_occupied_strip']
+        self.assertEqual((first['record'], first['coordinate'], first['before'], first['after']),
+                         (8, 31, '33132', '13231'))
+        tm = physical(advance(seed, first['record']))
+        stop = int(advance(seed, first['record']+1)['steps_hex'], 16)
+        left, width = first['coordinate'], len(first['before'])
+
+        def strip():
+            return ''.join(str(tm.tape.get(i, 0)) for i in range(left, left+width))
+
+        while tm.steps < stop:
+            old = tm.head
+            self.assertTrue(tm.step())
+            if (old == left-1 and tm.head == left and tm.state == first['entry_state']
+                    and strip() == first['before']):
+                for _ in range(first['steps']):
+                    self.assertTrue(tm.step())
+                self.assertEqual((tm.head, tm.state, strip()), (left-1, 'A', first['after']))
+                return
+        self.fail('literal blank orbit did not visit the reported witness')
+
     def test_literal_blank_records(self):
         verify()
         tm = TapeMachine(MACHINE)
