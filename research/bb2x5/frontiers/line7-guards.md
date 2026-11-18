@@ -10,6 +10,14 @@ At the moment a blank-orbit A0 installs its guard, its right neighbor is 0, 2 or
 
 If the neighbor is 3, the B1 that just wrote it consumed a 1 previously installed there by A0. Its suffix two cells to the right of the new guard has therefore just returned B to that earlier A0. Its first cell is now 2 or 4, the only writes on leftward B exits. These restrictions still permit both halting paths below. Start A on the second cell of `0004` or `0022` with blank exterior. Three instructions later the first cell is a live A0 guard next to a 3. The machine reaches A1 on the first cell at raw time 65 or 31 respectively.
 
+### A leading pair on every later epoch
+
+**Permanent outer-header invariant.** Every completed blank epoch from epoch 2 onward leaves a word beginning with a 3, some number $k\ge0$ of twos, and a pair 42 or 44.
+
+The underlying statement holds on arbitrary tapes. A suffix call that returns B after making at least one rightward excursion from its first cell leaves a prefix consisting of zero or more twos followed by 42 or 44. Consider its last instruction on the first cell. If it was B2, the last rightward move there must have been A4, the only rightward instruction writing 2. The child returned B, so the child cell now contains 2 or 4, while B2 leaves 4. If the last instruction was B0, the last rightward move must have been B4, the only rightward instruction writing 0. Its child was entered in A and returned B. An A entry cannot return B immediately, so this shorter child execution satisfies the same premise. B0 prepends one 2 to its output. Induction on the finite call length proves the statement.
+
+The first blank epoch leaves 32. Every successful later epoch began by calling B on 3, which necessarily makes a rightward excursion. The fresh B1 then prepends the 3. Consequently, at every outer launch from epoch 3 onward, the tail V after the maximal run of twos begins with a pair, even after an exceptional epoch. This proof does not assume a bound on $k$ or on the time spent inside the child.
+
 ### B on the neighboring 3
 
 Let U be the tape to the right of the 3. Each row lists replies **from U** and the ordered requests the machine sends **to U**. A completed row uses the evolved U when another round starts.
@@ -61,6 +69,10 @@ The same construction with $S(j,m)$ realizes every forced rank in the Fibonacci 
 There is also a halting route that uses just one more reply. At any rank $j\equiv2\pmod3$ the deepest leading 2 is suspended on 0. V's first A therefore installs a new 1 and sends B straight back into V. If that B call returns A, this new guard halts, in either block. If V's first A left 2 on its first cell, B2 returns immediately and this particular guard is safe. A normal A exit can otherwise leave 3. A V starting with a 42 or 44 pair always leaves 2 on its first A return, as the pair proof shows. A new candidate for this one-more-reply route needs both the correct ternary phase and a 3 actually deposited by V.
 
 In fact the leading pair becomes 22 on that first A return. The inner digit has returned A leaving 3, then A3 there and A3 on the outer digit each write 2. Prior B replies to A keep the first digit 4 and toggle the second between 2 and 4. Each all-B epoch uses an even number of A requests to V and therefore preserves the pair exactly. Immediately after the exceptional A, a B then an A on V must both return B, in one and three instructions, leaving 44.
+
+The permanent outer-header invariant therefore excludes the one-more-reply halt at the deepest leading 2 on every applicable blank epoch from epoch 3 onward. The original guard can still halt. For its Fibonacci family the units digit may now also be 2. The known B2 on V supplies the return needed to carry A across that last digit. There are $F_{k+1}$ forced ranks in the second block for a blank-reachable header, allowing any units digit in the separated ternary strings with leading zero. With four leading twos the five ranks are 81, 83, 87, 99 and 101. The register construction realizes all of them on explicit tapes. Their reachability from blank remains open.
+
+When $k=0$ and V begins with the guaranteed pair, the original guard takes the safe AB row if its first A call returns A. If the first A call returns B and the second returns A, V again begins with 22, the BA row requests B, and the original guard halts. Two initial B returns give the safe BB row. A halt inside V still propagates immediately.
 
 ## Searching consecutive epochs in one batch
 

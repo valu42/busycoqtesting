@@ -113,7 +113,7 @@ def rank_bits(cells, start):
     return width, value
 
 
-def rank_return(k, j, limit=100_000, tail=None, max_calls=0):
+def rank_return(k, j, limit=100_000, tail=None, max_calls=0, paired=False):
     """Replay the suspended guard, optionally following a bounded number of actual V calls."""
     if k < 1 or j < 0:
         raise ValueError('invalid leading width or rank')
@@ -125,18 +125,26 @@ def rank_return(k, j, limit=100_000, tail=None, max_calls=0):
     while offset:
         i -= 1
         offset, phases[i] = divmod(offset, 3)
-    propagates = phases[0] == phases[-1] == 0 and 1 not in phases and b'\x02\x02' not in phases
+    separated = phases[0] == 0 and 1 not in phases and b'\x02\x02' not in phases
+    propagates = separated and phases[-1] == 0
     cells = bytearray([1, 0 if block_index else 4])
     cells.extend((3, 4, 0)[phase] for phase in phases)
     x, state = len(cells)-1, 'A'
     budget = max(limit, 4*k+16)
     calls = []
+    pair_reply = False
     cost = 0
     while True:
         if x < 0:
             kind = 'safe'
             break
         if x == len(cells):
+            if paired and tail is None and not pair_reply and state == 'B':
+                # V started with 42 or 44. Its first A exit left 22, and
+                # no subsequent call has touched it. B2 takes one step.
+                pair_reply = True
+                x, state = x-1, 'B'
+                continue
             if tail is None or len(calls) == max_calls:
                 kind = 'needs_tail'
                 break
@@ -159,12 +167,15 @@ def rank_return(k, j, limit=100_000, tail=None, max_calls=0):
         cells[x], move, state = rule
         x += move
         cost += 1
-    if propagates and kind != ('halt' if block_index else 'safe'):
+    pair_covers_last_digit = paired and separated and (tail is None or max_calls > 0)
+    if (propagates or pair_covers_last_digit) and kind != ('halt' if block_index else 'safe'):
         raise ValueError('literal suspended path violates the ternary propagation rule')
     result = {'outcome': kind, 'steps_after_reply': cost, 'head_from_guard': x, 'state': state,
               'ternary_propagation': propagates}
     if tail is not None:
         result['tail_calls'] = calls
+    if paired:
+        result['known_B2_steps'] = int(pair_reply)
     return result
 
 
@@ -223,6 +234,10 @@ class RootRanks:
                                 'tail_digit_after_A': trial.tape[0], 'after_first_A': local})
             if local['outcome'] in ('safe', 'halt'):
                 prediction = local['outcome']
+            elif width:
+                paired = rank_return(k, j, paired=True)
+                if paired['outcome'] in ('safe', 'halt'):
+                    prediction = paired['outcome']
             distance = abs(j-block)
             if self.distance is None or distance*self.distance[1] < self.distance[0]*block:
                 self.distance = distance, block

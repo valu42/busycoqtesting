@@ -42,6 +42,21 @@ class GuardTests(unittest.TestCase):
                 self.assertEqual(literal_call(vm, 'B'), 'B')
                 self.assertEqual(vm.steps, 2+7*n-4*n.bit_count()+8*width)
 
+    def test_every_nonimmediate_B_exit_leaves_a_pair(self):
+        checked = 0
+        for digits in itertools.product(range(5), repeat=4):
+            for entry in 'AB':
+                vm = TapeMachine(MACHINE, digits)
+                if literal_call(vm, entry) != 'B' or vm.steps == 1:
+                    continue
+                x = 0
+                while vm.tape.get(x, 0) == 2:
+                    x += 1
+                self.assertEqual(vm.tape[x], 4)
+                self.assertIn(vm.tape[x+1], (2, 4))
+                checked += 1
+        self.assertEqual(checked, 165)
+
     def test_partial_register_on_unrestricted_tails(self):
         normal = 0
         for width in (1, 2, 3):
@@ -60,6 +75,9 @@ class GuardTests(unittest.TestCase):
         self.assertGreater(normal, 40)
 
     def test_one_cell_switch_at_the_outer_guard(self):
+        for n in range(8):
+            vm = TapeMachine(MACHINE, [0, 3]+register(n, 3))
+            self.assertEqual(literal_call(vm, 'A'), 'halt' if n == 1 else 'A')
         for k in range(1, 9):
             d = 3**k
             width = d.bit_length()+1
@@ -123,23 +141,26 @@ class GuardTests(unittest.TestCase):
     def test_fibonacci_family_of_forced_halts(self):
         fib, successor = 1, 1
         for k in range(1, 9):
-            found = 0
+            found = with_pair = 0
             for digits in itertools.product('02', repeat=k):
                 word = ''.join(digits)
-                if word[0] != '0' or word[-1] != '0' or '22' in word:
+                if word[0] != '0' or '22' in word:
                     continue
-                found += 1
+                with_pair += 1
                 offset = int(word, 3)
-                self.assertEqual(rank_return(k, offset)['outcome'], 'safe')
                 j = 3**k+offset
                 width = j.bit_length()
-                local = rank_return(k, j)
-                self.assertTrue(local['ternary_propagation'])
+                if word[-1] == '0':
+                    found += 1
+                    self.assertTrue(rank_return(k, j)['ternary_propagation'])
+                self.assertEqual(rank_return(k, offset, paired=True)['outcome'], 'safe')
+                local = rank_return(k, j, paired=True)
                 self.assertEqual((local['outcome'], local['head_from_guard']), ('halt', 0))
                 vm = TapeMachine(MACHINE, [0, 3]+[2]*k+register(j, width))
                 self.assertEqual(literal_call(vm, 'A'), 'halt')
                 self.assertEqual((vm.head, vm.steps), (0, 9*j+2*k+5-4*j.bit_count()+8*width))
             self.assertEqual(found, fib)
+            self.assertEqual(with_pair, successor)
             fib, successor = successor, fib+successor
 
     def test_fixed_cut_absolute_clock_and_followup_calls(self):
