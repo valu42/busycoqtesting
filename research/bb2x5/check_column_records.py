@@ -62,6 +62,20 @@ def root_replay(records, limit):
     assert result == [r for r in records if r[0]<=limit]
 
 
+def anchored_calendars(records):
+    by_old = {old: b for _, old, b, _, _ in records}
+    gaps = [9]
+    for j in range(3, 16):
+        first, second = gaps[0], gaps[1 % len(gaps)]
+        assert (j in by_old) == (first % 2 == 0)
+        if j in by_old:
+            assert second == by_old[j]
+        next_gaps = lift(gaps)
+        increase = 1 if first % 2 else (second + 1) // 2
+        assert next_gaps[0] == first + increase
+        gaps = next_gaps
+
+
 def phase_window(gaps, start, count):
     """Return each record margin relative to the starting margin."""
     u,e,width = 0,1,0
@@ -110,6 +124,7 @@ def main():
         run_bound += (run_bound+1)//2
     assert 3*run_bound < 2**52 and p['record_depth']+52 <= p['width']
     gap_walk()
+    anchored_calendars(records)
     root_replay(records,200000)
     previous_tick, previous, width = 1,4,5
     gains = []

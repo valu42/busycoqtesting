@@ -19,6 +19,19 @@ Let b be the number of P arriving at j strictly after its record Q and before th
 
 Thus **ΔC=floor((b+1)/4)−1**. Only b=0,1,2 cost a unit. Gaps 3 through 6 break even. Larger gaps buy at least one unit. A gap cannot cost more than one. From the seed C=1, blank nonhalting is equivalent to every prefix sum of these changes being nonnegative. The first negative prefix reaches C=0 exactly and the physical Q reaches the undefined B3. This criterion uses the actual chronological gaps at successively changing cuts.
 
+## The relevant phase is fixed at every depth
+
+In the ordinary calendar at full cut j, write gⱼ for the number of P before its **first** Q, and bⱼ for the number of P between its **first and second** Q. Read across the periodic boundary where necessary. Both are defined even if the physical machine were eventually to halt.
+
+**A cut j≥3 is a record stop exactly when gⱼ is even. At every such cut the gap in the margin recurrence is exactly bⱼ.** Before the first Q reaches j, its e bit is zero and its u bit has toggled gⱼ times. An even gⱼ stops the first Q there. An odd gⱼ passes it, so a later stop at j can never set a record. This pins the relevant phase to gap index 1 at every record, including records beyond the computed trace.
+
+There is a second, depth-by-depth version of the target. Start with g₃=9. When gⱼ is odd the first Q passes, and the initially zero pair has sent gⱼ+1 safe tokens. When gⱼ is even the first Q stops after emitting gⱼ safe tokens from the initial safe run. The next bⱼ inputs emit ceil(bⱼ/2) more, then the second Q passes. Hence
+
+* for odd gⱼ, gⱼ₊₁=gⱼ+1;
+* for even gⱼ, gⱼ₊₁=gⱼ+ceil(bⱼ/2).
+
+The virgin tail allocates on alternating safe inputs, starting with the first, so p(j)=ceil(gⱼ/2). Consequently nonhalting is equivalent to **gⱼ−2j≥1 for every j≥3** (the seed covers the lower cuts). This formulation requires just the first two gaps at each cut and has no unknown phase variable. It also gives a direct check of the trace: its row beginning at depth 94 gives g₉₄=400 (the stop is a record and p(94)=200), b₉₄=14, g₉₅=407, and g₉₆=408.
+
 ## A candidate induction and a phase counterexample
 
 The 61 observed transitions give the following smallest net changes over all contiguous windows of each length.
