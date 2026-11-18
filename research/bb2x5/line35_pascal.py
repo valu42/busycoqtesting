@@ -33,6 +33,37 @@ def next35(centers):
     return tuple(result)
 
 
+def check_left_cut(seed):
+    start = tuple(seed[:8])
+    states = [start]
+    seen = {start}
+    edges = set()
+    largest = 0
+    for prefix in states:
+        for debt in range(5):
+            word = prefix+(2,)*debt+(1,2)
+            new,low = word_sweep(word,TERNARY_CLOSE)
+            m = TapeMachine(TERNARY_CLOSE,word,left=1)
+            assert new is not None and direct_epoch(m,(1,2,3)) == new
+            dest = tuple(new[:8])
+            largest = max(largest,-low)
+            edges.add((prefix,dest))
+            if dest not in seen:
+                seen.add(dest)
+                states.append(dest)
+    assert (len(states),len(edges),largest) == (71,310,5)
+    prefix = start
+    for d in (2,5,2,5):
+        new,low = word_sweep(prefix+(2,)*d+(1,2),TERNARY_CLOSE)
+        if new is None:
+            assert low == -6 and prefix == (2,1,3,2,3,2,1,3)
+            break
+        prefix = tuple(new[:8])
+    else:
+        raise AssertionError('the exterior-debt-five witness must escape')
+    print('eight-cell cut: 71 safe prefixes, 310 ordered pairs, 355 literal checks, maximum guard debt 5')
+
+
 def main():
     machines = Path(__file__).with_name('BB2x5_Rocq_holdouts_37.txt').read_text().splitlines()
     assert machines[34] == TERNARY_CLOSE == '1RB2LA4RA1LA3LA_0LA3RB3LB2RB---'
@@ -73,6 +104,7 @@ def main():
         if epoch == 5:
             assert m.steps == 97 and m.head == -5 and word == list(map(int,'213111112'))
             assert centers35(word)[0] == 2
+            check_left_cut(word)
         if epoch >= 5 and epoch%2:
             current = centers35(word)
             assert current[:len(previous)] == next35(previous)

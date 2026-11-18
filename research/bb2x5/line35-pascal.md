@@ -40,4 +40,14 @@ $$
 $$
 the first $k$ triples have joined, provided that many sweeps succeed. This proves eventual coverage of every fixed right suffix on any infinite blank run, and bounds the debt it can transmit. The untreated middle of the growing tape can still send additional debt to the guard. At epoch 1,001 the computed word has 2,037 cells with 459 covered triples beyond the two boundary cells.
 
+## What a halt would require in the middle of the tape
+
+Let $d_8$ be the debt sent from the cells strictly after the first eight. **If $d_8\le4$ at every epoch from epoch 5 onward, line 35 never halts.** The finite calculation has 71 prefixes and only 355 cases.
+
+For a given eight-cell prefix $P$, the incoming exterior debt determines which of its openings survive and how much debt reaches the left guard. The resulting header depends only on the guard debt $H$. For $H=0,1,2,3,4,5$ the six physical headers respectively are `2`, `1`, `3`, `1323`, `1313`, `1331`. The virtual left survivor bit for the first old digit is respectively $1,1,0,0,0,0$. In the reset cases the wall and rewritten old guard supply the extra header digits. Applying $D$ to $P$ now determines the entire next eight-cell prefix. Thus one may realize exterior debt $d$ with the canonical completion $P C^d OC$ in matching roles, regardless of the rest of the actual tape.
+
+Start with the true prefix at epoch 5. Repeatedly compute all five successors for exterior debts zero through four. The reachable set closes on 71 prefixes and 310 distinct ordered pairs, with maximum guard debt five. The verifier also carries out all $71\cdot5$ canonical sweeps on the literal two-state machine. Allowing exterior debt five in this same abstraction admits a failure on the successive choices $2,5,2,5$. Those choices refer to independent exterior completions. They have no established realization on the blank orbit.
+
+Consequently a true halt requires some earlier or current epoch with $d_8\ge5$. Whenever the covered right suffix (the two-cell boundary and its Pascal triples) lies after this cut, the intervening middle word must itself have debt at least four on the intermediate phase, or five on the covered odd phase. Indeed the debt of a concatenation of a middle word and a suffix is at most the sum of their debts, and the covered suffix contributes at most one or zero respectively. A proof that the untreated middle never sends sufficient debt would complete the argument.
+
 Run `python3 line35_pascal.py` in this directory. Its check covers every input ending in a closing through length eight, including successful guard resets and all six possible debts of a successful word, and compares the blank prefix with literal TM execution. [Source](line35_pascal.py) · [Observed output](line35-pascal-verification.txt)
