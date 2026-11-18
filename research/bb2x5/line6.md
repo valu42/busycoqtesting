@@ -42,6 +42,8 @@ Let $N(w)$ count occurrences of 2 in $w$. Induction on any completed derivation 
 
 For the first three pair rules, compare the number of twos in the old and new prefixes. In the `30` rule a B result becomes an A result and the new prefix gains one 2. In the `2u` table the first and second results each contribute one surplus 2 precisely when they are A. The four new prefixes `23`, `32`, `3` and `0` contain respectively one, one, zero and zero twos. Subtracting the initial 2 yields the stated identities in all four cases. Every A result in either table explicitly starts with `0` or `32`.
 
+In fact every A residual has the form `(32)^j 0s`. Each A entry in the tables either adds a leading 0 or prepends `32` to a subordinate A residual, proving the claim by induction on the derivation. The boundary of a finitely stored word supplies implicit zeros. The next probe therefore gives exactly `b((23)^j s)` in $8j+1$ steps by the `32` and base rules. In the two-call table a first A result consequently forces a second B result. The displayed A/A row describes a conditional local trace with an unreachable pair of subordinate results. No additional probe into $s$ is required in this branch.
+
 Now induct lexicographically on $(N(w),L(w))$, where $L(w)$ is the length after trimming trailing zeros. The base rule on 0 terminates immediately. The first recursive call in every other rule strips a prefix. It decreases the number of twos or preserves that number and strictly shortens the stored word. A first-call halt propagates. In the sole two-call rule, on input `2u`, consider the remaining call after $F(u)$ returns.
 
 * A first result `b(v)` gives $N(v)=N(u)<N(2u)$, so the induction hypothesis applies to the second call.
@@ -58,6 +60,20 @@ The blank word is admissible, and a successful epoch prepends `32` to a B residu
 The blank machine runs forever exactly when $F(2^n)$ returns B for every $n≥0$. The totality proof makes each of these individual tests finite. More precisely, suppose the tests through $n$ all succeed, and write their last result as $b(v)$. The blank checkpoint at extension $n+1$ has word `32v`. Its time is the defined-step cost of the single probe $F(2^n)$ plus $n+2$.
 
 For $n=0$, the B probe on the blank takes one step, and the first left extension has word `32` at step 3. For the induction step compare $F(2^{n+1})$ and the actual next checkpoint probe $F(32v)$. In the unary test the first call gives the assumed $b(v)$, so both probes now reduce to the same call $F(v)$. On a B result both give a B result with prefix `23` attached to the same residual. On an A result both give an A result with prefix `32`. An internal halt of $F(v)$ propagates to both. Thus a first failing unary test detects the epoch in which the blank machine halts. On success the unary probe includes nine local steps in addition to its two subprobes. The blank epoch includes eight local probe steps and two outer steps in addition to $F(v)$. The time offset therefore increases by one, as claimed. Which unary inputs, if any, fail this test remains open.
+
+## A direct test at a blank checkpoint
+
+At extension 2 the blank word is `3223`. All later completed checkpoints have the form `3223w`. Write $G(w)=F(23w)$. If $G(w)=b(v)$, applying the `32` rule to the checkpoint gives $b(23v)$ and the next checkpoint is `3223v`. Thus the machine iterates the residual of $G$ starting from the empty word, halting on its first A result or internal halt.
+
+The tag of $G(w)$ has a shorter test. Read the first symbol, treating the empty stored word as starting with 0, and let $z$ be the remaining word. In all rows below an internal halt in any requested probe propagates.
+
+| Leading symbol of $w$ | When $F(z)=a(v)$ | When $F(z)=b(v)$ |
+|---|---|---|
+| 0 | halt | B |
+| 2 | B | Replace $w$ by $v$ and repeat the test |
+| 3 | B | Return the tag of $F(v)$ |
+
+For a leading 0, the first call in the `2` rule for $F(230z)$ is $F(30z)$. It either halts or returns A, and a first A forces a second B as proved above. For a leading 2, the first call is $F(32z)$. Its A case again forces a second B. Its B case leaves `23v` for the second call, giving exactly $G(v)$. Here $N(v)=N(z)<N(w)$, so the loop is finite. For a leading 3, the first call is $F(33z)$. Its B result leaves `33v` for the second call, which has exactly the tag of $F(v)$. This proves the table. In particular, reaching an A result requires eventually reading a 3 whose suffix produces B and then A on two consecutive probes of the residual. A first halt may occur earlier, as specified by the table.
 
 ## A prefix that persists on the blank orbit
 

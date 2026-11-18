@@ -83,6 +83,24 @@ def probe(word):
             return Result(state, None if word is None else word.rstrip("0"), steps)
 
 
+def active_tag(word):
+    """Tag of F(23w), using strict decrease in the number of twos."""
+    if any(digit not in "023" for digit in word):
+        raise ValueError("probe words use only 0, 2 and 3")
+    while True:
+        first = word[:1] or "0"
+        result = probe(word[1:])
+        if result.state == "H":
+            return "H"
+        if first == "0":
+            return "H" if result.state == "A" else "B"
+        if result.state == "A":
+            return "B"
+        if first == "3":
+            return probe(result.word).state
+        word = result.word
+
+
 def literal_probe(word, limit=500_000):
     tm = TapeMachine(MACHINE, map(int, word))
     tm.state = "B"
@@ -131,6 +149,7 @@ def audit():
     for n in range(8):
         for digits in product("023", repeat=n):
             word = "".join(digits)
+            assert active_tag(word) == literal_probe("23"+word).state
             result = probe(word)
             assert result == literal_probe(word), word
             if result.state != "H":
@@ -139,7 +158,12 @@ def audit():
                     assert "02" not in result.word and "222" not in result.word
                     assert result.state != "B" or not result.word.startswith("22")
                 if result.state == "A":
-                    assert not result.word or result.word.startswith(("0", "32"))
+                    j = 0
+                    while result.word[2*j:2*j+2] == "32":
+                        j += 1
+                    tail = result.word[2*j:]
+                    assert not tail or tail.startswith("0")
+                    assert probe(result.word) == Result("B", ("23"*j + tail[1:]).rstrip("0"), 8*j+1)
             count += 1
     print(f"{count} finite input words match the literal return, word and step count.")
     # Independently compare full checkpoint words from the blank orbit.

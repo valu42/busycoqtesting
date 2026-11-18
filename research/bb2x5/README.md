@@ -17,6 +17,8 @@ The first four rows are developed in [the research log](research-log.md). The ea
 
 The [integer-register derivation](marked-register.md) proves the line-17 running-time bound and describes the remaining branch question. The [column-frontier derivation](column-frontier.md) gives the line-26 fixed-point criterion and a safety bound between width increases. The [parity-sweep derivation](parity-bulk.md) proves eventual global parity uniformity for the boundary-free line-36 data dynamics.
 
+The [line-4 scalar return map](line4-scalar.md) verifies one million returns from blank and a lower bound of $10^{1,719,137}$ defined steps. The [six-phase line-36 tilings](line36-tiles.md) describe a growing prefix observed on blank, and the [right-boundary bound](line36-right-cap.md) controls part of the matching debt. The [line-37 stream recurrence](line37-stream.md) gives an exact blank halting test, with [a finite splicing example](line37-splice.md) showing how an altered tape can shadow the same cuts. On line 6, the [word recurrence](line6.md) gives a halting test on successive left extensions.
+
 From the repository root, run these checks with Python 3.10 or later, with assertions enabled. They use only the standard library.
 
 ```sh
