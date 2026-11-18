@@ -1,0 +1,15 @@
+{
+  "payload": {
+    "format": "bb2x5-window-v1",
+    "line": 32,
+    "machine": "1RB3RB1LB2RA---_2LA2RB1LA4LB0RA",
+    "steps": 10000000000,
+    "head": 73610,
+    "state": "B",
+    "status": "unknown",
+    "left": -6377,
+    "cells": 95760,
+    "tape_zlib_base64": "eNrt0dGqwkAMRdE24/9/syAIPohgndpMsvJyvNomZ+87YosRsY0r8vExQgghhBBCCCGEEEIIIYQQQghRPF4++PP9F5d9/eEHP/v5yAMe81jax754sN3jB17w2vwXvf7j6xMWWGONNdYsuWbiIuuss84663IttHbRtScutt5666233vqVDjjjjDPOOONMuTN/POScc9kPOutstcPOO++88853O5+ggBpqqKGGGqWKqKOOOuqoo4466qijkFpqta2VuJh66qmnnnrqqaeeeuopqKaaaqqppppqqqmmmmpWLKquuuoqrLbaaiuuvvrqq98B4IlRg6PQvwQKFChQoECBAgUKFCgFUYrBQIIECRIkSJAgQYIECRKkZkhFoaBBgwYNHESIECFChAgRIkSIECFChAgRJFSoUKFChQoVKlSoUKFChQoVLGTIkCFDBg0dOnTo0MFTQAEFFFBAAQUUUEABBRRQQAEFFFBAAhVUUEEFFVRQQQUVVFBBBRVUUEEFFWRQQgklhhJKSKGGGmqooYYaaqgx1FBDDTXUUEMNNdSQYyiiiCKKKKKIIooMRRRRRBFFFFFEkaGIJKqooooqQxVZlFFGGWWGMtKoK6Gug7v9pLnthjrqyKPQUEghhRQaCimkkEJDIYUUUmgopJBCCg2JVFJpqKSSSioNlVRSaaikkkoqDZVUUmmoJJNSSg2llFJqSCW2w0QTvXdq56lN"
+  },
+  "sha256": "652486d452e9b753dc39dcbc5b73f4ca1177f0ac1c3d37c95cc047522e4e1b19"
+}

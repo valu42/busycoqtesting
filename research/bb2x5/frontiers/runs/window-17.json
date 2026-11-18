@@ -1,0 +1,15 @@
+{
+  "payload": {
+    "format": "bb2x5-window-v1",
+    "line": 17,
+    "machine": "1RB2RA3LB---2LB_2LA0LA4RB0RB1LA",
+    "steps": 100000000,
+    "head": -1284,
+    "state": "A",
+    "status": "unknown",
+    "left": -6116,
+    "cells": 6128,
+    "tape_zlib_base64": "eNrt1MENACEIRNFxoP+ahUg224Lx52UEvMPKlBMAAAAAAAC4ki0vXMtRqarR/Ym+/zMBzwr971woKr0VU/udvdnXJz64"
+  },
+  "sha256": "38bab07268163395e76e5121ad96af1a72eb72bd57020cd0d7a0c4ba7c8e8824"
+}

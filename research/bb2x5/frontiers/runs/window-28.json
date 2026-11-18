@@ -1,0 +1,15 @@
+{
+  "payload": {
+    "format": "bb2x5-window-v1",
+    "line": 28,
+    "machine": "1RB3LB4LA0LB---_2LA0LA1RB0RA3RA",
+    "steps": 10000000000,
+    "head": -158944,
+    "state": "B",
+    "status": "unknown",
+    "left": -224005,
+    "cells": 224027,
+    "tape_zlib_base64": "eNrt2jEKwCAMQFET739nKYVW0EHooNBHfx+ZM6oRJSRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRptSg16/WTJMm92gJJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiT5d+/JJkiSJEmSJEmSJEmS5MmvG7xwIEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEnudjaRJEmSJMlvvp9dkCRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiTzme2CJEmSJEmSJMnxDN0WunuEbL/y6ys="
+  },
+  "sha256": "9273051d3783e60c46ccb00fb5472a4404fe6af150c7c1b2a8084fb365781d1c"
+}

@@ -1,0 +1,15 @@
+{
+  "payload": {
+    "format": "bb2x5-window-v1",
+    "line": 16,
+    "machine": "1RB2LA0RB0LB3LB_2LA4RB3RA0RA---",
+    "steps": 10000000000,
+    "head": 103084,
+    "state": "A",
+    "status": "unknown",
+    "left": -22,
+    "cells": 157560,
+    "tape_zlib_base64": "eNrt20EKgCAQQNEZvf+dEwIlClym+Oj30K24dLJmjfbfX/Td268VeYrj7jsLkiRJkiRJkiRJkiRJkiRJklzV2WwESZIkyT1nPJ0ESZIkSZIkSZIkSZIkSZIkSZJ/TvCmd/4kSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZLkYpYokiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkh5di4b+Mw=="
+  },
+  "sha256": "2c3efe4663bc0b13b42eea1c91db14c34a13cb12abfa6adebea4319daf9a6569"
+}

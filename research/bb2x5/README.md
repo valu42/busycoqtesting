@@ -1,5 +1,7 @@
 # BB(2,5) holdout research
 
+[Simulation table for all 37 holdouts](SIMULATION_TABLE.md) · [Run and resume the simulators](frontiers/README.md)
+
 These notes record partial results on the November 3, 2026 list of 37 formal holdouts. Each machine is identified by its full transition string. All line numbers here are **one-based positions in that exact file**. The scripts use an initially blank, two-way infinite tape, state A and head coordinate zero. An undefined instruction halts on arrival. No blank-tape decision or Rocq theorem is claimed in this directory.
 
 | Formal line | Machine | Result to continue from |
