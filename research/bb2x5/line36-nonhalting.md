@@ -2,7 +2,7 @@
 
 **Theorem.** Start `1RB2LA1LA4RA2LA_0LA3RB3LB2RB---` in state A on an all-zero, two-way-infinite tape. Its execution never reaches the undefined instruction B4. This is the machine on line 36 of the [November 3 list](BB2x5_Rocq_holdouts_37.txt).
 
-The proof starts with 612,729 literal instructions and then uses induction. Two finite integer calculations establish inequalities on opposite sides of a moving cut. The inequalities have exactly the rates needed to keep the cut away from the left guard for every future sweep. A Rocq formalization remains outstanding.
+The proof starts with 612,729 literal instructions and then uses induction. Two finite integer calculations establish inequalities on opposite sides of a moving cut. The inequalities have exactly the rates needed to keep the cut away from the left guard for every future sweep. The [Rocq development](line36-rocq.md) records the kernel-checked results and the status of the end-to-end theorem.
 
 ## Sweeps, tiles and the cut
 
