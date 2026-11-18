@@ -1,0 +1,5 @@
+Exact finite boundary formulas agree through length 9; alternating terminal phase checked on blank.
+Cluster and padded data sweeps agree for lengths 1..9; literal TM replays agree for lengths 1..4.
+Triangular clearing-time bounds and subsequent Rule 90 evolution agree on finite windows.
+Power-of-two Rule 90 jumps agree through 32 bulk sweeps.
+Finite tape witness 1121 -> 222122 increases parity changes from 0 to 3.
