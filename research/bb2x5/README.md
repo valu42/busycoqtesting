@@ -7,7 +7,7 @@ These notes record results on the November 3, 2026 list of 37 formal holdouts. E
 | Formal line | Machine | Result to continue from |
 |---:|---|---|
 | 17 | `1RB2RA3LB---2LB_2LA0LA4RB0RB1LA` | The first visit to coordinate 12 takes more than 10³⁶ elementary steps. A single integer tracks marked events through the 397-pair homogeneous block. The unresolved step selects the suspended word from the true periodic stream. |
-| 26 | `1RB2RB4LA2RA1LA_2LA4RA3LA---3RA` | Blank halting is equivalent to a least fixed point of a nondecreasing integer function. The verified iteration reaches 142 and excludes a fixed point below 142. |
+| 26 | `1RB2RB4LA2RA1LA_2LA4RA3LA---3RA` | Blank halting is equivalent to a least fixed point of a nondecreasing integer function. All fixed points through 151 are excluded. A finite automaton on the checkpoint tape cannot certify survival. [Proof and raw-step bound](column-phases.md) |
 | 2 | `1RB---4LB0LA4RA_2LB2LA3RA4LB0RB` | A fixed-cut protocol replaces the growing left half. The negative prefix is exact through 2,400 extensions from blank. |
 | 10 | `1RB2RB3LA4LA1LA_2LB3RA---4RA1RB` | Three leading A entries at the fresh edge halt. Cyclic period counts are known. The starting position matters. |
 | 3 | `1RB---0RB0LA2RA_2LB2LA3RA4LB0LB` | Mixed binary/ternary macros give a lower bound exceeding 10¹⁵⁰ defined steps from blank. Higher reset branches remain open. |
@@ -27,6 +27,7 @@ python3 verify.py
 python3 mixed_and_sweeps.py
 python3 marked_register.py
 python3 column_frontier.py
+python3 column_phases.py
 python3 parity_bulk.py
 ```
 

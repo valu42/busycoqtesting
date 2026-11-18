@@ -1,0 +1,21 @@
+maximum consecutive Q, cuts 3..15: [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4, 4]
+upper bound at cut 78: 524409302061
+one cycle on all paired residues verified through 6 columns
+plateau formula checked on 1584 gap triples
+successive negative-tail passes (tick, sufficient low width): [(1, 4), (6, 8), (18, 10), (58, 15), (217, 20), (596, 24), (1792, 28), (6793, 32), (8656, 32), (25684, 35), (63433, 38)]
+every suffix of 0 pairs fails by tick 1 above 4 all-one pairs
+every suffix of 1 pairs fails by tick 6 above 8 all-one pairs
+every suffix of 2 pairs fails by tick 58 above 15 all-one pairs
+every suffix of 3 pairs fails by tick 6793 above 32 all-one pairs
+literal nonblank witness: k 8 spare 1 defined steps 8680 B3 at 25
+literal nonblank witness: k 15 spare 2 defined steps 665166 B3 at 41
+p(71) = 142, first Q at tick 1268654660
+p(72) = 142, first Q at tick 1268654660
+p(73) = 143, first Q at tick 1343882677
+p(74) = 143, first Q at tick 1343882677
+p(75) = 144, first Q at tick 1380832725
+p(76) = 144, first Q at tick 1380832725
+p(77) = 147, first Q at tick 2465019328
+p(78) = 151, first Q at tick 4636999907
+gaps processed at cut 16: 110162401
+gaps processed at cut 17: 82621428

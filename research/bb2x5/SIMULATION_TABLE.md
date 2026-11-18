@@ -31,7 +31,7 @@ The endpoint column gives the largest exact raw count indexed in this repository
 | 23 | `1RB3LA3LB0RB0LA_2LA4RB1LB1RA---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-23.json) |
 | 24 | `1RB3LA1LA2RB2RA_2LA4RA3LB1RA---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-24.json) |
 | 25 | `1RB2LB3LA0RA1LB_2LA4RA3RB3LA---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-25.json) |
-| 26 | `1RB2RB4LA2RA1LA_2LA4RA3LA---3RA` | 100,000,000 | — | — | [Moving window](frontiers/runs/window-26.json) |
+| 26 | `1RB2RB4LA2RA1LA_2LA4RA3LA---3RA` | 100,000,000 | [≥ 2,752,226,320,489,425,129,509](column-phases.md#a-time-stamped-bound-from-the-actual-blank-tape) | — | [Moving window](frontiers/runs/window-26.json) |
 | 27 | `1RB3LB---4LA1RB_2LA4LA4LB3RB1RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-27.json) |
 | 28 | `1RB3LB4LA0LB---_2LA0LA1RB0RA3RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-28.json) |
 | 29 | `1RB3RB---3LA1RA_2LA3RA4LB0LB1LB` | 4,124,222,829 | — | — | [Block simulator](accelerator-results/line-29-level-12.json) |
