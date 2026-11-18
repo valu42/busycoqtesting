@@ -96,6 +96,11 @@ def generate():
     p = line7.load(path)
     consider(7, p['machine'], int(p['steps_hex'], 16), path, 'Batched suffix calls')
 
+    from line35_band import load_checkpoint
+    path = RUNS/'line35-band.json'
+    record, _ = load_checkpoint(path)
+    consider(35, record['machine'], record['steps'], path, 'Timed sweeps with a Pascal suffix')
+
     from line4_orbit import blank_returns
     path = RUNS/'line4-return.json'
     doc = json.loads(path.read_text())
