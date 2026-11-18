@@ -100,6 +100,8 @@ Inherited exact boundary simulation and BBABA left driver. The new complete loca
 
 ### Line 9
 
+**Handoff update.** Guarded BBA sweeps. Exceptional suffix reachability open. The concurrent branch gives a blank survival floor of 6,755,400,984,549,769 raw instructions. [Timed method, checkpoint and verification](https://github.com/valu42/busycoqtesting/blob/f8aad726409eb538d288f079898ee56197ef794f/research/bb2x5/line9-sweeps.md)
+
 `1RB---4RB2RB4LA_2LB3LA3LB0RA0RB`
 
 **Inherited floor:** 10^10. **Outlook:** Unknown. **Estimated halting time:** none justified.
@@ -140,6 +142,8 @@ Inherited three-cell driver has a periodic fixed word and a fresh-block AA trigg
 
 ### Line 14
 
+**Handoff update.** Exact strides. No all-time exclusion of B3. The concurrent branch gives a blank survival floor of 1,000,000,000,000,000 raw instructions. [Timed method, checkpoint and verification](https://github.com/valu42/busycoqtesting/blob/f8aad726409eb538d288f079898ee56197ef794f/research/bb2x5/frontiers/six-cell-strides.md)
+
 `1RB2RA4LA1RB4RB_1LB2LA3RA---0LB`
 
 **Inherited floor:** 10^10. **Outlook:** Unknown. **Estimated halting time:** none justified.
@@ -159,6 +163,8 @@ Only B4 is undefined. An inherited blank-left response certificate has prefix BB
 **Next concrete step:** Establish a right-block return contract or locate the concrete incompatible-return branches.
 
 ### Line 16
+
+**Handoff update.** Exact strides. No all-time exclusion of B4. The concurrent branch gives a blank survival floor of 1,000,000,000,000,000 raw instructions. [Timed method, checkpoint and verification](https://github.com/valu42/busycoqtesting/blob/f8aad726409eb538d288f079898ee56197ef794f/research/bb2x5/frontiers/six-cell-strides.md)
 
 `1RB2LA0RB0LB3LB_2LA4RB3RA0RA---`
 
@@ -190,6 +196,8 @@ Only A3 is undefined; the community describes spaghetti dynamics and reports ≥
 
 ### Line 20
 
+**Handoff update.** An internal B return on period 330 was absorbed. The concurrent branch gives a blank survival floor of ≈ 6.00000 × 10^22 raw instructions. [Timed method, checkpoint and verification](https://github.com/valu42/busycoqtesting/blob/f8aad726409eb538d288f079898ee56197ef794f/research/bb2x5/frontiers/line20-returns.md)
+
 `1RB2RA3LA4LA2RB_2LA---3LB1RA3RA`
 
 **Inherited floor:** 10^10. **Outlook:** Unknown. **Estimated halting time:** none justified.
@@ -210,6 +218,8 @@ Only B4 is undefined. The community calls it a permutation of a spaghetti machin
 
 ### Line 24
 
+**Handoff update.** Exact guard and chronological exceptional returns. The concurrent branch gives a blank survival floor of ≈ 1.77089 × 10^21 raw instructions. [Timed method, checkpoint and verification](https://github.com/valu42/busycoqtesting/blob/f8aad726409eb538d288f079898ee56197ef794f/research/bb2x5/frontiers/line24.md)
+
 `1RB3LA1LA2RB2RA_2LA4RA3LB1RA---`
 
 **Inherited floor:** 10^10. **Outlook:** Unknown. **Estimated halting time:** none justified.
@@ -229,6 +239,8 @@ Only B4 is undefined. A community analysis link exists, but no accessible substa
 **Next concrete step:** Extract and verify a repeated macro configuration around the prospective B4 event.
 
 ### Line 26
+
+**Handoff update.** A single dyadic clock now determines the first dangerous arrival at each width. The clock can decrease on the ordinary blank orbit. A uniform bound at record times would settle nonhalting. [Clock identity and decrement proof](https://github.com/valu42/busycoqtesting/blob/12c4acdce3310d435190895136f65826a702f1c8/research/bb2x5/column-reserve.md#one-clock-for-all-blank-first-arrivals)
 
 `1RB2RB4LA2RA1LA_2LA4RA3LA---3RA`
 
@@ -253,6 +265,8 @@ Only A2 is undefined. The community labels this a potential cryptid and links mx
 **Next concrete step:** Recover the linked arithmetic interpretation, match the full string, and certify its blank initialization.
 
 ### Line 28
+
+**Handoff update.** Exact strides. No all-time exclusion of A4. The concurrent branch gives a blank survival floor of 1,000,000,000,000,000 raw instructions. [Timed method, checkpoint and verification](https://github.com/valu42/busycoqtesting/blob/f8aad726409eb538d288f079898ee56197ef794f/research/bb2x5/frontiers/six-cell-strides.md)
 
 `1RB3LB4LA0LB---_2LA0LA1RB0RA3RA`
 
@@ -319,6 +333,8 @@ The inherited matching sweep treats 1 as opening, 2 as closing, 3 as neutral. Si
 The rightmost triples join a Pascal-mod-2 recurrence after a computably bounded number of successful sweeps. At the left, the transition graph on eight-cell prefixes from the actual seed has 71 states when incoming debt is bounded by four. Each of its 355 state/debt pairs completes safely. A true halt therefore requires incoming debt at least five at some epoch. A graph path using that fifth unit is an overapproximation until its exterior is shown reachable. Bound the middle word's debt as the right triples grow. [Derivation, tests and source](../line35-pascal.md)
 
 ### Line 36
+
+A concurrent update publishes the independent Coq 8.20.1 clean build and the full printed assumptions for the literal theorem. [Kernel replay transcript](https://github.com/valu42/busycoqtesting/blob/12c4acdce3310d435190895136f65826a702f1c8/research/bb2x5/line36-kernel-replay.txt)
 
 `1RB2LA1LA4RA2LA_0LA3RB3LB2RB---`
 

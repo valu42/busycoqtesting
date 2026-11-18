@@ -47,6 +47,10 @@ The table keeps the reviewed earlier outlooks for the open machines. On line 36,
 
 The next proof target is **34**. Its unresolved claim is a single inequality on the actual tape at a fixed cut. The public branches and recent commits at intake included active work on 13, 17, 26 and 35–37. This pass used a separate research branch and left the simulation table intact. The search identifies public work only.
 
+## Concurrent results checked at handoff
+
+Master advanced to [12c4acd](https://github.com/valu42/busycoqtesting/blob/12c4acdce3310d435190895136f65826a702f1c8/research/bb2x5/ROADMAP.md) during this pass. Another agent published [nine targeted simulations](https://github.com/valu42/busycoqtesting/blob/f8aad726409eb538d288f079898ee56197ef794f/research/bb2x5/SIMULATION_TABLE.md). We matched both revisions against all 37 complete strings and inspected their checkpoint tables and derivations. Their new floors on 9, 14, 16, 17, 20, 24, 28 and 29 appear as inherited evidence. The stronger existing outlook bounds on 3 and 30 continue to take precedence. The table also incorporates the updated line 26 clock and independent line 36 kernel replay. The starting simulation table and its intake hashes remain pinned at 01b0a10. The master [research board](https://github.com/valu42/busycoqtesting/blob/master/research/bb2x5/ROADMAP.md) indexes this page and its open line 34 proof obligation.
+
 ## Historical intake at 2ab106f
 
 The following sections describe the **earlier** outlook pass at 680c696. In these historical sections, “new”, “this pass” and the transcript results refer to that work. Current labels and bounds are in the [outlook table](../HALTING_OUTLOOK.md).

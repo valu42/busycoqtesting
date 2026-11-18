@@ -134,6 +134,8 @@ conditional halting-time percentile is calibrated here.
 
 <a id="line-29"></a>
 
+**Handoff update.** A concurrent full-string timed replay gives ≈ 1.09706 × 10^1030 raw instructions on line 29. [Method and checkpoint](https://github.com/valu42/busycoqtesting/blob/f8aad726409eb538d288f079898ee56197ef794f/research/bb2x5/frontiers/hydra.md)
+
 ## Line 29: related drift with an exceptional branch
 
 In the primary article's form `D(a,b)=0^∞ [B on 0] 0^a 3^b 2 0^∞`, the

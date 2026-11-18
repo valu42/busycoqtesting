@@ -7,7 +7,9 @@ Research pass: **2026-11-18**. No formal proof assistant verification was perfor
 
 ## Current repository result
 
-At the latest intake the repository had completed **6 × 10²⁸ ordinary sweeps**, at approximately 5.04000 × 10⁵⁸ defined instructions. The later cut-rank calculation puts the next visit to +12 before **3.176 × 10³⁴⁴** defined instructions. The actual marks at slots 9 and 10 of cut 418 select the branch. Finite continuations with the same initial period can give three distinct outcomes at this cut. The repeating blank-source period therefore matters. These bounds supersede the older continuation below and constrain the next opportunity only. [Exact checkpoint](../frontiers/runs/line17-epochs.json) · [Return test and proof of clock bound](../line17-edge-time.md)
+**Handoff update.** The active simulation reached 10^29 normal sweeps and pair 175 at ≈ 1.40000 × 10^59 raw steps. The upper bound on visiting +12 still applies. [Exact checkpoint](https://github.com/valu42/busycoqtesting/blob/12c4acdce3310d435190895136f65826a702f1c8/research/bb2x5/frontiers/runs/line17-epochs.json) · [First-visit analysis](https://github.com/valu42/busycoqtesting/blob/12c4acdce3310d435190895136f65826a702f1c8/research/bb2x5/line17-edge-time.md)
+
+At the opening intake the repository had completed **6 × 10²⁸ ordinary sweeps**, at approximately 5.04000 × 10⁵⁸ defined instructions. The later cut-rank calculation puts the next visit to +12 before **3.176 × 10³⁴⁴** defined instructions. The actual marks at slots 9 and 10 of cut 418 select the branch. Finite continuations with the same initial period can give three distinct outcomes at this cut. The repeating blank-source period therefore matters. These bounds supersede the older continuation below and constrain the next opportunity only. [Exact checkpoint](../frontiers/runs/line17-epochs.json) · [Return test and proof of clock bound](../line17-edge-time.md)
 
 The remainder documents the experiment inherited from [680c696](https://github.com/valu42/busycoqtesting/commit/680c69635d58a26ad2d33814ac16df4f72a86975).
 
