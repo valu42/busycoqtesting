@@ -8,7 +8,7 @@ Each row is a six-state, two-symbol machine started in state A at coordinate zer
 
 ## Starting position
 
-On November 18 the 608 rows gave **523 targets for a fresh decision**. Open BusyCoq PRs claimed 49 nonhalting and 28 halting results. Seven further machines had reported simulation halts. One proposed equivalence joins lines 117 and 405, with line 117 retained in the queue. The table links the evidence on every affected row. These figures describe the initial import. Run the summary for the current counts.
+On November 18 the 608 rows gave **523 targets for a fresh decision**. Open BusyCoq PRs claimed 49 nonhalting and 28 halting results. Seven further machines had reported simulation halts. One proposed equivalence joins lines 117 and 405, with line 117 retained as the representative. The table links the evidence on every affected row. These figures describe the initial import. Run the summary for the current counts.
 
 ## Use the register
 
@@ -24,10 +24,11 @@ python3 tracker.py --line 117  # one row, including evidence and notes
 |---|---|
 | `OPEN` | Candidate for a blank-tape decision. Check the claim board for an owner. |
 | `HALT_PR`, `NONHALT_PR` | An upstream PR proposes this outcome. Its link is in `source`. |
+| `PARTIAL_PR` | An open upstream PR proves a reduction or covers this representative in an equivalence. The blank-tape outcome is undecided. |
 | `SIMULATED_HALT` | A source reports a halt by simulation. The run record is in `simulation_log`. |
 | `EQUIVALENCE_PR`, `EQUIVALENT` | A proposed or verified equivalence points to the representative in `same_as_line`. Follow that line for the decision. |
 | `HALTS`, `NONHALTS` | A verified decision from blank. The row links the witness or proof and its verification. |
 
-Edit [MACHINES.csv](MACHINES.csv) when evidence changes. Set `status`, date the evidence as `YYYY-MM-DD`, and link a source or repository path. Use `notes` for the replay command, theorem or handoff as needed. For an equivalence, keep the lower line as the representative and point the higher line to it. If a pending result is withdrawn, record that in the evidence and return the affected row to the appropriate status. The blank-tape decision criteria and claim workflow are on the [roadmap](ROADMAP.md).
+Edit [MACHINES.csv](MACHINES.csv) when evidence changes. Set `status`, date the evidence as `YYYY-MM-DD`, and link a source or repository path. Use `notes` for the replay command, theorem or handoff as needed. For a proposed equivalence, record `PARTIAL_PR` on the lower representative when its blank outcome is undecided. Point the higher line to it with `EQUIVALENCE_PR`. If a pending result is withdrawn, record that in the evidence and return the affected row to the appropriate status. The blank-tape decision criteria and claim workflow are on the [roadmap](ROADMAP.md).
 
 The [community tracker](https://denniskoshta.com/bbchallenge/bb6/) and [upstream BusyCoq PRs](https://github.com/ccz181078/busycoq/pulls) are useful places to check before opening a campaign.

@@ -115,7 +115,7 @@ line,machine_id,machine,status,same_as_line,evidence_date,source,simulation_log,
 114,29687,1RB---_0RC0LF_1LD0RE_1RC0LB_1RD1RA_1LB0LC,OPEN,,,,,
 115,29824,1RB0RF_1RC0RA_1LD1RB_1LE0LD_1LB0LB_0RB---,OPEN,,,,,
 116,29825,1RB0RA_1LC0RA_0LD0LC_1RD1RE_1LF0LE_---0LB,OPEN,,,,,
-117,30773,1RB---_1LC0RF_1LD0LC_0RE0LF_0RD1LA_1RB0LE,OPEN,,2026-11-16,https://github.com/ccz181078/busycoq/pull/77,,Working representative for line 405 under proposed equivalence.
+117,30773,1RB---_1LC0RF_1LD0LC_0RE0LF_0RD1LA_1RB0LE,PARTIAL_PR,,2026-11-18,https://github.com/ccz181078/busycoq/pull/77,,Working representative of the proposed equivalence with line 405. The PR leaves its blank outcome undecided.
 118,30875,1RB0LE_1LC0RD_0RA1LD_0LC1RA_1LF1LA_---1LA,OPEN,,,,,
 119,31128,1RB0LC_0LA1RD_1LA0RE_1RE0RF_1LF---_1LB1RF,OPEN,,,,,
 120,31371,1RB1LA_0LC0RC_1LE1RD_1RE1RC_1LF0LA_---1LE,OPEN,,,,,
@@ -520,7 +520,7 @@ line,machine_id,machine,status,same_as_line,evidence_date,source,simulation_log,
 519,149506,1RB1LB_1LC0RE_0LE0LD_0LC---_1LA0RF_1RE1LC,OPEN,,,,,
 520,149707,1RB1RF_1LC1LF_0RE1LD_0LB1LD_---1RC_1RA0RD,OPEN,,,,,
 521,149962,1RB0LC_1LC0RE_1RA1LD_1LA1LC_1RF0RA_---0LA,OPEN,,,,,
-522,150065,1RB1LA_1LC1RD_1LA0LC_1RE0RB_1RF0LE_1RA---,OPEN,,,,,
+522,150065,1RB1LA_1LC1RD_1LA0LC_1RE0RB_1RF0LE_1RA---,PARTIAL_PR,,2026-11-18,https://github.com/ccz181078/busycoq/pull/40,,"SOC25Iter.F from (2, 4). Halting from blank is equivalent to this integer orbit reaching its halt branch."
 523,151599,1RB1RE_1RC0LD_1LB---_1RA1LD_1RA0RF_1RE0LC,OPEN,,,,,
 524,151747,1RB1RC_1LC1LC_1RE0LD_1LB1RF_---1RA_0RD1RD,OPEN,,,,,
 525,151878,1RB1RF_0LC0RF_1RD1LC_---0LE_0RC1LF_1RA0LE,OPEN,,,,,
@@ -556,8 +556,8 @@ line,machine_id,machine,status,same_as_line,evidence_date,source,simulation_log,
 555,162010,1RB1RF_1RC0RF_0RD0LC_1LE1RA_1LC---_0LD0RE,OPEN,,,,,
 556,162473,1RB0LC_1LA1RE_1LD1RE_1RE0LA_0RA1RF_0RB---,OPEN,,,,,
 557,162730,1RB1LA_1RC0LD_1LB0RE_0LA0LC_0RD1RF_0RB---,OPEN,,,,,
-558,163183,1RB1LA_1LC1RD_1LA0LC_1RE0RB_1RF1RC_1RA---,OPEN,,,,,
-559,163594,1RB1LD_1RC0RB_1LA1RC_1LE0LA_1LF---_1LC---,OPEN,,,,,
+558,163183,1RB1LA_1LC1RD_1LA0LC_1RE0RB_1RF1RC_1RA---,PARTIAL_PR,,2026-11-18,https://github.com/ccz181078/busycoq/pull/40,,"SOC25Iter.F from (1, 3). Halting from blank is equivalent to this integer orbit reaching its halt branch."
+559,163594,1RB1LD_1RC0RB_1LA1RC_1LE0LA_1LF---_1LC---,PARTIAL_PR,,2026-11-18,https://github.com/ccz181078/busycoq/pull/40,,"SOC25Iter.F from (1, 2). Halting from blank is equivalent to this integer orbit reaching its halt branch."
 560,163738,1RB0LD_0RC0RF_1LD0RB_1LE---_0LA0LB_0LE0RA,OPEN,,,,,
 561,164326,1RB0RB_0LC0RA_1LE1LD_0LE---_1LF0LC_1RA1LB,OPEN,,,,,
 562,164391,1RB1LD_1RC0LA_0RD1RB_1RE0RF_0LA1LE_---0RA,OPEN,,,,,
