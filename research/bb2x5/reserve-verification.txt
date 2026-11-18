@@ -1,2 +1,5 @@
 signed P and Q accounting and closed halting test: 19110 word/gap checks
 all-one suffix threshold checked on 5400 cases
+common clock: 10000 ticks, 29 first arrivals, 872 negative full-tick changes
+selected (upper width, tick, leading gap, wraps): [(0, 1, 9, 5), (4, 4, 19, 10), (8, 11, 34, 17), (12, 112, 62, 31), (16, 208, 68, 34), (20, 797, 89, 45), (24, 1543, 118, 59), (28, 6919, 132, 66)]
+freely chosen Q-selector loss at widths 1, 4, 8, 12, 16: ['1/2', '9/4', '145/16', '2099/64', '29553/256']
