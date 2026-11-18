@@ -5,11 +5,17 @@ Machine: `1RB2RA3LB---2LB_2LA0LA4RB0RB1LA`.
 Starting repository commit: `2ab106f706cb1715d494c7f67464e9222092058f`.
 Research pass: **2026-11-18**. No formal proof assistant verification was performed.
 
-## Current repository result
+## Accelerator update
+
+The tiled simulator reached 10^30 ordinary sweeps and pair 186 at ≈ 1.40000 × 10^61 raw instructions from blank. Two extrapolations from 21 shortened registers put the first +12 visit around 4 × 10^149 or 3 × 10^158 instructions. The rigorous upper bound is 2.871 × 10^332. The blank trajectory still has two previously observed overflow resets and no calibrated raw halting clock.
+
+[Simulator, experiments, and reproduction](../line17-accelerator.md) · [Exact blank-tape checkpoint](../frontiers/runs/line17-epochs.json)
+
+## Earlier repository results
 
 **Handoff update.** The active simulation reached 10^29 normal sweeps and pair 175 at ≈ 1.40000 × 10^59 raw steps. The upper bound on visiting +12 still applies. [Exact checkpoint](https://github.com/valu42/busycoqtesting/blob/12c4acdce3310d435190895136f65826a702f1c8/research/bb2x5/frontiers/runs/line17-epochs.json) · [First-visit analysis](https://github.com/valu42/busycoqtesting/blob/12c4acdce3310d435190895136f65826a702f1c8/research/bb2x5/line17-edge-time.md)
 
-At the opening intake the repository had completed **6 × 10²⁸ ordinary sweeps**, at approximately 5.04000 × 10⁵⁸ defined instructions. The later cut-rank calculation puts the next visit to +12 before **3.176 × 10³⁴⁴** defined instructions. The actual marks at slots 9 and 10 of cut 418 select the branch. Finite continuations with the same initial period can give three distinct outcomes at this cut. The repeating blank-source period therefore matters. These bounds supersede the older continuation below and constrain the next opportunity only. [Exact checkpoint](../frontiers/runs/line17-epochs.json) · [Return test and proof of clock bound](../line17-edge-time.md)
+At the opening intake the repository had completed **6 × 10²⁸ ordinary sweeps**, at approximately 5.04000 × 10⁵⁸ defined instructions. The later cut-rank calculation puts the next visit to +12 before **3.176 × 10³⁴⁴** defined instructions. The actual marks at slots 9 and 10 of cut 418 select the branch. Finite continuations with the same initial period can give three distinct outcomes at this cut. The repeating blank-source period therefore matters. These bounds supersede the older continuation below and constrain the next opportunity only. [Earlier checkpoint](https://github.com/valu42/busycoqtesting/blob/6e9f4ea27600c34026e8d1c4eb795a7b040a6d5f/research/bb2x5/frontiers/runs/line17-epochs.json) · [Return test and proof of clock bound](../line17-edge-time.md)
 
 The remainder documents the experiment inherited from [680c696](https://github.com/valu42/busycoqtesting/commit/680c69635d58a26ad2d33814ac16df4f72a86975).
 

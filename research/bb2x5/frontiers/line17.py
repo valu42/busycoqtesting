@@ -5,6 +5,7 @@ from bisect import bisect_right
 from array import array
 from dataclasses import dataclass
 import json
+import os
 from pathlib import Path
 import sys
 import subprocess
@@ -151,12 +152,34 @@ def once_counts(slots, marks, state):
     return result
 
 
+def check_pulse_balances(epochs, initial, counts):
+    """Recover all six local pulse counts and check burst and trit conservation."""
+    slots, marks, incoming_flag = 4*epochs, epochs, 0
+    for index, ((start, outgoing_flag), row) in enumerate(zip(initial, counts)):
+        end, pending = row.state
+        # 3 outputs + ending trit = inputs + starting trit + 4 compounds.
+        compound, remainder = divmod(3*row.slots + end - slots - start, 4)
+        c0 = row.calls - slots - 2*compound
+        c1, half_move = divmod(row.interior, 2)
+        c1 -= row.slots                 # Exactly one mark per compound at trit 1.
+        c2 = compound - c0 - c1
+        o2 = row.slots - c0 - 2*(c1+c2)
+        # Balance entrances/exits at trits zero and one to recover plain pulses.
+        o0 = o2 + c1 - c0 - (int(end == 0) - int(start == 0))
+        o1 = o0 + c2 - c1 - (int(end == 1) - int(start == 1))
+        if (remainder or half_move or min(c0,c1,c2,o0,o1,o2) < 0
+                or o0+o1+o2+compound != slots or c0 != marks+incoming_flag-pending):
+            raise ValueError(f'inconsistent pulse tallies at pair {index}')
+        slots, marks, incoming_flag = row.slots, c1, outgoing_flag
+
+
 def record(epochs, counts, register=DATA, base_steps=2308940, base_head=-844, start_epoch=0):
     initial = digits(register)
     if len(counts)!=len(initial):
         raise ValueError('incomplete digit tally')
     if counts[-1].slots:
         raise ReachesTerminal('a call reaches the old right boundary; stop before this epoch')
+    check_pulse_balances(epochs, initial, counts)
     # Header = 58 + outgoing raw probes. Every ordinary pair contributes its
     # two boundary crossing counts plus its internal moves. At the pile, a
     # reset 12 emits four slots, uses 9 input probes and makes 10 internal
@@ -209,12 +232,27 @@ def native_counts(rows, slots, width):
 
 def advance_packed(seed, epochs, engine, word_bits=2**28, finite_slots=10**11):
     """Apply a finite header stream to the complete, possibly resumed register."""
+    if not 16 <= word_bits <= 2**32 or not 0 <= finite_slots < 2**60:
+        raise ValueError('invalid packed worker budget')
+    return advance_native(seed, epochs, engine, word_bits, finite_slots)
+
+
+def advance_tiled(seed, epochs, engine, word_bits, threads):
+    """Replay periodic words using temporary packed files and independent tiles."""
+    if not 16 <= word_bits <= 2**43 or not 1 <= threads <= 64:
+        raise ValueError('invalid tiled worker budget or thread count')
+    env = os.environ.copy()
+    env.setdefault('OMP_WAIT_POLICY', 'PASSIVE')
+    return advance_native(seed, epochs, engine, word_bits, threads, env=env)
+
+
+def advance_native(seed, epochs, engine, *limits, env=None):
     if not __debug__ or holdouts()[16] != M17:
         raise ValueError('the verified line 17 encoding and assertions are required')
-    if epochs < 0 or not 16 <= word_bits <= 2**32 or not 0 <= finite_slots < 2**60:
-        raise ValueError('invalid additional epoch count or packed worker budget')
-    proc = subprocess.run([str(Path(engine).resolve()),str(epochs),str(word_bits),str(finite_slots)],
-                          input=seed['register'],text=True,capture_output=True)
+    if epochs < 0:
+        raise ValueError('invalid additional epoch count')
+    command = [str(Path(engine).resolve()), str(epochs), *(str(limit) for limit in limits)]
+    proc = subprocess.run(command, input=seed['register'], text=True, capture_output=True, env=env)
     if proc.returncode:
         raise ValueError(proc.stderr.strip() or 'packed worker failed')
     counts = native_counts(proc.stdout.splitlines(),4*epochs,len(digits(seed['register'])))
@@ -362,6 +400,8 @@ def main():
     workers = parser.add_mutually_exclusive_group()
     workers.add_argument('--engine',type=Path,help='native timestamp worker')
     workers.add_argument('--packed-engine',type=Path,help='native packed-bit worker for replay or resume')
+    workers.add_argument('--tiled-engine',type=Path,help='native file-backed parallel packed worker')
+    parser.add_argument('--threads',type=int,default=1,help='number of worker threads for the tiled engine')
     parser.add_argument('--word-bits',type=int,default=2**28,help='largest materialized packed word in bits')
     parser.add_argument('--finite-slots',type=int,default=10**11,help='maximum slots entering a streamed suffix')
     parser.add_argument('--depth',action='store_true',help='report the deepest data pair reached since the initial register')
@@ -369,7 +409,11 @@ def main():
     parser.add_argument('--checkpoint',type=Path,required=True)
     args=parser.parse_args()
     try:
-        if args.packed_engine:
+        if args.tiled_engine:
+            seed = load(args.resume) if args.resume else replay(0,6)
+            result = advance_tiled(seed,args.epochs-seed['epochs'],args.tiled_engine,
+                                   args.word_bits,args.threads)
+        elif args.packed_engine:
             seed = load(args.resume) if args.resume else replay(0,6)
             result = advance_packed(seed,args.epochs-seed['epochs'],args.packed_engine,
                                     args.word_bits,args.finite_slots)
@@ -390,3 +434,4 @@ def main():
 
 
 if __name__=='__main__': main()
+

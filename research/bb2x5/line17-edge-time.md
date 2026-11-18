@@ -1,5 +1,7 @@
 # Line 17 · timing the first visit to +12
 
+The [later accelerator runs and period bound](line17-accelerator.md#guaranteed-timing-of-the-next-overflow) tighten the raw deadline and add a lower bound of 65 inputs at cut 403. The derivation below supplies the upper cut-403 rank used in that calculation.
+
 Line 17 first reaches the blank at coordinate +12 within **81,526,541 inputs at cut 403**, the entrance to its last 21 data pairs. This bound is sharp if the continuation after the 26 known inputs there can be any valid marked stream. On the actual blank orbit, inversion through the first 95 pairs places the visit before sweep **4.763 × 10¹⁷¹** and raw step **3.176 × 10³⁴⁴**. The [simulation table](SIMULATION_TABLE.md) gives the observed lower endpoint. The return branch taken by the blank orbit and the machine's eventual halting status remain open. [Elementary-machine reduction](frontier-background.md#why-the-424-digits-reach-the-edge)
 
 ## Bounding the time at a single cut

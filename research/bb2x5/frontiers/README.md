@@ -166,10 +166,14 @@ The timestamp and packed workers agree on all 424 pairs and the exact clock at 1
 | 3 × 10²⁸ | 173 | 1 |
 | 4 × 10²⁸ | 173 | 1 |
 | 6 × 10²⁸ | 173 | 1 |
+| 10²⁹ | 175 | 1 |
+| 10³⁰ | 186 | 1 |
 
-The [literal initialization](../frontier-background.md#configuration-and-entry) visits no cell to the right of coordinate 11. At the [6 × 10²⁸ checkpoint](runs/line17-epochs.json), the terminal singleton at 11 has still received zero calls. Thus the first visit to coordinate 12 is later than 5.04 × 10⁵⁸ defined instructions.
+The [literal initialization](../frontier-background.md#configuration-and-entry) visits no cell to the right of coordinate 11. At the [6 × 10²⁸ checkpoint](https://github.com/valu42/busycoqtesting/blob/6e9f4ea27600c34026e8d1c4eb795a7b040a6d5f/research/bb2x5/frontiers/runs/line17-epochs.json), the terminal singleton at 11 has still received zero calls. Thus the first visit to coordinate 12 is later than 5.04 × 10⁵⁸ defined instructions.
 
-The tests exhaust every normal pair/pulse control case, replay the complete physical tape through 425 epochs with an elementary interpreter, and meet the independent 100-million-step moving-window checkpoint. The Python-only timestamp implementation and a native replay using a different cut produce byte-identical full configurations and time at 10¹⁸ epochs. Independent cut choices also agree at 10²¹ and 10²² epochs. At the published endpoint, advancing another 1,000,001 epochs as one batch or in two parts gives the same full checkpoint.
+The tests exhaust every normal pair/pulse control case, replay the complete physical tape through 425 epochs with an elementary interpreter, and meet the independent 100-million-step moving-window checkpoint. The Python-only timestamp implementation and a native replay using a different cut produce byte-identical full configurations and time at 10¹⁸ epochs. Independent cut choices also agree at 10²¹ and 10²² epochs. At the earlier 6 × 10²⁸ endpoint, advancing another 1,000,001 epochs as one batch or in two parts gives the same full checkpoint.
+
+The [parallel file-backed worker and first-overflow experiments](../line17-accelerator.md) extend this run. The worker accepts the same saved physical registers and exact clock format via `--tiled-engine`. The report gives the current clock, timing measurements and reproduction commands.
 
 ## Line 17 first arrivals inside a sweep
 
