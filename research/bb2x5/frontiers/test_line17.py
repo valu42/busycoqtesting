@@ -2,16 +2,19 @@
 import itertools
 import os
 import subprocess
+import sys
+import tempfile
 from pathlib import Path
 import unittest
 
-from line17 import (DATA, HEAD, M17, ROOT, ReachesTerminal, advance, load, literal_counts, once_counts,
+from line17 import (DATA, HEAD, M17, ROOT, ReachesTerminal, advance, advance_packed, load, literal_counts, once_counts,
                     mark_image, periodic_counts, replay, word_counts)
 from prior_frontier import T17, header17, mark_step
 from prior_sweeps import TapeMachine
 import survey
 
 WORKER = Path(os.environ.get('BB25_MARK17', '/tmp/bb25-marks17'))
+PACKED = Path(os.environ.get('BB25_PACK17', '/tmp/bb25-packed17'))
 WINDOW = Path(os.environ.get('BB25_WINDOW', '/tmp/bb25-window'))
 
 
@@ -141,6 +144,35 @@ class Line17Tests(unittest.TestCase):
             advance(altered,1,WORKER)
         with self.assertRaises(ValueError):
             advance(deep,-1,WORKER)
+
+    def test_packed_streams_and_resumed_phases(self):
+        entry = replay(0,6)
+        for target in (0,1,2,9,71,10001,10**7):
+            target_state = replay(target,27)
+            # Force streaming deep inside short words and also keep whole periods.
+            for bits in (16,127,65536):
+                self.assertEqual(advance_packed(entry,target,PACKED,bits),target_state)
+        deep = load(ROOT/'frontiers/runs/line17-epochs.json')
+        first = advance_packed(deep,14681,PACKED,127)
+        combined = advance_packed(first,1000001,PACKED,65536)
+        self.assertEqual(combined,advance(deep,1014682,WORKER))
+        with self.assertRaises(ReachesTerminal):
+            advance_packed({**deep,'register':'22'*424},1,PACKED,16)
+
+    def test_packed_budget_preserves_checkpoint(self):
+        path = ROOT/'frontiers/runs/line17-epochs.json'
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp)/'checkpoint.json'
+            saved = path.read_bytes()
+            output.write_bytes(saved)
+            result = subprocess.run([sys.executable,str(ROOT/'frontiers/line17.py'),
+                                     '--resume',str(output),'--checkpoint',str(output),
+                                     '--epochs',str(load(path)['epochs']+10**6),'--word-bits','16',
+                                     '--finite-slots','0','--packed-engine',str(PACKED)],
+                                    text=True,capture_output=True)
+            self.assertNotEqual(result.returncode,0)
+            self.assertIn('finite slot budget',result.stderr)
+            self.assertEqual(output.read_bytes(),saved)
 
     def test_native_period_lifting_and_budget(self):
         # Check every count and child word for several copy phases, including

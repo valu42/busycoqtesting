@@ -177,6 +177,34 @@ class ReachesTerminal(ValueError):
     """The cut at the singleton receives a raw probe during the requested interval."""
 
 
+def native_counts(rows, slots, width):
+    counts = []
+    for row in rows:
+        v,p,emitted,calls,inner = map(int,row.split())
+        if (v not in range(3) or p not in (0,1) or not 0 <= emitted <= 2*slots
+                or not slots <= calls <= 4*slots or not 0 <= inner <= 6*slots):
+            raise ValueError('invalid native digit counts')
+        counts.append(Counts((v,p),emitted,calls,inner))
+        slots = emitted
+    if len(counts) != width:
+        raise ValueError('incomplete native digit counts')
+    return counts
+
+
+def advance_packed(seed, epochs, engine, word_bits=2**28, finite_slots=10**11):
+    """Apply a finite header stream to the complete, possibly resumed register."""
+    if not __debug__ or holdouts()[16] != M17:
+        raise ValueError('the verified line 17 encoding and assertions are required')
+    if epochs < 0 or not 16 <= word_bits <= 2**32 or not 0 <= finite_slots < 2**60:
+        raise ValueError('invalid additional epoch count or packed worker budget')
+    proc = subprocess.run([str(Path(engine).resolve()),str(epochs),str(word_bits),str(finite_slots)],
+                          input=seed['register'],text=True,capture_output=True)
+    if proc.returncode:
+        raise ValueError(proc.stderr.strip() or 'packed worker failed')
+    counts = native_counts(proc.stdout.splitlines(),4*epochs,len(digits(seed['register'])))
+    return record(epochs,counts,seed['register'],seed['steps'],seed['head'],seed['epochs'])
+
+
 def advance(seed, epochs, engine):
     """Resume at a physical sweep boundary. Finite arbitrary digit phases are preserved."""
     if not __debug__:
@@ -210,12 +238,7 @@ def advance(seed, epochs, engine):
             proc = subprocess.run([str(Path(engine).resolve()),'resume',seed['register'],str(cut),str(n)],
                                   input=word,capture_output=True)
             if proc.returncode: raise ValueError(proc.stderr.decode().strip() or 'resume worker failed')
-            for row in proc.stdout.splitlines():
-                v,p,count,calls,inner=map(int,row.split())
-                if v not in range(3) or p not in (0,1) or not 0<=count<=2*n or not n<=calls<=4*n or not 0<=inner<=6*n:
-                    raise ValueError('invalid native resumed counts')
-                counts.append(Counts((v,p),count,calls,inner));n=count
-            if len(counts)!=len(data): raise ValueError('incomplete native resumed counts')
+            counts.extend(native_counts(proc.stdout.splitlines(),n,len(data)-cut))
         else:
             marks = array('Q',(i for i,bit in enumerate(word,1) if bit))
             for i in range(cut,len(data)):
@@ -275,12 +298,8 @@ def replay(epochs, periodic_cut=45, mark_budget=10000000, engine=None):
         rows = proc.stdout.splitlines()
         if len(rows) != width+1 or rows[-1].split()[:1] != ['marks']:
             raise ValueError('incomplete native output')
-        for row in rows[:-1]:
-            v,p,slots,calls,inner = map(int,row.split())
-            if v not in range(3) or p not in (0,1) or not n <= calls <= 4*n or not 0 <= slots <= 2*n or not 0 <= inner <= 6*n:
-                raise ValueError('invalid native counts')
-            counts.append(Counts((v,p),slots,calls,inner))
-            n = slots
+        counts.extend(native_counts(rows[:-1],n,width))
+        n = counts[-1].slots
         finite = array('Q',map(int,rows[-1].split()[1:]))
         tail_start = 403
     else:
@@ -321,12 +340,20 @@ def main():
     parser.add_argument('--epochs',type=int,required=True)
     parser.add_argument('--cut',type=int,default=45)
     parser.add_argument('--mark-budget',type=int,default=10000000)
-    parser.add_argument('--engine',type=Path,help='optional native finite mark worker')
+    workers = parser.add_mutually_exclusive_group()
+    workers.add_argument('--engine',type=Path,help='native timestamp worker')
+    workers.add_argument('--packed-engine',type=Path,help='native packed-bit worker for replay or resume')
+    parser.add_argument('--word-bits',type=int,default=2**28,help='largest materialized packed word in bits')
+    parser.add_argument('--finite-slots',type=int,default=10**11,help='maximum slots entering a streamed suffix')
     parser.add_argument('--resume',type=Path,help='start at this saved boundary; --epochs remains an absolute target')
     parser.add_argument('--checkpoint',type=Path,required=True)
     args=parser.parse_args()
     try:
-        if args.resume:
+        if args.packed_engine:
+            seed = load(args.resume) if args.resume else replay(0,6)
+            result = advance_packed(seed,args.epochs-seed['epochs'],args.packed_engine,
+                                    args.word_bits,args.finite_slots)
+        elif args.resume:
             seed = load(args.resume)
             result = advance(seed,args.epochs-seed['epochs'],args.engine)
         else:

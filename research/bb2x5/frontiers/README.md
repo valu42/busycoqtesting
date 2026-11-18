@@ -125,10 +125,24 @@ c++ -O3 -std=c++17 frontiers/line17_marks.cpp -o /tmp/bb25-marks17
 python3 frontiers/line17.py --epochs 100000000000000000000000 --cut 70 \
   --mark-budget 5000000000 --engine /tmp/bb25-marks17 --checkpoint /tmp/line17.json
 python3 frontiers/line17.py --resume frontiers/runs/line17-epochs.json \
-  --epochs 100000000000000001000000 --engine /tmp/bb25-marks17 --checkpoint /tmp/line17-next.json
-BB25_WINDOW=/tmp/bb25-window BB25_MARK17=/tmp/bb25-marks17 python3 frontiers/test_line17.py
+  --epochs 1000000000000000000001000000 --engine /tmp/bb25-marks17 --checkpoint /tmp/line17-next.json
 ```
 
 On resume, the stored physical flags initialize the pending bits at each cut. Early digits translate the actual stream in its saved phase until the remaining finite input fits in memory. The worker then processes that prefix with arbitrary initial trits and flags. A request that exceeds the period budget can be retried with fewer additional epochs. For a starting pile of K pairs and D further epochs, the pile contributes 14D(2K+D−1) raw moves.
+
+A second worker packs eight consecutive slots into a lookup. It takes the complete physical register at any saved sweep. For each digit it represents the finite input as a prefix, a repeated word and a suffix. When the trit and pending bit both recur at a word boundary, it multiplies the output counts and raw costs for all complete repetitions using GMP integers. If a word grows past the selected bit limit, it streams the incoming word through the rest of the register in 65,536-slot chunks. A partial chunk retains every digit's phase. The size check on the finite input happens before the checkpoint is replaced.
+
+```sh
+c++ -O3 -std=c++17 frontiers/line17_packed.cpp -lgmpxx -lgmp -o /tmp/bb25-packed17
+python3 frontiers/line17.py --epochs 1000000000000000000000000000 \
+  --packed-engine /tmp/bb25-packed17 --word-bits 1073741824 --checkpoint /tmp/line17.json
+python3 frontiers/line17.py --resume frontiers/runs/line17-epochs.json \
+  --epochs 1000100000000000000000000000 --packed-engine /tmp/bb25-packed17 \
+  --word-bits 1073741824 --checkpoint /tmp/line17-next.json
+BB25_WINDOW=/tmp/bb25-window BB25_MARK17=/tmp/bb25-marks17 \
+  BB25_PACK17=/tmp/bb25-packed17 python3 frontiers/test_line17.py
+```
+
+The timestamp and packed workers agree on all 424 pairs and the exact clock at 10²³ sweeps. At 10²⁷ sweeps the packed replay from the initial register agrees byte for byte with a continuation through the saved phases at 10²³, 10²⁵ and 10²⁶ sweeps. The singleton has received zero calls through that endpoint.
 
 The tests exhaust every normal pair/pulse control case, replay the complete physical tape through 425 epochs with an elementary interpreter, and meet the independent 100-million-step moving-window checkpoint. The Python-only timestamp implementation and a native replay using a different cut produce byte-identical full configurations and time at 10¹⁸ epochs. Independent cut choices also agree at 10²¹ and 10²² epochs. At the published endpoint, advancing another 1,000,001 epochs as one batch or in two parts gives the same full checkpoint.
