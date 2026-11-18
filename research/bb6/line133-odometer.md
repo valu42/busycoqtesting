@@ -1,6 +1,6 @@
 # BB(6) line 133 from its own blank tape
 
-**Open, ID 35069.** The machine `1RB0LC_1LC0RE_1LD1LB_1LA1LD_1RF0RA_---1RE` reaches an exceptional counter configuration with 1,802,104,644,690,770,721,432,339,129,424,760,388,912 ones. The Rocq proof reaches that configuration from blank and gives a rule that carries it past the exception. The remaining halting question is whether a later carry can reach state F reading zero. [Formal proof](Line133Odometer.v) · [Claim board](ROADMAP.md#claim-board)
+**Open, ID 35069.** The machine `1RB0LC_1LC0RE_1LD1LB_1LA1LD_1RF0RA_---1RE` reaches an exceptional counter configuration with 1,802,104,644,690,770,721,432,339,129,424,760,388,912 ones. Two later carries on its blank run return to the tape edge. The proof gives the complete return tape for their family and a separate condition that would make the machine halt. [Blank checkpoint](Line133Odometer.v) · [Carry proof](Line133Carry.v) · [Claim board](ROADMAP.md#claim-board)
 
 ## Which parts of line 581 transfer?
 
@@ -29,7 +29,26 @@ After 4,195,051 rounds of the sound simulator from the C seed, the usual counter
 
 The two programs follow different schedules. One runs the sibling simulator for the specified number of rounds, the other advances from blank to the specified visit. Both check the state, the blank half-tape, all 248 tokens on the other half, and the same step count. They share a step-count routine for counter jumps. The round-based simulator also checks that routine against a separate dyadic sum. In the saved tape, an integer means that many copies of `011` and a string gives literal cells, in the reflected machine's far-to-near order. [Full checkpoint](line133-checkpoint.json) · [Replay](replay_line133.py)
 
-**Next proof obligation.** At this checkpoint the recovery takes five visits. A further 14 visits leave eight separator bits all equal to one. On the very next visit the carry crosses the next `11101` marker and returns with eleven bits, a one followed by ten zeros in the parser's order. Prove how such a carry passes an arbitrary number of levels, including the condition under which it enters F0. The marker and the exact before-and-after prefixes are checked by the replay. [Replay](replay_line133.py)
+## Where a full carry turns or halts
+
+Write $w=110$ and read the original tape rightward from the fresh blank under the head in state C. Suppose the cells **after** the head contain $0w^f(10w^{n_1})\cdots(10w^{n_k})1T$. The front count $f$ can be zero, the $k$ counters are positive, and $k$ can be zero. Once the carry has passed all these levels, read $T$ as a sequence $u$ of `01` and `101` tokens until the first `00`, `11`, or `100`. Each finite tape followed by blanks has such an exit. The suffix $S$ beyond that exit can be arbitrary. [Formal statements](Line133Carry.v)
+
+| Exit after $u$ | What line 133 does |
+|---|---|
+| `00` | Halts in F on the second zero. |
+| `11` | Returns to the blank edge in C. Its right side is $0w^{f+1}(11w^{n_1})\cdots(11w^{n_k})1\phi(u)10S$, where $\phi(01)=11$ and $\phi(101)=101$. |
+| `100` | Turns inward in C on a one. The theorem identifies both sides of the tape at that turn. Its later behavior is open. |
+
+Two instances have kernel-checked paths from the original blank start and complete return tapes. In each row the simulator has completed the stated number of rounds and checked whether it can jump at the frontier. The elementary durations below come from the Python replay. [Proof](Line133Carry.v) · [Replay](replay_line133.py)
+
+| Simulator rounds | Full levels | Tokens and exit, nearest first | Elementary steps for the return |
+|---:|---:|---|---:|
+| 4,195,128 | 8 | `01 · 11` | 5,342,260,303,229,962,613,692,520,856,953,481,871,221 |
+| 4,311,329 | 3 | `01 · 101 · 101 · 11` | 16,917,470,004,200,655,430,819,991,315,998,177,608,847 |
+
+The first case follows the earlier checkpoint by five recovery visits and fourteen ordinary visits. After it returns, the counter parser sees eleven bits. In the second case, the final `11` crosses the boundary between a literal marker and the next compressed run. The proof checks the underlying cells across that boundary. The replay also checks the three possible exits on 240 small configurations using the original transition table one step at a time. [Replay](replay_line133.py)
+
+**Remaining decision question.** Can a reachable carry take the `00` exit? A blank-tape nonhalting proof also needs to cover the continuation after `100` and visits where a counter runs out before the carry crosses it. [Claim board](ROADMAP.md#claim-board)
 
 ## Reproduce
 
@@ -43,7 +62,7 @@ git -C /tmp/explorer-line133 checkout --detach c409c4b292369cb404e939753004bd121
 python3 replay_line133.py /tmp/explorer-line133
 ```
 
-The formal proof uses Coq 8.20.1 and the pinned six-state BusyCoq library and odometer from PR 76. On November 18, 2026, all five printed theorems reported `Closed under the global context`, and recursive `coqchk` exited successfully. The commands below build the full sibling proof first. The bytecode option enables kernel checking of the VM computations.
+The formal proofs use Coq 8.20.1 and the pinned six-state BusyCoq library and odometer from PR 76. The commands build the dependency and check both line 133 modules. The bytecode option enables kernel checking of the VM computations.
 
 ```sh
 git clone --filter=blob:none --no-checkout https://github.com/fractal-geometry-explorer/busycoq.git /tmp/busycoq-line133
@@ -58,7 +77,8 @@ odometer_verify=/tmp/busycoq-line133/verify
   done
 )
 coqc -q -native-compiler no -Q "$odometer_verify" BusyCoq Line133Odometer.v
-coqchk -silent -bytecode-compiler yes -Q "$odometer_verify" BusyCoq Line133Odometer
+coqc -q -native-compiler no -Q "$odometer_verify" BusyCoq Line133Carry.v
+coqchk -silent -bytecode-compiler yes -Q "$odometer_verify" BusyCoq Line133Carry
 ```
 
 [prior]: https://github.com/fractal-geometry-explorer/busy-beaver-explorer/blob/c409c4b292369cb404e939753004bd1216fa3333/holdouts/1RB0LC_1LC0RE_1LD1LB_1LA1LD_1RF0RA_---1RE/README.md
