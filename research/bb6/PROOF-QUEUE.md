@@ -1,0 +1,24 @@
+# BB(6) proof queue, November 18, 2026
+
+Use the one-based line from the October 30 list. This shortlist ranks the work by the evidence available for the next proof step. The running time of a simulation gives little guidance about proof difficulty. [Register](MACHINES.csv) · [Live claims](ROADMAP.md)
+
+| Order | Line and ID | Why take it here? | What would advance the decision? |
+|---:|---|---|---|
+| 1 | 173 · 45924 | The community tracker links a merged theorem for this exact table. | Completed the literal-table and kernel replay. The machine runs forever. [Replay PR](https://github.com/valu42/busycoqtesting/pull/14) |
+| 2 | 110 · 28035 | Three shift-overflow counters have a finite halting witness built from almost the same visits. The common rules and the changed terminal case can be checked separately. | Current claim. The full visit interpreter reduces a blank halt to entering `1111`. The nearby machines halt at `1011`, which this machine rewrites to `0001`. [Line 110](line110-visits.md) · [Sibling proofs](https://github.com/ccz181078/busycoq/pull/59) |
+| 3 | 24 · 7846 | Its table differs from the first translated counter in PR 37 only at D0. On zero, line 24 writes zero where the reference writes one. Both move right into A. | Test the reference marker-to-marker rule across the first D0 write. Derive how that cell changes the carry or the restart before borrowing the induction over counter lengths. [Translated-counter proof](https://github.com/ccz181078/busycoq/pull/37) |
+| 4 | 306 · 83065 | Its table differs from the parent in PR 16 only at A1. Both erase a one and move left. Line 306 enters C where the parent enters E. | Compare the first return from that cell and test the digit rules for ordinary carries and overflow. The parent proof needs both. [Skelet 1-like proof](https://github.com/ccz181078/busycoq/pull/16) |
+
+The exact table or the changed instruction identifies each comparison. The October 24 research branch uses a different 623-machine ordering. It already explored cubic recurrences, packets, fractal sweeps and finite-automaton relations. Its long searches and local proofs are relevant background when choosing another route. [Earlier investigation](https://github.com/valu42/busycoqtesting/pull/2)
+
+## What has been tried on BB(6)
+
+- **Finding long-running halters.** Symbolic tape patterns and recurrences let researchers follow machines far beyond direct simulation. The June 2025 champion of mxdys has a Rocq halting proof and a lower bound above $2\uparrow\uparrow\uparrow5$. The exact value of BB(6) remains open. [Champion and proof](https://wiki.bbchallenge.org/wiki/1RB1RA_1RC1RZ_1LD0RF_1RA0LE_0LD1RC_1RA0RE)
+- **Eliminating families.** Enumeration, automatic deciders, finite-automaton reachability and proven equivalences shrink the list that needs individual attention. On October 30 mxdys published 608 representatives for 1,303 machines before grouping equivalents. The initial repository import designated 523 rows open, 77 with proposed upstream decisions, seven simulated halters and one proposed equivalence. [Community history](https://wiki.bbchallenge.org/wiki/BB%286%29) · [Import baseline](https://github.com/valu42/busycoqtesting/blob/b0b299e652f8807e293792e69d4890786517f846/research/bb6/README.md)
+- **Describing the hard remainder.** An exact recurrence can expose the mathematical question behind a machine. For Antihydra it is an inequality about odd and even terms along one integer orbit. Dos Santos and colleagues reported Lean-verified Collatz-like accelerations for eleven BB(6) machines whose blank outcomes remained open in the paper. [Antihydra](https://bbchallenge.org/antihydra) · [October 2026 paper](https://arxiv.org/abs/2610.22603)
+
+## What transfers from this repository's BB(2,5) work
+
+The repository follows the November 3 list of 37 machines. Its simulation table covers all 37. Its verified decision is line 36, where a finite blank seed enters an invariant and each safe sweep makes positive progress. The left and right tape bounds keep the head away from the undefined instruction at every later sweep. [Simulation table](../bb2x5/SIMULATION_TABLE.md) · [Line 36 theorem and replay](../bb2x5/line36-rocq.md)
+
+Other campaigns show how to turn a run into a specific mathematical question. Line 26 reduces halting to a least fixed point, with a branch checking all widths through 207. Line 35 has a suffix whose boundary passes zero unmatched closings forever, while the debt in the remaining prefix is open. Lines 21 and 22 identify short input words at a new cell that would trigger the halting branch. On line 110 the analogous test is a four-bit word at an actual C entry, with an explicit record of the suspended visits. [Line 26](https://github.com/valu42/busycoqtesting/pull/7) · [Line 35](https://github.com/valu42/busycoqtesting/pull/10) · [Lines 21 and 22](../bb2x5/anchored-phase.md)
