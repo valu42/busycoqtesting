@@ -40,6 +40,19 @@ $$
 $$
 the first $k$ triples have joined, provided that many sweeps succeed. This proves eventual coverage of every fixed right suffix on any infinite blank run, and bounds the debt it can transmit. The untreated middle of the growing tape can still send additional debt to the guard. At epoch 1,001 the computed word has 2,037 cells with 459 covered triples beyond the two boundary cells.
 
+### Exact waiting time for a neutral center
+
+With $k$ covered triples, every $B(k)=k+2^{\nu_2(k)}$ successive paired updates contain a transition on which the outermost covered center becomes $N$. Here $2^{\nu_2(k)}$ is the lowest set bit of $k$. This bound is sharp over initial bit vectors of the $k$ centers. Thus the sufficient epoch for the first $k$ triples can be reduced to $5+2\sum_{i=1}^{k-1}(B(i)+2)$. This still presupposes successful sweeps through the specified epoch.
+
+Let $z(t)=h_{k-1}(t)$ and let $\Delta z(t)=z(t+1)+z(t)$ over the two-element field. The Pascal rule gives $\Delta^kz=1$ because $h_{-1}=1$. A transition $0\to1$ of $z$ produces $N$. If $L$ transitions have no rise, their $L+1$ samples have the form $1^a0^{L+1-a}$. When $L\ge k$, every $k$-difference window starting at $t=0,\ldots,L-k$ has value one. It must straddle the change. In such a window the difference is
+$$
+ \sum_{j=0}^{a-t-1}\binom{k}{j}
+ =\binom{k-1}{a-t-1}\pmod2.
+$$
+The equality follows by Pascal's identity. The row $\binom{k-1}{j}$ therefore contains $L-k+1$ consecutive odd entries. Its longest run has length $R=2^{\nu_2(k)}$. Indeed $(1+X)^{k-1}$ modulo two is the product of $1+X^{2^s}$ over the set bits of $k-1$. The bottom $\nu_2(k)$ positions are all available and the next position is absent, so no longer run is possible. Thus $L\le k-1+R$.
+
+For attainment take the $k+R$ samples $1^R0^k$. Every available $k$-difference window equals one by the same identity. The first $k$ samples uniquely extend to a sequence with $\Delta^kz=1$. Its initial lower center bits are the successive differences of $z$ at time zero, so it is realized by an initial Pascal vector. These samples give $k+R-1$ transitions without a rise. The sharpness concerns variation of the initial vector. The single blank run has its own initial vector and may synchronize sooner.
+
 ## What a halt would require in the middle of the tape
 
 Let $d_8$ be the debt sent from the cells strictly after the first eight. **If $d_8\le4$ at every epoch from epoch 5 onward, line 35 never halts.** The finite calculation has 71 prefixes and only 355 cases.

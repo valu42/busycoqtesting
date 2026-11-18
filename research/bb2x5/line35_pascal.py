@@ -33,6 +33,26 @@ def next35(centers):
     return tuple(result)
 
 
+def check_neutral_wait():
+    for k in range(1,13):
+        period = 1<<k.bit_length()
+        index = 1<<k
+        mask = 2*index-1
+        largest = 0
+        for interior in range(index):
+            bits = 1+2*interior
+            for wait in range(1,period+1):
+                next_bits = bits^((bits<<1)&mask)
+                if not bits&index and next_bits&index:
+                    break
+                bits = next_bits
+            else:
+                raise AssertionError('missing rise')
+            largest = max(largest,wait)
+        assert largest == k+(k&-k)
+    print('sharp wait for a neutral center verified on all 8190 initial vectors at widths 1..12')
+
+
 def check_left_cut(seed):
     start = tuple(seed[:8])
     states = [start]
@@ -120,6 +140,7 @@ def main():
                 break
         assert period == 1<<k.bit_length()
     print('periods of the affine Pascal boundary checked through 64 centers')
+    check_neutral_wait()
 
 
 if __name__ == '__main__':

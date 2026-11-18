@@ -3,3 +3,4 @@ eight-cell cut: 71 safe prefixes, 310 ordered pairs, 355 literal checks, maximum
 literal epoch 5 at 97 steps, head -5, word 213111112
 epoch 1001 width 2037 with 459 covered triples after the two-cell cap
 periods of the affine Pascal boundary checked through 64 centers
+sharp wait for a neutral center verified on all 8190 initial vectors at widths 1..12
