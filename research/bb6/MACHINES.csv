@@ -583,7 +583,7 @@ line,machine_id,machine,status,same_as_line,evidence_date,source,simulation_log,
 582,172498,1RB0RC_1LC0RD_0LD0LC_1RE0LA_0RA0RF_1RD---,OPEN,,,,,
 583,172963,1RB1RD_1LC0LC_0RD0LB_1RF0LE_0RD---_0RA1RC,OPEN,,,,,
 584,173393,1RB0RC_1LC0RB_1LD0LD_1RA1LE_---0LF_1LB1LF,OPEN,,,,,
-585,173433,1RB0LE_1RC0LB_1RD0RC_1LA1RC_---1LF_1LB1LD,OPEN,,,,,
+585,173433,1RB0LE_1RC0LB_1RD0RC_1LA1RC_---1LF_1LB1LD,NONHALTS,,2026-11-18,https://github.com/ccz181078/busycoq/pull/97,,Published nonhalt theorem by @Dahoas. Coq 8.20.1 and coqchk replayed the literal table from blank. Print Assumptions reports a closed global context. https://github.com/Dahoas/busycoq/blob/81e9244063d6b85fb0af196f8e5f4d4887d29bc7/verify/M_1RB0LE_1RC0LB_1RD0RC_1LA1RC_HHH1LF_1LB1LD.v#L1097
 586,173562,1RB0LC_0RC0RF_1RD0RE_1LE0RA_0LA0LE_0LD---,OPEN,,,,,
 587,173741,1RB1LD_0RC0LF_1LD1RE_0LA0RB_0RD1RB_0LD---,OPEN,,,,,
 588,173888,1RB0RD_1RC1LE_1LD---_1RF0LE_1LD1LE_1RA0RF,OPEN,,,,,

@@ -8,7 +8,7 @@ Each row is a six-state, two-symbol machine started in state A at coordinate zer
 
 ## Recorded outcomes
 
-On November 18 the register records **30 proven halters and 50 proven nonhalters**. Seven machines have reported simulation halts. Line 405 has a proved equivalence to line 117. Of the 520 unresolved representatives, four have open upstream PRs for partial results and 516 appear in the fresh-work queue. The original import listed 523 open rows and linked 77 decisions as pending PRs. Run the summary below for the latest counts.
+On November 18 the register records **30 proven halters and 51 proven nonhalters**. Seven machines have reported simulation halts. Line 405 has a proved equivalence to line 117. Of the 519 unresolved representatives, four have open upstream PRs for partial results and 515 appear in the fresh-work queue. The original import listed 523 open rows and linked 77 decisions as pending PRs. Run the summary below for the latest counts.
 
 ## Use the register
 
