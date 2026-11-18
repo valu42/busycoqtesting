@@ -1,0 +1,44 @@
+Line 36 independent build transcript
+
+Machine    1RB2LA1LA4RA2LA_0LA3RB3LB2RB---
+Source     ae726a19e3cdee85530e19f439e85b4fd3e6d075
+Workflow   66030db84a0bbb948a041555edda6c3f6314136a
+Run        https://github.com/valu42/busycoqtesting/actions/runs/44316962368
+Job        https://github.com/valu42/busycoqtesting/actions/runs/44316962368/job/134845505563
+
+Environment   Debian trixie, amd64, GNU Make 4.4.1, g++ 14.2.0.
+coqc -v
+The Coq Proof Assistant, version 8.20.1
+compiled with OCaml 5.3.0
+
+Build from the source revision above
+make -C verify -j2 line36
+
+The build completed successfully on 2026-11-18 at 15:08:59 UTC.
+Its final two compilations were
+COQC Line36Nonhalt.v
+COQC Line36Nonhalting.v
+
+Query from the repository root
+coqtop -quiet -Q verify BusyCoq <<'END_COQ'
+From BusyCoq Require Import Line36Nonhalting.
+Check line36_nonhalting.
+Print Assumptions line36_nonhalting.
+END_COQ
+
+Verbatim theorem and dependencies reported by Coq, with runner timestamps,
+interactive prompts and the intervening module-loading messages omitted
+
+line36_nonhalting
+     : ~ halts line36 c0
+Axioms:
+PrimInt63.lsr : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.land : PrimInt63.int -> PrimInt63.int -> PrimInt63.int
+PrimInt63.int : Set
+PArray.get : forall A : Type, PArray.array A -> PrimInt63.int -> A
+PrimInt63.eqb : PrimInt63.int -> PrimInt63.int -> bool
+PArray.array : Type -> Type
+
+All six entries above are built-in primitives for machine integers and arrays.
+The separate standalone-checker command used by the linked job is
+coqchk -bytecode-compiler yes -Q verify BusyCoq BusyCoq.Line36Nonhalting

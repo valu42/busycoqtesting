@@ -35,3 +35,5 @@ coqchk -bytecode-compiler yes -Q verify BusyCoq BusyCoq.Line36Nonhalting
 ```
 
 `Print Assumptions` reports the built-in primitive integer and array types and their operations. There are no admitted lemmas or user-defined axioms in the theorem.
+
+The independent clean build records the Coq version, the pinned source revision, and the complete output of `Print Assumptions`. [Verification transcript](line36-kernel-replay.txt)
