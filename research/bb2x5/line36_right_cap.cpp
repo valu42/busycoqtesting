@@ -7,6 +7,7 @@
 #include <map>
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -161,7 +162,8 @@ struct Node {
 
 // The table stores one integer index per slot. The 50-cell graph peaks
 // below 500 MB when built with 32-bit int and 64-bit Word.
-std::vector<Node> cap_graph(Word seed, int width, int expected) {
+std::vector<Node> cap_graph(Word seed, int width, int expected,
+                            std::vector<Word>* ordered_words = nullptr) {
     std::size_t capacity = 1;
     while (capacity * 7 < static_cast<std::size_t>(expected) * 10) capacity *= 2;
     std::vector<int> index(capacity, -1);
@@ -191,6 +193,7 @@ std::vector<Node> cap_graph(Word seed, int width, int expected) {
         graph.push_back({a, b, step.loss});
     }
     require(static_cast<int>(graph.size()) == expected, "smaller cap graph than expected");
+    if (ordered_words) ordered_words->swap(words);
     return graph;
 }
 
@@ -227,9 +230,69 @@ void check(Certificate c) {
               << seed_worst << ")/" << c.period << " from epoch 32\n";
 }
 
-void check_one_third() {
+// Emit the optional, untrusted Rocq witness. Its input alphabet is read from
+// the right edge. Terminal zero excludes a word and 1-H represents potential H.
+void write_rocq_witness(const std::string& filename, std::vector<Word>& words,
+                        const std::vector<int>& potential) {
+    for (std::size_t i = 0; i < words.size(); ++i) {
+        Word word = words[i], reverse = 0;
+        for (int bit = 0; bit < 50; ++bit) {
+            reverse = 2*reverse + (word & 1);
+            word >>= 1;
+        }
+        words[i] = 32*reverse + (1-potential[i]);
+    }
+    std::sort(words.begin(), words.end());
+    using Id = std::uint32_t;
+    std::vector<Id> ids(words.size());
+    for (std::size_t i = 0; i < words.size(); ++i) {
+        ids[i] = words[i] & 31;
+        words[i] >>= 5;
+    }
+    std::vector<std::pair<Id, Id>> nodes(23, {0,0});
+    for (int depth = 49; depth >= 0; --depth) {
+        std::unordered_map<Word, Id> unique;
+        std::size_t out = 0, i = 0;
+        while (i < words.size()) {
+            Word parent = words[i] >> 1;
+            Id left = 0, right = 0;
+            if (!(words[i] & 1)) left = ids[i++];
+            if (i < words.size() && words[i] >> 1 == parent) right = ids[i++];
+            Word key = (Word(left) << 32) | right;
+            auto [where, added] = unique.emplace(key, static_cast<Id>(nodes.size()));
+            if (added) nodes.emplace_back(left, right);
+            words[out] = parent;
+            ids[out++] = where->second;
+        }
+        words.resize(out);
+        ids.resize(out);
+    }
+    require(ids.size() == 1 && ids[0] == 1342830 && nodes.size() == 1342831,
+            "unexpected Rocq decision diagram");
+    std::ofstream out(filename, std::ios::binary);
+    require(static_cast<bool>(out), "cannot open Rocq witness file");
+    out << "From Coq Require Import PArray PrimString PrimInt63.\n"
+        << "Open Scope pstring_scope.\n"
+        << "Definition cap_chunks : array PrimString.string := [|\n";
+    for (std::size_t i = 0; i < nodes.size(); ++i) {
+        if (!(i % 4096)) {
+            if (i) out << "\";\n";
+            out << '"';
+        }
+        for (Id child : {nodes[i].first, nodes[i].second}) {
+            for (int k = 0; k < 4; ++k) out.put(static_cast<char>(48+((child >> (6*k)) & 63)));
+        }
+    }
+    out << "\" | \"\" |].\n";
+    out.close();
+    require(static_cast<bool>(out), "error writing Rocq witness");
+}
+
+void check_one_third(const std::string& rocq_file = "") {
     const int width = 50;
-    auto graph = cap_graph(blank_seed(width), width, 16939461);
+    std::vector<Word> words;
+    auto graph = cap_graph(blank_seed(width), width, 16939461,
+                           rocq_file.empty() ? nullptr : &words);
     std::vector<int> value(graph.size()), next(graph.size());
     // Include the empty path at every vertex. At convergence the resulting
     // potential is a lower bound for every finite path's 3*cost - length.
@@ -250,6 +313,7 @@ void check_one_third() {
             }
             std::cout << "width 50, " << graph.size() << " states, integer potential fixed "
                       << "at update " << t << ", range [-21,0], seed 0\n";
+            if (!rocq_file.empty()) write_rocq_witness(rocq_file, words, value);
             return;
         }
         value.swap(next);
@@ -259,6 +323,10 @@ void check_one_third() {
 
 int main(int argc, char** argv) {
     check_small_cuts();
+    if (argc == 3 && std::string(argv[1]) == "--rocq-data") {
+        check_one_third(argv[2]);
+        return 0;
+    }
     const int width = argc == 2 ? std::stoi(argv[1]) : 36;
     if (width == 50) { check_one_third(); return 0; }
     for (auto c : std::vector<Certificate>{

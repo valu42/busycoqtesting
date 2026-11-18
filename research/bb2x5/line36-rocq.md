@@ -15,5 +15,8 @@ make -C verify -j3 line36
 | Every legal finite concatenation obeys the six-phase tile identity. Every factor in the tiled region satisfies the density bound. | [Reference update](../../verify/Line36Reference.v) and [density theorem](../../verify/Line36Tiles.v) |
 | If a covered cut has the proved reserve, its actual next sweep succeeds on any exterior word. The two local potential inequalities and the charge inequality preserve the required reserve. | [Safety and reserve](../../verify/Line36Safety.v) |
 | Matching gives the stated charge inequality on arbitrary trailing words, including positive and zero incoming debt. | [Right-side matching](../../verify/Line36Right.v) and [cut accounting](../../verify/Line36Halo.v) |
+| All 16,939,461 reachable 50-cell suffixes obey the right-edge potential inequality. A real successful sweep has one of the certified successor suffixes, and the terminal bit alternates. | [Certificate](../../verify/Line36CapCertificate.v) and [physical correspondence](../../verify/Line36CapInvariant.v) |
 
-The final blank-tape theorem requires the frontier to reproduce itself with the certified bounds after every sweep. The finite-graph replay and the correspondence between graph edges and the next physical cut are the remaining integration steps.
+The explicit `line36` target requires a C++17 compiler. It regenerates the right-edge potential table with `line36_right_cap.cpp`. Rocq checks every represented suffix and both possible boundary transitions against the formal word model. The checked theorem is independent of the generator's correctness.
+
+The final blank-tape theorem also requires an actual successor cut with the left-potential and charge bounds at every step.
