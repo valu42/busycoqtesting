@@ -1,0 +1,37 @@
+{
+  "cut": 403,
+  "known_marks": [
+    5,
+    11,
+    17,
+    23,
+    29
+  ],
+  "through": 32,
+  "latest_plus12": 81526469,
+  "zero_suffix_terminal_word": "4444040444444",
+  "latest_decision_slot_9": 38479748,
+  "latest_decision_slot_10": 52828655,
+  "conditional_gap_examples": [
+    {
+      "gap_after_29": 6,
+      "visits_at": 9058530,
+      "symbol_at_minus_one": 4
+    },
+    {
+      "gap_after_29": 13,
+      "visits_at": 2580,
+      "symbol_at_minus_one": 0
+    },
+    {
+      "gap_after_29": 17,
+      "visits_at": 6933,
+      "symbol_at_minus_one": 1
+    },
+    {
+      "gap_after_29": 56,
+      "visits_at": 6513,
+      "symbol_at_minus_one": 0
+    }
+  ]
+}

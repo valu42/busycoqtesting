@@ -59,6 +59,17 @@ class TiledTests(unittest.TestCase):
         for threads in (1, 3):
             self.assertEqual(advance_tiled(start, epochs, TILES, 2**30, threads), expected)
 
+    def test_automatic_period_alignment(self):
+        for start in (replay(0, 6), load(ROOT/'frontiers/runs/line17-epochs.json')):
+            for target in (0, 19, 10**15+31):
+                # A smaller word limit switches to the finite tile-by-tile tail.
+                limits = (2**30, 4096) if target < 100 else (2**30, 2**18)
+                for bits in limits:
+                    result = advance_tiled(start, target, TILES, bits, 2, aligned=True)
+                    actual = result['epochs'] - start['epochs']
+                    self.assertGreaterEqual(actual, target)
+                    self.assertEqual(result, advance_packed(start, actual, PACKED, 2**24, 2**31))
+
     def test_endpoint_and_refusal_controls(self):
         start = replay(0, 6)
         self.assertEqual(advance_tiled(start, 425, TILES, 10000, 2), replay(425, 6))

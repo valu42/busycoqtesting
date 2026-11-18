@@ -1,6 +1,6 @@
 # A deadline for line 17's next overflow
 
-The deadline concerns the first visit to +12 from blank. The return can still reset or halt. The argument uses the [exact pulse table](../frontier-background.md), the [integer mark recurrence](../marked-register.md) and the [cut-403 rank and elementary-clock bound](../line17-edge-time.md). The calculation is in [line17_period_bound.py](line17_period_bound.py).
+The first visit to +12 from blank occurs before **1.592 × 10¹⁶⁵ sweeps** and **3.545 × 10³³¹ elementary instructions**. The previous raw deadline was 3.176 × 10³⁴⁴. The aligned-run ceiling is about 8.96 trillion times smaller. The return can still reset or halt. The argument uses the [exact pulse table](../frontier-background.md), the [integer mark recurrence](../marked-register.md) and the [cut-403 rank and elementary-clock bound](../line17-edge-time.md). The calculation is in [line17_period_bound.py](line17_period_bound.py).
 
 ## The period seen from slot one
 
@@ -49,3 +49,25 @@ python3 frontiers/line17_period_bound.py --cut 107 \
   --trace frontiers/runs/line17-1e30-periods.txt \
   --counts frontiers/runs/line17-1e30-counts.txt
 ```
+
+At cut 107 one period has 70,476,474,672 slots and 8,809,556,816 marks. The [10³⁰-sweep calculation](runs/line17-period-bound-trace.json) gave a raw deadline of 2.871 × 10³³².
+
+### A later run aligned to a whole period
+
+The aligned worker records the root sweep origin O, root period H, prefix size, period length P and mark count M for every cycle it constructs. At O+kH its virtual prefix has the recorded prefix size plus kP slots. In the homogeneous band under study the prefix size is zero. The aligned checker compares its starting cycle against the prior independently checked cut-107 record. At each further cut it verifies the integral cycle multiplier, the compound-pulse identity, and the recorded slot and mark totals at the actual sample horizon. At cut 108 the root origin is two sweeps and the source period contains 140,952,929,200 slots, with 17,619,113,632 marks. The deadline allows both sweeps of origin.
+
+The 10³⁰-sweep witness contains five marks in the first 29 input slots at cut 168. The guaranteed prefix through slot 26 leaves three possible positions for the fifth. Literal transfer of each candidate through the next digit checks its ending state, output length and number of output marks. Only slot 29 gives the recorded result. All five canonical marks at 5, 11, 17, 23 and 29 then propagate to every remaining homogeneous cut by the trit-2 burst rule. The five bursts contribute fifteen compounds. Using the pulse-table inverse in the short nonhomogeneous suffix sets the sufficient rank at cut 403 to 81,526,469. The inverse bound through the homogeneous cuts from 168 onward becomes R ↦ 3R−61. Each period with length at least 29 in this range contains at least five marks.
+
+The aligned checker also uses the observed number of consumed compounds at every homogeneous digit. The slot identity gives this number exactly from the incoming and outgoing slot counts and the ending trit. When the observed input lies in g copies of the parent superperiod, its consumed compounds are at most gD, including an unfinished final burst. Each superperiod also has D≥hM+M′. A surviving input mark costs at least one compound beyond its starting pulse. If h=3, D=6M=3M′. These yield additional lower bounds on the scaled length. For the finite boundary overhead the sum of the earlier K values is maximized, at fixed multiplicities, by placing triples first, doubles next and singles last. Each swap into this order increases or preserves every intermediate period product.
+
+Replay using the [aligned cycles](runs/line17-aligned-periods.txt), [digit counts](runs/line17-aligned-1e31-counts.txt) and [earlier fifth-mark witness](runs/line17-1e30-counts.txt).
+
+```sh
+python3 frontiers/line17_period_bound.py --cut 108 \
+  --aligned frontiers/runs/line17-aligned-periods.txt \
+  --counts frontiers/runs/line17-aligned-1e31-counts.txt \
+  --anchor frontiers/runs/line17-period-bound-trace.json \
+  --five-marks-from frontiers/runs/line17-1e30-counts.txt
+```
+
+The [aligned result](runs/line17-period-bound-aligned-five.json) attains its best bound at cut 390. Its elementary deadline is 8.10 times smaller than the cut-107 result from 10³⁰ simulated sweeps.

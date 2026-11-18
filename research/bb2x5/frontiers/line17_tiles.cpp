@@ -105,7 +105,7 @@ struct Slice {
     StateMap map{};
     std::array<Count,2*tile/64+2> out{};
     Count n=0,calls=0,interior=0;
-    unsigned start=0;
+    unsigned start=0, end=0;
 };
 // Compose the six possible starting states over this tile. State 6 is an
 // absorbing conflict. Composing maps in order is associative, so tiles can
@@ -134,7 +134,8 @@ void emit_slice(Slice& s,const Count* src,unsigned n,const Tables& t) {
     unsigned state=s.start,offset=0,done=0;
     Count acc=0,calls=0,interior=0;
     auto emit=[&](const Packet& p){
-        state=p.state; // map_slice checked the entire tile before this loop.
+        if (p.state == invalid) throw std::runtime_error("overlapping marked bursts");
+        state=p.state;
         calls+=p.calls; interior+=p.interior;
         Count data=p.bits;
         acc|=data<<offset;
@@ -154,7 +155,7 @@ void emit_slice(Slice& s,const Count* src,unsigned n,const Tables& t) {
     }
     s.out[done]=acc;
     s.n=done*64+offset;
-    s.calls=calls; s.interior=interior;
+    s.calls=calls; s.interior=interior; s.end=state;
 }
 // Resolve the tile boundaries, then emit in parallel and join in tape order.
 // The two lanes of work share the compiled pulse table with the scalar worker.
@@ -201,9 +202,19 @@ struct Ray {
     Count period_marks = 0;
 };
 
+// When the stopping sweep is chosen later, this record evaluates an entire
+// digit exactly at every compatible boundary (origin + k * root_period).
+struct Cycle {
+    unsigned transient = 0, cycle = 0, state = 0;
+    Count prefix_slots = 0, period_slots = 0;
+    mpz_class prefix_calls = 0, prefix_inner = 0;
+    mpz_class period_calls = 0, period_inner = 0;
+    mpz_class origin, root_period;
+};
+
 // Equal digit states at a copy boundary give the same word, raw cost and
 // final state. Keep the preperiod and remainder in their original order.
-Ray lift(unsigned& state,const Ray& in,Totals& totals,const Tables& t,Count limit,int workers){
+Ray lift(unsigned& state,const Ray& in,Totals& totals,const Tables& t,Count limit,int workers,Cycle* summary=nullptr){
     Ray out;
     auto prefix=transform(in.prefix,state,t,limit,workers);
     append(out.prefix,prefix.out);
@@ -224,6 +235,19 @@ Ray lift(unsigned& state,const Ray& in,Totals& totals,const Tables& t,Count limi
     };
     for (size_t j=0;j<begin;++j) add(parts[j],out.prefix,1);
     if (cycle) {
+        if (summary) {
+            summary->transient = begin;
+            summary->cycle = parts.size() - begin;
+            summary->state = state;
+            summary->prefix_slots = length(out.prefix);
+            summary->prefix_calls = totals.calls;
+            summary->prefix_inner = totals.interior;
+            for (size_t j = begin; j < parts.size(); ++j) {
+                summary->period_slots += parts[j].out ? parts[j].out->size : 0;
+                summary->period_calls += parts[j].calls;
+                summary->period_inner += parts[j].interior;
+            }
+        }
         mpz_class left=in.copies-begin;
         auto rem=mpz_fdiv_q_ui(out.copies.get_mpz_t(),left.get_mpz_t(),parts.size()-begin);
         for (size_t j = begin; j < parts.size(); ++j) {
@@ -242,10 +266,85 @@ Ray lift(unsigned& state,const Ray& in,Totals& totals,const Tables& t,Count limi
     totals.calls+=suffix.calls; totals.interior+=suffix.interior; state=suffix.end;
     return out;
 }
+
+void write_row(unsigned state, const mpz_class& slots, const mpz_class& calls, const mpz_class& inner) {
+    std::cout << state/2 << ' ' << state%2 << ' ' << slots << ' ' << calls << ' ' << inner << '\n';
+}
+
+// Stream a finite suffix once its period would need too much disk. Each digit
+// consumes its tiles chronologically, including partial bursts across tiles.
+struct TailDigit {
+    unsigned state;
+    Count slots = 0, calls = 0, interior = 0;
+    Slice buffer;
+};
+
+void feed_tail(std::vector<TailDigit>& digits, size_t i, const Count* bits,
+               Count n, const Tables& tables) {
+    if (!n || i == digits.size()) return;
+    auto& digit = digits[i];
+    while (n) {
+        unsigned width = std::min<Count>(tile, n);
+        auto& out = digit.buffer;
+        out.start = digit.state;
+        emit_slice(out, bits, width, tables);
+        digit.state = out.end;
+        if (digit.slots > UINT64_MAX - out.n || digit.calls > UINT64_MAX - out.calls ||
+            digit.interior > UINT64_MAX - out.interior)
+            throw std::overflow_error("finite suffix counter overflow");
+        digit.slots += out.n;
+        digit.calls += out.calls;
+        digit.interior += out.interior;
+        feed_tail(digits, i+1, out.out.data(), out.n, tables);
+        n -= width;
+        if (n) bits += width/64;
+    }
+}
+
+void finish_aligned_tail(const Ray& in, const std::vector<unsigned>& states, size_t cut,
+                         const Tables& tables) {
+    std::vector<TailDigit> digits(states.size() - cut);
+    for (size_t i = cut; i < states.size(); ++i) digits[i-cut].state = states[i];
+    auto feed = [&](const Segments& words) {
+        for (const auto& part : words) feed_tail(digits, 0, part->addr, part->size, tables);
+    };
+    feed(in.prefix);
+    if (length(in.period)) {
+        if (!mpz_fits_ulong_p(in.copies.get_mpz_t()))
+            throw std::overflow_error("too many finite copies in tiled suffix");
+        auto copies = in.copies.get_ui();
+        for (Count k = 0; k < copies; ++k) {
+            feed(in.period);
+            if (std::getenv("LINE17_TILES_TRACE") && copies <= 100)
+                std::cerr << "streamed period " << k+1 << " of " << copies << '\n';
+        }
+    }
+    feed(in.suffix);
+    for (const auto& digit : digits)
+        write_row(digit.state, digit.slots, digit.calls, digit.interior);
+}
+
+// The source phase at each chosen boundary contains a complete number of every
+// earlier period. This makes an arbitrary-precision sweep index inexpensive to
+// reconstruct even when its decimal representation was unknown during the lift.
+void write_aligned_rows(const std::vector<Cycle>& history, const mpz_class& epochs) {
+    std::cout << "epochs " << epochs << '\n';
+    for (const auto& c : history) {
+        mpz_class delta = epochs - c.origin;
+        if (delta < 0 || delta % c.root_period != 0)
+            throw std::logic_error("chosen sweep does not align with a preceding cut");
+        mpz_class k = delta / c.root_period;
+        write_row(c.state, c.prefix_slots + k*c.period_slots,
+                  c.prefix_calls + k*c.period_calls, c.prefix_inner + k*c.period_inner);
+    }
+    std::cout.flush();
+}
 }
 int main(int argc,char** argv) try {
     using namespace tiled;
-    if (argc!=4) throw std::runtime_error("usage: line17-tiles ADDITIONAL_EPOCHS WORD_BITS THREADS < register");
+    bool aligned = argc == 5 && std::string(argv[4]) == "at-least";
+    if (argc != 4 && !aligned)
+        throw std::runtime_error("usage: line17-tiles ADDITIONAL_EPOCHS WORD_BITS THREADS [at-least] < register");
     mpz_class epochs(argv[1],10);
     Count limit = number(argv[2]);
     Count requested_workers = number(argv[3]);
@@ -259,18 +358,66 @@ int main(int argc,char** argv) try {
     Tables t; Ray stream;
     auto initial=std::make_shared<Bits>(4); initial->addr[0]=2; initial->size=4;
     append(stream.period,initial); stream.copies=epochs;
-    unsigned pending=0;
-    for (size_t i=0;i<reg.size();i+=2) {
-        char v=reg[i],f=reg[i+1];
-        if ((v!='0' && v!='1' && v!='2') || (f!='2' && f!='3')) throw std::runtime_error("invalid register digit");
-        unsigned state=2*(v=='1'?0:(v=='0'?1:2))+pending; pending=f=='3';
+    unsigned pending = 0;
+    std::vector<unsigned> states;
+    for (size_t i = 0; i < reg.size(); i+=2) {
+        char v = reg[i], flag = reg[i+1];
+        if ((v!='0' && v!='1' && v!='2') || (flag!='2' && flag!='3'))
+            throw std::runtime_error("invalid register digit");
+        states.push_back(2*(v=='1' ? 0 : (v=='0' ? 1 : 2)) + pending);
+        pending = flag == '3';
+    }
+    std::vector<Cycle> history;
+    mpz_class origin = 0, root_period = 1;
+    for (size_t i = 0; i < states.size(); ++i) {
+        unsigned state = states[i];
         Totals totals;
-        stream=tiled::lift(state,stream,totals,t,limit,workers);
-        mpz_class n=length(stream.prefix)+stream.copies*length(stream.period)+length(stream.suffix);
-        std::cout<<state/2<<' '<<state%2<<' '<<n<<' '<<totals.calls<<' '<<totals.interior<<'\n';
-        std::cout.flush();
-        if (std::getenv("LINE17_TILES_TRACE"))
-            std::cerr<<i/2+1<<" "<<length(stream.prefix)<<" "<<length(stream.period)<<" "<<stream.copies<<" "<<length(stream.suffix)<<" "<<stream.period_marks<<"\n";
+        if (aligned) {
+            // Seven copies suffice to find a repeated state among six states.
+            // Discard the artificial remainder. Keep the true infinite ray.
+            stream.copies = 7;
+            auto& summary = history.emplace_back();
+            stream = tiled::lift(state, stream, totals, t, limit, workers, &summary);
+            if (!summary.cycle) throw std::logic_error("no period in seven copies");
+            origin += root_period * summary.transient;
+            root_period *= summary.cycle;
+            summary.origin = origin;
+            summary.root_period = root_period;
+            stream.suffix.clear();
+            if (std::getenv("LINE17_TILES_TRACE"))
+                std::cerr << "cycle " << i+1 << ' ' << origin << ' ' << root_period << ' '
+                          << length(stream.prefix) << ' ' << length(stream.period) << ' '
+                          << stream.period_marks << '\n';
+            bool stream_tail = length(stream.period) > limit/3;
+            if (origin + root_period >= epochs || i+1 == states.size() || stream_tail) {
+                mpz_class repeats = 0;
+                if (epochs > origin) {
+                    mpz_class remainder = epochs - origin;
+                    mpz_cdiv_q(repeats.get_mpz_t(), remainder.get_mpz_t(), root_period.get_mpz_t());
+                }
+                const mpz_class actual = origin + repeats*root_period;
+                write_aligned_rows(history, actual);
+                stream.copies = repeats;
+                aligned = false;
+                if (stream_tail && i+1 < states.size()) {
+                    if (std::getenv("LINE17_TILES_TRACE"))
+                        std::cerr << "streaming cut " << i+1 << ": " << repeats << " periods of "
+                                  << length(stream.period) << " slots, plus " << length(stream.prefix)
+                                  << " leading slots; aligned sweep " << actual << '\n';
+                    finish_aligned_tail(stream, states, i+1, t);
+                    return 0;
+                }
+            }
+        } else {
+            stream = tiled::lift(state, stream, totals, t, limit, workers);
+            mpz_class n = length(stream.prefix) + stream.copies*length(stream.period) + length(stream.suffix);
+            write_row(state, n, totals.calls, totals.interior);
+            std::cout.flush();
+        }
+        if (!aligned && std::getenv("LINE17_TILES_TRACE"))
+            std::cerr << i+1 << ' ' << length(stream.prefix) << ' ' << length(stream.period)
+                      << ' ' << stream.copies << ' ' << length(stream.suffix)
+                      << ' ' << stream.period_marks << '\n';
     }
     return 0;
 } catch (const std::exception& e) { std::cerr<<e.what()<<'\n'; return 2; }
