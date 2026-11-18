@@ -1,0 +1,58 @@
+{
+  "machine": "1RB---3RA2LA2RB_2LB3LA4LB4RA0RA",
+  "start_epochs": 9216,
+  "end_epochs": 9728,
+  "start_sha256": "82a5bdc77dfe141471a72389f8714a09b28b04d43071893963e1aeae0b9a7f2a",
+  "end_sha256": "cf2a332114dc85e6524c156a60152069fa9f7961698ef663abd67ee97a1cbad0",
+  "status": "unknown",
+  "counts": {
+    "outer": {
+      "first_A_on_virgin": 339,
+      "open_prefix": 173
+    },
+    "internal": {
+      "child_0": 812,
+      "terminal_32": 406,
+      "child_2": 4255067,
+      "ordinary_prefix": 259
+    }
+  },
+  "first_examples": {
+    "outer_first_A_on_virgin": {
+      "epoch": 9217,
+      "guard_coordinate": -9216,
+      "distance_to_virgin": 38179,
+      "projected_count_bits": 3
+    },
+    "outer_open_prefix": {
+      "epoch": 9220,
+      "guard_coordinate": -9219,
+      "prefix": "3222222222222222222222222222222222222222222222222222222222222222",
+      "local_steps": 64
+    }
+  },
+  "guard3_reply_rounds": {
+    "outer": {
+      "BB": 512
+    },
+    "internal": {
+      "AB": 406,
+      "BB": 259
+    }
+  },
+  "first_round": {
+    "internal_AB": {
+      "epoch": 9217,
+      "guard_coordinate": 28963
+    },
+    "internal_BB": {
+      "epoch": 9217,
+      "guard_coordinate": 4822
+    },
+    "outer_BB": {
+      "epoch": 9217,
+      "guard_coordinate": -9216
+    }
+  },
+  "internal_literal_prefixes": []
+}

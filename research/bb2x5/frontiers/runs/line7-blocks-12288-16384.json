@@ -1,0 +1,15 @@
+{
+  "machine": "1RB---3RA2LA2RB_2LB3LA4LB4RA0RA",
+  "start_epochs": 12288,
+  "end_epochs": 16384,
+  "start_sha256": "97f3d179d5e8f166ea69edd2cea1d392d353ae4f2ef82c4c9343e625b71fc4dc",
+  "end_sha256": "6dc3d207b9c75dfa0ec8999f0fcaecdfa400b87a5b1d04fd9cad5ef157919c2c",
+  "status": "unknown",
+  "all_B_epoch_ranges_inclusive": [
+    [
+      12289,
+      16384
+    ]
+  ],
+  "exceptional_or_literal_epochs": []
+}
