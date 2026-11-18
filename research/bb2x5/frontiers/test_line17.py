@@ -7,9 +7,9 @@ import tempfile
 from pathlib import Path
 import unittest
 
-from line17 import (DATA, HEAD, M17, ROOT, ReachesTerminal, advance, advance_packed, load, literal_counts, once_counts,
+from line17 import (DATA, HEAD, M17, ROOT, ReachesTerminal, advance, advance_packed, deepest_probe, load, literal_counts, once_counts,
                     mark_image, periodic_counts, replay, word_counts)
-from prior_frontier import T17, header17, mark_step
+from prior_frontier import T17, digits, header17, marks_on_word, mark_step
 from prior_sweeps import TapeMachine
 import survey
 
@@ -173,6 +173,40 @@ class Line17Tests(unittest.TestCase):
             self.assertNotEqual(result.returncode,0)
             self.assertIn('finite slot budget',result.stderr)
             self.assertEqual(output.read_bytes(),saved)
+
+    def test_fused_pairs_against_literal_slots(self):
+        for left,right in itertools.product(('12','13','02','03','22','23'),repeat=2):
+            register = DATA[:12]+left+right+'031322'
+            data = digits(register)
+            word = bytes((0,1,0,0))*75
+            rows = []
+            worker = subprocess.run([str(PACKED),'75','16','100000'],input=register,
+                                    text=True,capture_output=True)
+            try:
+                for i,(trit,_) in enumerate(data):
+                    state = trit,data[i-1][1] if i else 0
+                    c = literal_counts(state,word)
+                    rows.append((*c.state,c.slots,c.calls,c.interior))
+                    _,word = marks_on_word(state,word)
+            except AssertionError:  # The literal rule detected an overlapping mark.
+                self.assertNotEqual(worker.returncode,0)
+                self.assertIn('overlapping marked bursts',worker.stderr)
+            else:
+                self.assertEqual(worker.returncode,0,worker.stderr)
+                self.assertEqual(rows,[tuple(map(int,r.split())) for r in worker.stdout.splitlines()])
+
+    def test_deepest_probe_from_a_completed_register(self):
+        for start,more in ((0,0),(0,1),(11,73),(10**9,171)):
+            seed = replay(start,27)
+            final = advance_packed(seed,more,PACKED,16)
+            word = bytes((0,1,0,0))*more
+            data = digits(seed['register'])
+            last = None
+            for i,(trit,_) in enumerate(data):
+                if not word: break
+                last = i,len(word)
+                _,word = marks_on_word((trit,data[i-1][1] if i else 0),word)
+            self.assertEqual(last,deepest_probe(final['register'],seed['register']))
 
     def test_native_period_lifting_and_budget(self):
         # Check every count and child word for several copy phases, including

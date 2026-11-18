@@ -162,6 +162,62 @@ void print(unsigned state,const mpz_class& n,const mpz_class& calls,const mpz_cl
     std::cout<<state/2<<' '<<state%2<<' '<<n<<' '<<calls<<' '<<interior<<'\n';
 }
 struct Digit { unsigned state; Count n=0,calls=0,interior=0; };
+void check_room(const Digit& digit) {
+    // A single bounded chunk can add at most six times its input length.
+    if (digit.n>arithmetic_limit || digit.calls>8*arithmetic_limit || digit.interior>8*arithmetic_limit)
+        throw std::runtime_error("finite counter limit");
+}
+
+// Compose two adjacent trits for a byte of input. The intermediate word can
+// contain sixteen bits; the composed output can contain at most thirty-two.
+struct PairPacket {
+    std::uint32_t bits=0;
+    std::uint8_t left=0,right=0,width=0,middle=0;
+    std::uint8_t left_calls=0,left_inner=0,right_calls=0,right_inner=0;
+};
+struct PairTransfer {
+    std::array<std::array<PairPacket,256>,36> table{};
+    static PairPacket compile(unsigned left,unsigned right,unsigned bits,unsigned width) {
+        PairPacket p;
+        const Packet a=Transfer::compile(left,bits,width);
+        p.left=a.state;
+        if (a.state==invalid) return p;
+        p.left_calls=a.calls; p.left_inner=a.interior; p.middle=a.width;
+        p.right=right;
+        for (unsigned offset=0; offset<a.width; offset+=8) {
+            auto child=Transfer::compile(p.right,a.bits>>offset,std::min(8U,a.width-offset));
+            p.right=child.state;
+            if (child.state==invalid) break;
+            p.bits|=std::uint32_t(child.bits)<<p.width;
+            p.width+=child.width;
+            p.right_calls+=child.calls; p.right_inner+=child.interior;
+        }
+        return p;
+    }
+    PairTransfer() {
+        for (unsigned state=0;state<36;++state)
+            for (unsigned byte=0;byte<256;++byte)
+                table[state][byte]=compile(state/6,state%6,byte,8);
+    }
+    void apply(const Word& in,Digit& left,Digit& right,Word& out) const {
+        unsigned state=6*left.state+right.state;
+        auto take=[&](const PairPacket& p) {
+            if (p.left==invalid || p.right==invalid) throw std::runtime_error("overlapping marked bursts");
+            state=6*p.left+p.right;
+            left.n+=p.middle; left.calls+=p.left_calls; left.interior+=p.left_inner;
+            right.calls+=p.right_calls; right.interior+=p.right_inner;
+            out.push(p.bits,p.width,Count(1)<<28);
+        };
+        for (Count i=0;i<in.size/8;++i) {
+            unsigned byte=(in.data[i/8]>>(8*(i%8))) & 255;
+            take(table[state][byte]);
+        }
+        unsigned tail=in.size%8;
+        if (tail) take(compile(state/6,state%6,in.read(in.size-tail,tail),tail));
+        left.state=state/6; right.state=state%6;
+        right.n+=out.size;
+    }
+};
 
 // Fall back before building a large word. Stream the original input unchanged
 // through every remaining digit; word boundaries survive as state, not padding.
@@ -172,6 +228,7 @@ void finish(const Transfer& tr, const Stream& in, const std::vector<unsigned>& i
                                  ": need "+in.size().get_str()+", budget "+std::to_string(work_limit));
     std::vector<Digit> digits;
     for (unsigned j=cut;j<initial.size();++j) digits.push_back({initial[j]});
+    PairTransfer pairs;
     Word a,b;
     auto feed=[&](const Word& w) {
         for (Count offset=0;offset<w.size;) {
@@ -180,14 +237,18 @@ void finish(const Transfer& tr, const Stream& in, const std::vector<unsigned>& i
                 auto width=static_cast<unsigned>(std::min<Count>(64,end-j));
                 a.push(w.read(j,width),width,65536);
             }
-            for (auto& digit:digits) {
-                if (!a.size) break;
-                if (a.size>arithmetic_limit || digit.calls>arithmetic_limit*8 || digit.interior>arithmetic_limit*8)
-                    throw std::runtime_error("finite counter limit");
-                tr.apply(a,digit.state,b,digit.calls,digit.interior,Count(1)<<28);
-                if (digit.n>arithmetic_limit-b.size) throw std::runtime_error("finite length limit");
-                digit.n+=b.size;
+            size_t i=0;
+            for (; i+1<digits.size() && a.size; i+=2) {
+                check_room(digits[i]);
+                check_room(digits[i+1]);
+                pairs.apply(a,digits[i],digits[i+1],b);
                 a.clear(); std::swap(a,b);
+            }
+            if (i<digits.size() && a.size) {
+                auto& digit=digits[i];
+                check_room(digit);
+                tr.apply(a,digit.state,b,digit.calls,digit.interior,Count(1)<<28);
+                digit.n+=b.size; b.clear();
             }
             a.clear(); offset=end;
         }

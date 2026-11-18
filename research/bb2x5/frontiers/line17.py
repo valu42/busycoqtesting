@@ -177,6 +177,22 @@ class ReachesTerminal(ValueError):
     """The cut at the singleton receives a raw probe during the requested interval."""
 
 
+def deepest_probe(register, start=DATA):
+    """Deepest data-pair index and its number of inputs in a completed interval."""
+    initial, final = digits(start), digits(register)
+    if len(initial) != len(final):
+        raise ValueError('register lengths differ')
+    for i in reversed(range(len(initial))):
+        old, new = initial[i][0], final[i][0]
+        if new != old:
+            # Every C emits a slot. The last pair reached receives only plain
+            # pulses, and a plain pulse at trit two would reach its child.
+            if new < old:
+                raise ValueError('deepest visited trit must increase without wrapping')
+            return i,new-old
+    return None
+
+
 def native_counts(rows, slots, width):
     counts = []
     for row in rows:
@@ -345,6 +361,7 @@ def main():
     workers.add_argument('--packed-engine',type=Path,help='native packed-bit worker for replay or resume')
     parser.add_argument('--word-bits',type=int,default=2**28,help='largest materialized packed word in bits')
     parser.add_argument('--finite-slots',type=int,default=10**11,help='maximum slots entering a streamed suffix')
+    parser.add_argument('--depth',action='store_true',help='report the deepest data pair reached since the initial register')
     parser.add_argument('--resume',type=Path,help='start at this saved boundary; --epochs remains an absolute target')
     parser.add_argument('--checkpoint',type=Path,required=True)
     args=parser.parse_args()
@@ -358,8 +375,13 @@ def main():
             result = advance(seed,args.epochs-seed['epochs'],args.engine)
         else:
             result = replay(args.epochs,args.cut,args.mark_budget,args.engine)
+        reached = deepest_probe(result['register']) if args.depth else None
         save(args.checkpoint,result)
         print(f"Line 17 at {result['epochs']} epochs and {result['steps']} raw steps.")
+        if reached is not None:
+            i, pulses = reached
+            noun = 'slot' if pulses==1 else 'slots'
+            print(f"Data pair {i} was the deepest reached (indices 0–423). It received {pulses} input {noun}.")
     except (ValueError, OverflowError, OSError) as exc:
         parser.exit(2,f'Replay stopped: {exc}\n')
 
