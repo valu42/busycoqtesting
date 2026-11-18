@@ -37,7 +37,7 @@ Write $w=110$ and read the original tape rightward from the fresh blank under th
 |---|---|
 | `00` | Halts in F on the second zero. |
 | `11` | Returns to the blank edge in C. Its right side is $0w^{f+1}(11w^{n_1})\cdots(11w^{n_k})1\phi(u)10S$, where $\phi(01)=11$ and $\phi(101)=101$. |
-| `100` | Turns inward in C on a one. The theorem identifies both sides of the tape at that turn. Its later behavior is open. |
+| `100` | Turns inward in C on a one. The theorem identifies both sides of the tape. A second outward scan is proved for the prefix below. |
 
 Two instances have kernel-checked paths from the original blank start and complete return tapes. In each row the simulator has completed the stated number of rounds and checked whether it can jump at the frontier. The elementary durations below come from the Python replay. [Proof](Line133Carry.v) · [Replay](replay_line133.py)
 
@@ -48,7 +48,13 @@ Two instances have kernel-checked paths from the original blank start and comple
 
 The first case follows the earlier checkpoint by five recovery visits and fourteen ordinary visits. After it returns, the counter parser sees eleven bits. In the second case, the final `11` crosses the boundary between a literal marker and the next compressed run. The proof checks the underlying cells across that boundary. The replay also checks the three possible exits on 240 small configurations using the original transition table one step at a time. [Replay](replay_line133.py)
 
-**Remaining decision question.** Can a reachable carry take the `00` exit? A blank-tape nonhalting proof also needs to cover the continuation after `100` and visits where a counter runs out before the carry crosses it. [Claim board](ROADMAP.md#claim-board)
+### A halt after the `100` turn
+
+If $T$ begins `01 · 100 · 01`, the head first turns on `100`, then resumes scanning outward in E on the untouched suffix. The local sequence takes exactly 22 elementary transitions from the state at the end of the full levels. The remaining suffix can contain any sequence of `01` and `101` tokens. If these lead to `00`, line 133 halts on that second scan. This holds at arbitrary depth. [Second-scan proof](Line133Turn100.v)
+
+A one-cell change shows why the suffix matters. Take one full counter of size one, a front count of zero, and $T$ beginning `01 · 100`. With blanks after the exit, the machine returns to the edge in C after 97 steps. Setting only the second cell after the exit to one makes it halt in F after 34 steps. Both clocks and the return tape are kernel-checked. These are constructed configurations. The two blank-reachable examples above both take the `11` exit. [Exact witnesses](Line133Turn100.v)
+
+**Remaining decision question.** Can the blank run reach a halting suffix on either scan? The other `100` continuations and visits where a counter runs out also need to be covered for a blank-tape nonhalting proof. [Claim board](ROADMAP.md#claim-board)
 
 ## Reproduce
 
@@ -62,7 +68,7 @@ git -C /tmp/explorer-line133 checkout --detach c409c4b292369cb404e939753004bd121
 python3 replay_line133.py /tmp/explorer-line133
 ```
 
-The formal proofs use Coq 8.20.1 and the pinned six-state BusyCoq library and odometer from PR 76. The commands build the dependency and check both line 133 modules. The bytecode option enables kernel checking of the VM computations.
+The formal proofs use Coq 8.20.1 and the pinned six-state BusyCoq library and odometer from PR 76. The commands build the dependency and check all three line 133 modules. The bytecode option enables kernel checking of the VM computations.
 
 ```sh
 git clone --filter=blob:none --no-checkout https://github.com/fractal-geometry-explorer/busycoq.git /tmp/busycoq-line133
@@ -78,7 +84,8 @@ odometer_verify=/tmp/busycoq-line133/verify
 )
 coqc -q -native-compiler no -Q "$odometer_verify" BusyCoq Line133Odometer.v
 coqc -q -native-compiler no -Q "$odometer_verify" BusyCoq Line133Carry.v
-coqchk -silent -bytecode-compiler yes -Q "$odometer_verify" BusyCoq Line133Carry
+coqc -q -native-compiler no -Q "$odometer_verify" BusyCoq Line133Turn100.v
+coqchk -silent -bytecode-compiler yes -Q "$odometer_verify" BusyCoq Line133Turn100
 ```
 
 [prior]: https://github.com/fractal-geometry-explorer/busy-beaver-explorer/blob/c409c4b292369cb404e939753004bd1216fa3333/holdouts/1RB0LC_1LC0RE_1LD1LB_1LA1LD_1RF0RA_---1RE/README.md
