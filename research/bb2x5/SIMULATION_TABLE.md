@@ -40,7 +40,7 @@ The endpoint column gives the largest exact raw count indexed in this repository
 | 32 | `1RB3RB1LB2RA---_2LA2RB1LA4LB0RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-32.json) |
 | 33 | `1RB2LA0RB4LB1RA_1LA3RA1RA---0LA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-33.json) |
 | 34 | `1RB2LA4RA1LA3LA_0LA2RB3RB2LB---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-34.json) |
-| 35 | `1RB2LA4RA1LA3LA_0LA3RB3LB2RB---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-35.json) |
+| 35 | `1RB2LA4RA1LA3LA_0LA3RB3LB2RB---` | 436,208,497,795 | — | — | [Timed cut-28 sweeps](frontiers/runs/line35-isolated-forecast.json) |
 | 36 | `1RB2LA1LA4RA2LA_0LA3RB3LB2RB---` | 10,000,000,000 | [Unbounded (proved nonhalting)](line36-nonhalting.md) | — | [Moving window](frontiers/runs/window-36.json) |
 | 37 | `1RB2LA3LA4RA1LA_0LA3LB3RB1RB---` | 10,000,000,000 | [≥ 39,999,600,001](line37-header.md) | — | [Moving window](frontiers/runs/window-37.json) |
 

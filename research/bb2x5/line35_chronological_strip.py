@@ -4,6 +4,7 @@ import argparse
 import base64
 import json
 import zlib
+from bisect import bisect_right
 from collections import Counter
 from itertools import product
 from pathlib import Path
@@ -20,6 +21,17 @@ from prior_sweeps import TERNARY_CLOSE, TapeMachine, direct_epoch, word_sweep
 
 
 HEIGHT = 5
+DEFICIT_WIDTHS = (1, 3, 8, 13, 18, 29, 37, 48, 56, 67, 75, 86)
+
+
+def ordinary_debt_bound(width):
+    """Maximum possible prefix deficit in the five-ancestor graph up to this width."""
+    if width < 0:
+        raise ValueError('negative interval width')
+    periods = max(0, (width - 67) // 19)
+    return 2 * periods + bisect_right(DEFICIT_WIDTHS, width - 19 * periods)
+
+
 # Letters 0 and 1 have zero debt, 2 has unit debt, and 3 includes every debt >= 2.
 LETTERS = range(4)
 BLOCK = tuple(map(int, '3313333333133111111'))
@@ -112,7 +124,8 @@ def length_envelope(edges):
     extrema = [min(v) for v in vectors]
     first = [next(length for length, value in enumerate(extrema) if value <= -debt)
              for debt in range(1, 13)]
-    assert first == [1, 3, 8, 13, 18, 29, 37, 48, 56, 67, 75, 86]
+    assert tuple(first) == DEFICIT_WIDTHS
+    assert all(ordinary_debt_bound(n) == -min(extrema[:n+1]) for n in range(87))
     print('all 1024 endpoint values at length 86 equal those at 67 minus two')
     print('least graph widths at deficits 1 through 12:', *first)
 

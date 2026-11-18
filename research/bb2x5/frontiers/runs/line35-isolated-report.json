@@ -1,0 +1,101 @@
+{
+  "machine": "1RB2LA4RA1LA3LA_0LA3RB3LB2RB---",
+  "origin": {
+    "kind": "checkpoint"
+  },
+  "start": {
+    "epoch": 300001,
+    "steps": 293713845976,
+    "head": -310114,
+    "cells": 610114
+  },
+  "starting_checkpoint_sha256": "5c555073fa1789a24b9f50dcf101ada2eb536b2808f5f517cd31d01ddc801eaf",
+  "attempted_sweeps": 65536,
+  "successful_sweeps": 65536,
+  "last_boundary": {
+    "epoch": 365537,
+    "steps": 436079626737,
+    "head": -377861,
+    "cells": 743397
+  },
+  "guard_histogram": {
+    "0": 32400,
+    "1": 27977,
+    "2": 4422,
+    "3": 737
+  },
+  "exterior_histogram": {
+    "0": 50070,
+    "1": 13993,
+    "2": 1473
+  },
+  "closest": {
+    "epoch": 300088,
+    "steps": 293884110672,
+    "head": -310204,
+    "cells": 610291,
+    "cut": 28,
+    "prefix": "2132131123121113231213231232",
+    "prefix_balance": 2,
+    "prefix_deficit": 1,
+    "threshold": 8,
+    "exterior_debt": 0,
+    "exterior_margin": 8,
+    "guard_debt": 1,
+    "unmatched_in_prefix": [
+      1
+    ],
+    "crossings": []
+  },
+  "strongest": {
+    "epoch": 300027,
+    "steps": 293764779228,
+    "head": -310140,
+    "cells": 610166,
+    "cut": 28,
+    "prefix": "2321131211311232312113211131",
+    "prefix_balance": 7,
+    "prefix_deficit": 2,
+    "threshold": 13,
+    "exterior_debt": 2,
+    "exterior_margin": 11,
+    "guard_debt": 2,
+    "unmatched_in_prefix": [
+      1,
+      3
+    ],
+    "crossings": [
+      {
+        "cell": 29,
+        "right_index": 610137,
+        "birth_epoch": 300013,
+        "birth_digit": 2,
+        "absorbed_by": {
+          "cell": 28,
+          "right_index": 610138,
+          "birth_epoch": 300014,
+          "birth_digit": 3
+        }
+      },
+      {
+        "cell": 31,
+        "right_index": 610135,
+        "birth_epoch": 300012,
+        "birth_digit": 1,
+        "absorbed_by": {
+          "cell": 26,
+          "right_index": 610140,
+          "birth_epoch": 300015,
+          "birth_digit": 1
+        }
+      }
+    ]
+  },
+  "pulse_window": {
+    "cut_28_sweeps": 65536,
+    "readings_above_two": 0,
+    "first_above_six_epoch_and_debt": null,
+    "shortest_gap_and_its_epochs": null
+  },
+  "saved_boundary_sha256": "21bea94d42845dd24edfbe68f0dbbaf184dab676391e18267b56a2be4fc8eda4"
+}
