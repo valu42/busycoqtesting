@@ -97,6 +97,10 @@ class Driver:
         check_return_contract(right_rules, self.first, self.usual)
         if self.first[0]!=self.usual:
             raise ValueError('first positive excursion returns in the wrong state')
+        self.check_left(rules, width)
+
+    def check_left(self, rules, width):
+        """Certify the negative driver and its clock, independently of positive calls."""
         # Table after j external calls: cumulative subordinate calls, count of
         # local transitions, and block contents in increasing physical order.
         w=[0]*width

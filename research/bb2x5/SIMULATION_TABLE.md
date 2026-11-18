@@ -20,15 +20,15 @@ The endpoint column gives the largest exact raw count indexed in this repository
 | 12 | `1RB4RB4RA1LA3LA_1LB2LA3RB2RB---` | ≈ 2.67029 × 10^82 | — | — | [Boundary streams](frontiers/runs/stream-12.json) |
 | 13 | `1RB3RA3RB4LA1LA_1LB2LA1LA---1RB` | ≈ 1.50000 × 10^35 | — | [≈ 10^17.50888](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Boundary streams](frontiers/runs/stream-13.json) |
 | 14 | `1RB2RA4LA1RB4RB_1LB2LA3RA---0LB` | 1,000,000,000,000,000 | — | [≥ 5 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Six-cell strides](frontiers/runs/stride-14.json) |
-| 15 | `1RB3RB1LA2LA3RA_1LB2RA4RB0LA---` | 10,000,000,000 | — | [≥ 2 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Moving window](frontiers/runs/window-15.json) |
+| 15 | `1RB3RB1LA2LA3RA_1LB2RA4RB0LA---` | 20,331,546,024,060 | — | [≥ 2 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Seven-cell right returns](frontiers/runs/line15-next.json) |
 | 16 | `1RB2LA0RB0LB3LB_2LA4RB3RA0RA---` | 1,000,000,000,000,000 | — | — | [Six-cell strides](frontiers/runs/stride-16.json) |
 | 17 | `1RB2RA3LB---2LB_2LA0LA4RB0RB1LA` | ≈ 1.40000 × 10^59 | [> 10^36](marked-register.md) | — | [Timed register sweeps](frontiers/runs/line17-epochs.json) |
-| 18 | `1RB2RA3LB4LA---_2LA0RB1LA2RB0RA` | ≈ 9.24569 × 10^952 | — | — | [Timed prefix and suffix calls](frontiers/runs/line18-returns.json) |
-| 19 | `1RB2RA3LA---2LB_2LA4RA4RB0RB0LA` | 10,000,000,000 | — | [≥ 4 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Moving window](frontiers/runs/window-19.json) |
+| 18 | `1RB2RA3LB4LA---_2LA0RB1LA2RB0RA` | ≈ 4.86750 × 10^2832 | — | — | [Timed prefix and suffix calls](frontiers/runs/line18-returns.json) |
+| 19 | `1RB2RA3LA---2LB_2LA4RA4RB0RB0LA` | 100,000,000,000 | — | [≥ 4 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Paired guard traces](frontiers/runs/spaghetti-19.json) |
 | 20 | `1RB2RA3LA4LA2RB_2LA---3LB1RA3RA` | ≈ 6.00000 × 10^22 | — | — | [Guarded boundary streams](frontiers/runs/stream-20.json) |
 | 21 | `1RB2RA3LA4LA2RB_2LA3RB---0RA1LA` | ≈ 5.20000 × 10^23 | — | — | [Boundary streams](frontiers/runs/stream-21.json) |
 | 22 | `1RB2RA3LA4LA2RB_2LA3RA---0RA1LA` | ≈ 5.20000 × 10^23 | — | — | [Boundary streams](frontiers/runs/stream-22.json) |
-| 23 | `1RB3LA3LB0RB0LA_2LA4RB1LB1RA---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-23.json) |
+| 23 | `1RB3LA3LB0RB0LA_2LA4RB1LB1RA---` | 100,000,000,000 | — | — | [Paired guard traces](frontiers/runs/spaghetti-23.json) |
 | 24 | `1RB3LA1LA2RB2RA_2LA4RA3LB1RA---` | ≈ 1.77089 × 10^21 | — | — | [Guarded AB sweeps](frontiers/runs/line24-sweeps.json) |
 | 25 | `1RB2LB3LA0RA1LB_2LA4RA3RB3LA---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-25.json) |
 | 26 | `1RB2RB4LA2RA1LA_2LA4RA3LA---3RA` | 566,255,088,944,246,173,560,939 | [≥ 377,503,392,604,154,203,337,765](column-phases.md#extension-through-cut-84) | — | [Timed pair checkpoint](column-time.md) |
