@@ -12,10 +12,10 @@ The endpoint column gives the largest exact raw count indexed in this repository
 | 4 | `1RB3LA1LA1RA3RA_2LB2RA---4RB1LB` | ≈ 5.35561 × 10^1802 | — | — | [Timed A(6,b) returns](frontiers/runs/line4-return.json) |
 | 5 | `1RB3LA1LA1RA1RA_2LB2RA---4RB1LB` | 100,000,000 | [≥ 2^173,753](accelerator-results/arithmetic5-100k.json) | — | [Moving window](frontiers/runs/window-05.json) |
 | 6 | `1RB---3LB4RB0LA_2LB3LA3RB4RA0RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-06.json) |
-| 7 | `1RB---3RA2LA2RB_2LB3LA4LB4RA0RA` | ≈ 4.69601 × 10^1920 | — | [> 10^1,140,000,000](https://wiki.bbchallenge.org/wiki/TMBR:_October_2026#Holdouts) | [Batched suffix calls](frontiers/runs/line7-calls.json) |
+| 7 | `1RB---3RA2LA2RB_2LB3LA4LB4RA0RA` | ≈ 5.69453 × 10^3872 | — | [> 10^1,140,000,000](https://wiki.bbchallenge.org/wiki/TMBR:_October_2026#Holdouts) | [Batched suffix calls](frontiers/runs/line7-calls.json) |
 | 8 | `1RB4LA1RA1RB1LA_2LB3LA---4RA2RB` | ≈ 1.50000 × 10^57 | — | — | [Boundary streams](frontiers/runs/stream-08.json) |
 | 9 | `1RB---4RB2RB4LA_2LB3LA3LB0RA0RB` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-09.json) |
-| 10 | `1RB2RB3LA4LA1LA_2LB3RA---4RA1RB` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-10.json) |
+| 10 | `1RB2RB3LA4LA1LA_2LB3RA---4RA1RB` | ≈ 2.10250 × 10^22 | — | — | [Boundary streams](frontiers/runs/stream-10.json) |
 | 11 | `1RB2LA4LA1RA1LA_2LB3RB4RB---2RA` | ≈ 2.81543 × 10^50 | — | — | [Boundary streams](frontiers/runs/stream-11.json) |
 | 12 | `1RB4RB4RA1LA3LA_1LB2LA3RB2RB---` | ≈ 2.67029 × 10^82 | — | — | [Boundary streams](frontiers/runs/stream-12.json) |
 | 13 | `1RB3RA3RB4LA1LA_1LB2LA1LA---1RB` | ≈ 1.50000 × 10^33 | — | [≈ 10^17.50888](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Boundary streams](frontiers/runs/stream-13.json) |

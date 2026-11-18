@@ -153,9 +153,10 @@ public:
 int main(int argc, char **argv) try {
     if (argc!=3) throw std::runtime_error("usage: longitudinal PERIOD_GROUPS MAX_BITS < protocol");
     mpz_class groups(argv[1],10); bit_limit=parse(argv[2]);
-    std::string machine,period,usual,first,seed;
-    if (!(std::cin >> machine >> period >> usual >> first >> seed)) throw std::runtime_error("incomplete protocol");
-    if (groups<=0 || bit_limit<16 || period.empty() || period.find_first_not_of("AB")!=std::string::npos ||
+    std::string machine,prefix,period,usual,first,seed;
+    if (!(std::cin >> machine >> prefix >> period >> usual >> first >> seed)) throw std::runtime_error("incomplete protocol");
+    if (prefix==".") prefix.clear();
+    if (prefix.find_first_not_of("AB")!=std::string::npos || groups<=0 || bit_limit<16 || period.empty() || period.find_first_not_of("AB")!=std::string::npos ||
         usual.size()!=1 || first.size()!=2 || (usual+first).find_first_not_of("AB")!=std::string::npos ||
         machine.size()!=31 || machine[15]!='_') throw std::runtime_error("invalid protocol");
     for (unsigned q=0; q<2; ++q) for (unsigned s=0; s<5; ++s) {
@@ -168,7 +169,7 @@ int main(int argc, char **argv) try {
     else if (seed.find_first_not_of("01234")!=std::string::npos) throw std::runtime_error("invalid positive tape");
     Stream input;
     if (blank) {
-        input.prefix=letters("A"); input.period=letters(period); input.copies=groups-1;
+        input.prefix=letters("A"+prefix); input.period=letters(period); input.copies=groups-1;
         input.suffix=letters(period.substr(0,period.size()-1));
     } else {
         input.period=letters(period.back()+period.substr(0,period.size()-1)); input.copies=groups;
