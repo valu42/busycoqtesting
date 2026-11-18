@@ -17,6 +17,21 @@ A lookup starts at the join between two adjacent base-five words. The key includ
 
 The initial window survey used width 8 and a limit of 10 billion window operations per machine. It targeted 100 billion raw steps on lines 7 and 13, 100 million on lines 3, 5, 17, 26, 29 and 30, and 10 billion elsewhere. Every target was reached. Each snapshot stores the occupied interval as compressed symbols, its left endpoint, and the absolute head, state and step count. Earlier, deeper results take precedence in the table where applicable. To refresh the table after saving checked results run `python3 frontiers/scoreboard.py`.
 
+## Replaying the targeted simulations
+
+The following runs started with an exact repository clock of ten billion steps or fewer. Their saved configurations can be extended using the commands in the last column.
+
+| Line | What the accelerator counts | Replay and continuation |
+|---|---|---|
+| 3 | Rightward probes through mixed ternary tokens and binary increments on the left | [Mixed-counter clock](line3-timing.md) |
+| 9 | Pairs of growing left sweeps and their three ordered suffix calls | [BBA sweeps](../line9-sweeps.md) |
+| 14, 16, 28 | Repeated six-cell crossings that restore the entry state and the adjacent guard word | [Six-cell strides](six-cell-strides.md) |
+| 20 | Periodic negative-tape returns with an exact replay of the exceptional positive-tape period | [Guarded boundary streams](line20-returns.md) |
+| 24 | Alternating A and B calls after the 46-step seed, with literal recovery on exceptional returns | [Alternating sweeps](line24.md) |
+| 29, 30 | Timed sweeps through the Bonus Cryptid and Hydra tapes, including the early exceptional Bonus Cryptid configurations | [Timed cryptid sweeps](hydra.md) |
+
+Lines 15 and 19 still have ten-billion-step repository checkpoints. Their community-reported runs reach at least 20 trillion and 40 trillion steps, respectively. A machine-specific simulation that can reproduce those runs would give the repository a new full-tape checkpoint to continue. The short replays on lines 29 and 30 establish local exact clocks for two machines with much deeper published trajectories and evidence favoring nonhalting. [Community holdout table](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) · [Hydra and Bonus Cryptid analysis](https://www.sligocki.com/2024/05/10/bb-2-5-is-hard.html)
+
 ## Exact batches of boundary crossings
 
 Lines 8, 10, 11, 12, 13, 21, 22 and 31 have periodic responses from the initially blank negative half of the tape. Seven of the left-half periods and their discoverers are recorded in [the earlier sweep analysis](../mixed-and-sweeps.md). The simulator uses those responses to send an exact sequence of calls through the nonnegative cells. One call starts on a cell from its left and ends on the first move back to the left. A batch ends with the head at coordinate zero. The checksum covers the raw time, control state, number of completed periods and every visited nonnegative cell, including visited zeros.

@@ -6,7 +6,11 @@ import re
 from decimal import Decimal
 
 from checkpoints import ROOT, checksum, holdouts
-from longitudinal import DRIVERS, Driver
+from longitudinal import DRIVERS, GUARDED_DRIVERS, Driver
+import hydra
+import line3_timed
+import line9
+import line24
 import survey
 import line7
 import line5_timed
@@ -44,10 +48,32 @@ def generate():
         path = RUNS/f'window-{line:02}.json'
         p = survey.load(path, line, machine)
         consider(line, machine, p['steps'], path, 'Moving window')
-    for line in DRIVERS:
+    for line in (14, 16, 28):
+        path = RUNS/f'stride-{line:02}.json'
+        p = survey.load(path, line, machines[line-1])
+        consider(line, p['machine'], p['steps'], path, 'Six-cell strides')
+    for line in DRIVERS | GUARDED_DRIVERS:
         path = RUNS/f'stream-{line:02}.json'
         p = Driver(line).load(path)
-        consider(line, p['machine'], p['steps'], path, 'Boundary streams')
+        label = 'Guarded boundary streams' if line in GUARDED_DRIVERS else 'Boundary streams'
+        consider(line, p['machine'], p['steps'], path, label)
+
+    path = RUNS/'line3-timed.json'
+    p = line3_timed.load(path)
+    consider(3, p['machine'], int(p['steps_hex'], 16), path, 'Timed mixed-counter probes')
+
+    path = RUNS/'line9-sweeps.json'
+    p = line9.load(path)
+    consider(9, p['machine'], p['steps'], path, 'Batched BBA sweeps')
+
+    path = RUNS/'line24-sweeps.json'
+    p = line24.Line24().load(path)
+    consider(24, p['machine'], p['steps'], path, 'Guarded AB sweeps')
+
+    for line in hydra.MACHINES:
+        path = RUNS/f'hydra-{line}.json'
+        run = hydra.load(path, line)
+        consider(line, run.code, run.steps, path, 'Timed cryptid sweeps')
 
     path = RUNS/'line7-calls.json'
     p = line7.load(path)
@@ -95,7 +121,8 @@ def generate():
               37: '[≥ 39,999,600,001](line37-header.md)'}
     reports = {7: ('> 10^1,140,000,000', OCTOBER), 13: ('≈ 10^17.50888', COMMUNITY),
                14: ('≥ 5 × 10^13', COMMUNITY), 15: ('≥ 2 × 10^13', COMMUNITY),
-               19: ('≥ 4 × 10^13', COMMUNITY)}
+               19: ('≥ 4 × 10^13', COMMUNITY),
+               29: ('≥ 10^13,634', 'https://wiki.bbchallenge.org/wiki/Bonus_Cryptid')}
     lines = ['# BB(2,5) simulation table', '',
              'Each row starts on the all-zero, two-way-infinite tape. One raw step is one defined Turing-machine instruction. Line 36 runs forever by the [blank-tape proof](line36-nonhalting.md).', '',
              'The endpoint column gives the largest exact raw count indexed in this repository. Follow its source for the full integer and configuration or run record. ≈ marks a shortened display. Bounds, externally reported simulations and exact repository counts have separate columns.', '',
