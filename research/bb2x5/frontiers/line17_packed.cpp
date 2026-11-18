@@ -51,12 +51,55 @@ struct Word {
     void clear() { size=0; data.clear(); }
 };
 
+// The mark separation admits only 595 of the 65,536 sixteen-slot words.
+// Keep a compact transfer table and retain byte handling for other inputs.
+struct SpacedWords {
+    static constexpr unsigned missing=std::numeric_limits<std::uint16_t>::max();
+    std::array<std::uint16_t,65536> index;
+    std::vector<std::uint16_t> words;
+    SpacedWords() {
+        index.fill(missing);
+        for (unsigned w=0;w<index.size();++w) {
+            if (w & ((w>>1)|(w>>2))) continue;
+            index[w]=static_cast<std::uint16_t>(words.size());
+            words.push_back(static_cast<std::uint16_t>(w));
+        }
+    }
+};
+const SpacedWords& spaced_words() {
+    static const SpacedWords words;
+    return words;
+}
+
+// Apply every complete transfer and return the remaining bit count (0..7).
+// The emitter updates state before the next table lookup.
+template<class ByteTable,class WideTable,class Emit>
+unsigned apply_chunks(const Word& in,unsigned& state,const ByteTable& table,const WideTable& wide,Emit emit) {
+    const auto& indices=spaced_words().index;
+    for (Count i=0;i<in.size/16;++i) {
+        unsigned word=(in.data[i/4]>>(16*(i%4)))&65535;
+        unsigned entry=indices[word];
+        if (entry!=SpacedWords::missing) emit(wide[entry][state]);
+        else {
+            emit(table[state][word&255]);
+            emit(table[state][word>>8]);
+        }
+    }
+    unsigned tail=in.size%16;
+    if (tail>=8) {
+        emit(table[state][in.read(in.size-tail,8)]);
+        tail-=8;
+    }
+    return tail;
+}
+
 struct Packet {
     std::uint8_t state=0, width=0, calls=0, interior=0;
-    std::uint16_t bits=0;
+    std::uint32_t bits=0;
 };
 struct Transfer {
     std::array<std::array<Packet,256>,6> table{};
+    std::vector<std::array<Packet,6>> wide;
     static Packet compile(unsigned initial, unsigned bits, unsigned width) {
         Packet out;
         unsigned v=initial/2, pending=initial%2;
@@ -82,6 +125,10 @@ struct Transfer {
     Transfer() {
         for (unsigned s=0;s<6;++s)
             for (unsigned b=0;b<256;++b) table[s][b]=compile(s,b,8);
+        const auto& words=spaced_words().words;
+        wide.resize(words.size());
+        for (size_t j=0;j<words.size();++j)
+            for (unsigned s=0;s<6;++s) wide[j][s]=compile(s,words[j],16);
     }
     void apply(const Word& in, unsigned& state, Word& out,
                Count& calls, Count& interior, Count limit) const {
@@ -90,11 +137,7 @@ struct Transfer {
             out.push(p.bits,p.width,limit);
             calls+=p.calls; interior+=p.interior; state=p.state;
         };
-        for (Count i=0; i<in.size/8; ++i) {
-            unsigned byte=(in.data[i/8]>>(8*(i%8))) & 255;
-            emit(table[state][byte]);
-        }
-        unsigned tail=in.size%8;
+        unsigned tail=apply_chunks(in,state,table,wide,emit);
         if (tail) {
             unsigned bits=static_cast<unsigned>(in.read(in.size-tail,tail));
             emit(compile(state,bits,tail));
@@ -169,51 +212,62 @@ void check_room(const Digit& digit) {
         throw std::runtime_error("finite counter limit");
 }
 
-// Compose two adjacent trits for a byte of input. The intermediate word can
-// contain sixteen bits; the composed output can contain at most thirty-two.
+// Compose two adjacent digits. One input slot can at most double at each digit.
 struct PairPacket {
-    std::uint32_t bits=0;
-    std::uint8_t left=0,right=0,width=0,middle=0;
+    Count bits=0;
+    std::uint8_t state=invalid,width=0,middle=0;
     std::uint8_t left_calls=0,left_inner=0,right_calls=0,right_inner=0;
 };
 struct PairTransfer {
     std::array<std::array<PairPacket,256>,36> table{};
+    std::vector<std::array<PairPacket,36>> wide;
     static PairPacket compile(unsigned left,unsigned right,unsigned bits,unsigned width) {
         PairPacket p;
         const Packet a=Transfer::compile(left,bits,width);
-        p.left=a.state;
         if (a.state==invalid) return p;
         p.left_calls=a.calls; p.left_inner=a.interior; p.middle=a.width;
-        p.right=right;
         for (unsigned offset=0; offset<a.width; offset+=8) {
-            auto child=Transfer::compile(p.right,a.bits>>offset,std::min(8U,a.width-offset));
-            p.right=child.state;
-            if (child.state==invalid) break;
-            p.bits|=std::uint32_t(child.bits)<<p.width;
+            auto child=Transfer::compile(right,a.bits>>offset,std::min(8U,a.width-offset));
+            if (child.state==invalid) return p;
+            right=child.state;
+            p.bits|=Count(child.bits)<<p.width;
             p.width+=child.width;
             p.right_calls+=child.calls; p.right_inner+=child.interior;
         }
+        p.state=6*a.state+right;
+        return p;
+    }
+    PairPacket combine(unsigned state,unsigned word) const {
+        auto p=table[state][word&255];
+        if (p.state==invalid) return p;
+        const auto& next=table[p.state][word>>8];
+        if (next.state==invalid) return next;
+        p.state=next.state;
+        p.bits|=next.bits<<p.width;
+        p.width+=next.width; p.middle+=next.middle;
+        p.left_calls+=next.left_calls; p.left_inner+=next.left_inner;
+        p.right_calls+=next.right_calls; p.right_inner+=next.right_inner;
         return p;
     }
     PairTransfer() {
         for (unsigned state=0;state<36;++state)
             for (unsigned byte=0;byte<256;++byte)
                 table[state][byte]=compile(state/6,state%6,byte,8);
+        const auto& words=spaced_words().words;
+        wide.resize(words.size());
+        for (size_t j=0;j<words.size();++j)
+            for (unsigned state=0;state<36;++state) wide[j][state]=combine(state,words[j]);
     }
     void apply(const Word& in,Digit& left,Digit& right,Word& out) const {
         unsigned state=6*left.state+right.state;
         auto take=[&](const PairPacket& p) {
-            if (p.left==invalid || p.right==invalid) throw std::runtime_error("overlapping marked bursts");
-            state=6*p.left+p.right;
+            if (p.state==invalid) throw std::runtime_error("overlapping marked bursts");
+            state=p.state;
             left.n+=p.middle; left.calls+=p.left_calls; left.interior+=p.left_inner;
             right.calls+=p.right_calls; right.interior+=p.right_inner;
             out.push(p.bits,p.width,Count(1)<<28);
         };
-        for (Count i=0;i<in.size/8;++i) {
-            unsigned byte=(in.data[i/8]>>(8*(i%8))) & 255;
-            take(table[state][byte]);
-        }
-        unsigned tail=in.size%8;
+        unsigned tail=apply_chunks(in,state,table,wide,take);
         if (tail) take(compile(state/6,state%6,in.read(in.size-tail,tail),tail));
         left.state=state/6; right.state=state%6;
         right.n+=out.size;

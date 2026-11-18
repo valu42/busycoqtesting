@@ -43,24 +43,27 @@ class SlotOrigins {
         Count wanted=rank<=2*word.bits ? rank.get_ui() : std::numeric_limits<Count>::max();
         Count emitted=0;
         std::array<Count,2048> block;
+        const auto& indices=spaced_words().index;
         for (Count pos=0;pos<word.bits;) {
             Count bits=std::min<Count>(word.bits-pos,64*block.size());
             size_t words=(bits+63)/64;
             if (std::fread(block.data(),sizeof(Count),words,file.get())!=words)
                 throw std::runtime_error("cannot read the slot-origin temporary file");
-            for (Count j=0;j<bits;j+=8) {
-                unsigned width=static_cast<unsigned>(std::min<Count>(8,bits-j));
-                unsigned byte=(block[j/64]>>(j%64))&255;
-                const Packet p=width==8 ? tr.table[state][byte] : Transfer::compile(state,byte,width);
+            for (Count j=0;j<bits;j+=16) {
+                unsigned width=static_cast<unsigned>(std::min<Count>(16,bits-j));
+                unsigned bits16=(block[j/64]>>(j%64))&65535;
+                unsigned entry=indices[bits16];
+                const Packet p=width==16 && entry!=SpacedWords::missing
+                    ? tr.wide[entry][state] : Transfer::compile(state,bits16,width);
                 if (p.state==invalid) throw std::runtime_error("overlapping marked bursts");
                 if (wanted-emitted<=p.width) {
                     for (unsigned b=0;b<width;++b) {
-                        const auto one=Transfer::compile(state,(byte>>b)&1,1);
+                        const auto one=Transfer::compile(state,(bits16>>b)&1,1);
                         emitted+=one.width;
                         if (emitted>=wanted) return consumed+pos+j+b+1;
                         state=one.state;
                     }
-                    throw std::logic_error("byte and single-slot ranks differ");
+                    throw std::logic_error("packet and single-slot ranks differ");
                 }
                 emitted+=p.width;
                 state=p.state;
