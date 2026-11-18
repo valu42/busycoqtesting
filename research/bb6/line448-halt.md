@@ -13,6 +13,14 @@ Reflect the tape and exchange A with C and B with D. E and F keep their names. C
 
 These counts measure calls to the simulator. One call can stand for many elementary moves. The elementary runtime is undetermined here. A direct local check in the original orientation explains the last instruction. When A reads `0111`, the defined transitions A0, B1 and E1 put F on the last 1. When A reads `0110`, the machine writes `1111` and resumes in A, four cells to the right, after eight steps. Both rules hold for arbitrary tape outside the four cells. [Local sweep proofs](Line448Sweeps.v)
 
+## Verification
+
+The standalone file in upstream draft PR #100 contains the target table, the T4 simulator, and `Theorem halt : halts tm c0.` It imports `Individual62` and the Coq standard library. A public verification run checks the exact submitted commit with Coq 8.18.0, then passes the compiled objects to `coqchk` in a separate job. [Submitted theorem](https://github.com/valu42/busycoqtesting/blob/cdbb2630b998012b7466070118dadde9671f94ab/verify/M_1RB1RD_1LC0RE_1LD1LC_1RA0LB_0RD0RF_0LCHHH.v#L5739) · [Upstream draft](https://github.com/ccz181078/busycoq/pull/100) · [Compiler and checker logs](https://github.com/valu42/busycoqtesting/actions/runs/44398354450)
+
+Two executions of the OCaml witness reproduced both stopping counts in the table above. The local `coqchk` accepted the shared engine, and both `stepFast_spec` and `run_pow_spec` printed `Closed under the global context`. A second upstream draft for line 448 independently reports the same terminal state and count from Python and JavaScript. [Parallel submission](https://github.com/ccz181078/busycoq/pull/101)
+
+Fractal Geometry Explorer previously identified the C-start correspondence and reported 256,799 accelerated transitions from this start. The run above extends that trajectory to the first halt. [Earlier C-start work](https://github.com/fractal-geometry-explorer/busy-beaver-explorer/blob/c409c4b292369cb404e939753004bd1216fa3333/holdouts/1RB1RD_1LC0RE_1LD1LC_1RA0LB_0RD0RF_0LC---/README.md#deepminds-engine-changed-for-this-table-18-november-2026)
+
 ## Replay
 
 The decision theorem is `line448_halts : halts line448 c0`. Its finite certificate evaluates `run_pow 19` on the C start, with a budget of 524,288 calls and early exit on the first `None`. The theorem transports the result to line 448 using the checked reflection and renaming. [Coq proof](Line448Halt.v)
