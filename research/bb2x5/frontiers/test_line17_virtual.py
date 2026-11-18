@@ -49,10 +49,21 @@ class FusedTests(unittest.TestCase):
 
     def test_batch_with_pending_seam_and_resume(self):
         origin = replay(self.meta['origin'], 6)
-        seed, counts = self.compare(5, 7, 3, 'seed')
+        index = self.root/'seven.index'
+        seed, counts = self.compare(5, 7, 3, 'seed', '--index', index)
+        self.assertTrue(index.is_file())
         self.assertNotEqual(load(seed)['register'], origin['register'])
-        self.compare(17, 7, 4, 'continued', '--seed', seed, '--seed-counts', counts)
+        self.compare(17, 7, 4, 'continued', '--seed', seed, '--seed-counts', counts, '--index', index)
         self.compare(17, 5, 1, 'five')
+        with index.open('r+b') as stream:
+            stream.seek(-1, 2)
+            value = stream.read(1)[0]
+            stream.seek(-1, 2)
+            stream.write(bytes([value ^ 1]))
+        bad = self.worker('advance','--epochs',10**18,'--digits',7,'--index',index,
+                          '--checkpoint',self.root/'bad-index.json',check=False)
+        self.assertNotEqual(bad.returncode,0)
+        self.assertIn('index checksum',bad.stderr)
 
     def test_physical_periods(self):
         result = subprocess.run([str(TILES),'probe',str(self.period),'59','7','2'],

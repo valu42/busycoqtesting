@@ -22,7 +22,7 @@ The endpoint column gives the largest exact raw count indexed in this repository
 | 14 | `1RB2RA4LA1RB4RB_1LB2LA3RA---0LB` | 10,000,000,000 | — | [≥ 5 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Moving window](frontiers/runs/window-14.json) |
 | 15 | `1RB3RB1LA2LA3RA_1LB2RA4RB0LA---` | 10,000,000,000 | — | [≥ 2 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Moving window](frontiers/runs/window-15.json) |
 | 16 | `1RB2LA0RB0LB3LB_2LA4RB3RA0RA---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-16.json) |
-| 17 | `1RB2RA3LB---2LB_2LA0LA4RB0RB1LA` | ≈ 2.92453 × 10^65 | [> 10^36](marked-register.md) | — | [Timed register sweeps](frontiers/runs/line17-epochs.json) |
+| 17 | `1RB2RA3LB---2LB_2LA0LA4RB0RB1LA` | ≈ 6.10179 × 10^65 | [> 10^36](marked-register.md) | — | [Timed register sweeps](frontiers/runs/line17-epochs.json) |
 | 18 | `1RB2RA3LB4LA---_2LA0RB1LA2RB0RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-18.json) |
 | 19 | `1RB2RA3LA---2LB_2LA4RA4RB0RB0LA` | 10,000,000,000 | — | [≥ 4 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Moving window](frontiers/runs/window-19.json) |
 | 20 | `1RB2RA3LA4LA2RB_2LA---3LB1RA3RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-20.json) |

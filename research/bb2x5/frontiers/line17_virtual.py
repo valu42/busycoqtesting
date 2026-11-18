@@ -119,14 +119,39 @@ def checkpoint_interval(path, meta, seed, begin, end, counts_before, args):
     return found
 
 
+def phase_index(args, period, meta):
+    path = args.index.resolve()
+    sidecar = metadata_path(path)
+    identity = dict(format='bb2x5-line17-phase-index-v1', source_sha256=meta['sha256'],
+                    digits=args.digits)
+    if path.exists() or sidecar.exists():
+        cached = json.loads(sidecar.read_text())
+        if cached != {**identity, 'sha256': file_hash(path)}:
+            raise ValueError('phase index checksum, depth or source mismatch')
+        return path
+    with tempfile.TemporaryDirectory(dir=path.parent) as folder:
+        tmp = Path(folder)/'index'
+        command = [str(args.engine.resolve()), 'index', str(period), str(args.digits),
+                   str(args.threads), str(tmp)]
+        run = subprocess.run(command, capture_output=True, text=True, env=native_env())
+        if run.returncode:
+            raise ValueError(run.stderr.strip() or 'phase indexing failed')
+        checksum = file_hash(tmp)
+        os.replace(tmp, path)
+        atomic_json(sidecar, {**identity, 'sha256': checksum})
+    return path
+
+
 def advance(args):
     if not __debug__:
         raise ValueError('run with Python assertions enabled')
     outputs = [p.resolve() for p in (args.checkpoint, args.counts) if p is not None]
     period = args.period.resolve()
+    if args.index:
+        outputs += [args.index.resolve(), metadata_path(args.index.resolve())]
     if (len(set(outputs)) != len(outputs)
             or any(path in (period, metadata_path(period)) for path in outputs)):
-        raise ValueError('period, checkpoint and cumulative counts need distinct output files')
+        raise ValueError('period, index, checkpoint and counts need distinct files')
     if args.seed_counts and not args.counts:
         raise ValueError('seed counts require a cumulative counts destination')
     meta = json.loads(metadata_path(period).read_text())
@@ -161,6 +186,8 @@ def advance(args):
         dest = str(Path(folder)/'period-')
         command = [str(args.engine.resolve()),'virtual',str(period),str(cut),str(args.digits),
                    str(begin),str(copies),str(args.threads),dest,str(args.phase_batch)]
+        if args.index:
+            command.append(str(phase_index(args,period,meta)))
         with subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE,
                               text=True, env=native_env()) as proc:
             try:
@@ -202,6 +229,7 @@ def main():
             sub.add_argument('--epochs',type=int,required=True,help='absolute minimum sweep count')
             sub.add_argument('--digits',type=int,default=5,help='adjacent virtual digits, 1 through 7')
             sub.add_argument('--phase-batch',type=int,default=1,help='source copies per disk pass, 1 through 32')
+            sub.add_argument('--index',type=Path,help='reuse or create a checksummed stripe index')
             sub.add_argument('--seed',type=Path)
             sub.add_argument('--seed-counts',type=Path)
             sub.add_argument('--counts',type=Path,help='also save cumulative counts from blank')

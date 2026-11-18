@@ -1,4 +1,5 @@
 #pragma once
+#include <map>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -124,10 +125,10 @@ struct Index{
     std::vector<StripeAction> maps;
     std::vector<U> whole,inverse;
     B slots=0,marks=0;
+    std::deque<Token> tail;
     Index(const std::string& path,const ternary17::Tables& t,unsigned threads){
         
         whole.resize(t.count);std::iota(whole.begin(),whole.end(),0);
-        std::deque<Token> tail;
         read_source(path,threads*5,[&](const Batch& jobs){
             size_t first=maps.size();maps.resize(first+jobs.size());
             std::vector<B> ms(jobs.size());
@@ -155,60 +156,271 @@ struct Index{
         });
         inverse=boundary(tail,t);
     }
+    // The cache contains only stripe actions and the original trailing
+    // tokens. Recompose the full period and recover physical endpoints on
+    // reload. The driver binds this file to the exact source bytes by SHA-256.
+    void save(const std::string& path,const ternary17::Tables& t) const {
+        std::ofstream out(path,std::ios::binary);
+        out<<"BB25-L17-PHASE-1\n"<<t.depth<<' '<<slots<<' '<<marks<<' '<<maps.size()<<' '<<tail.size()<<'\n';
+        for(auto token:tail)out<<token.mask<<' '<<token.width<<'\n';
+        for(const auto& map:maps)out.write(reinterpret_cast<const char*>(map.coordinates.data()),map.coordinates.size());
+        out.close();
+        if(!out)throw std::runtime_error("failed to write phase index");
+    }
+    Index(std::istream& input,const ternary17::Tables& t){
+        std::string magic;
+        std::getline(input,magic);
+        U depth=0,count_tail=0;B rows=0;
+        if(magic!="BB25-L17-PHASE-1" || !(input>>depth>>slots>>marks>>rows>>count_tail)
+            || depth!=t.depth || !rows || !slots || marks>slots || count_tail>128 || !count_tail)
+            throw std::runtime_error("invalid phase index header");
+        for(U i=0;i<count_tail;++i){
+            Token a{};
+            if(!(input>>a.mask>>a.width)||!a.width||a.width>16||a.mask>=65536||t.code[a.mask]==255)
+                throw std::runtime_error("invalid phase index suffix");
+            tail.push_back(a);
+        }
+        if(input.get()!='\n')throw std::runtime_error("invalid phase index separator");
+        const auto offset=input.tellg();
+        input.seekg(0,std::ios::end);
+        const auto remaining=input.tellg()-offset;
+        const U fields=t.count<=256?1:t.count==729?2:5;
+        const U size=fields==1?t.count:243*fields;
+        if(remaining<=0 || B(remaining)%size || B(remaining)/size!=rows)
+            throw std::runtime_error("invalid phase index extent");
+        input.seekg(offset);
+        whole.resize(t.count);std::iota(whole.begin(),whole.end(),0);
+        maps.resize(rows);
+        for(auto& map:maps){
+            map.coordinates.resize(size);
+            if(!input.read(reinterpret_cast<char*>(map.coordinates.data()),size))
+                throw std::runtime_error("truncated phase index");
+            for(U i=0;i<size;++i){
+                const U limit=fields==1?t.count:(i%fields?6:243);
+                if(map.coordinates[i]>=limit)throw std::runtime_error("invalid phase coordinates");
+            }
+            for(auto& s:whole)s=map[s];
+        }
+        inverse=boundary(tail,t);
+    }
+
 };
 struct Stats {std::array<unsigned char,7> slots{},marks{};};
+// Split each token action at the third trit. A complete sixteen-slot token
+// has only 160 possible emitted words there, across all symbols and states.
+// The upper table is shared by every occurrence of each distinct word.
 struct EmitTable {
     const ternary17::Tables& t;
-    std::vector<B> packet;std::vector<Stats> stats;
+    struct Word {
+        B bits;
+        unsigned width;
+        bool operator<(const Word& rhs) const {
+            return width<rhs.width || (width==rhs.width && bits<rhs.bits);
+        }
+    };
+    struct Partial {
+        U end=0;
+        Word word{};
+        Stats costs{};
+    };
+    U lower_depth,lower_states,upper_states,upper_offset;
+    std::vector<U> lower;
+    std::vector<B> upper;
+    std::vector<Stats> stats;
     std::array<U,250> full{};
-    explicit EmitTable(const ternary17::Tables& tbl):t(tbl){
-        packet.resize(t.count*t.rows.size());stats.resize(packet.size());
-        for(unsigned c=0;c<250;++c)full[c]=t.token[16][c]*t.count;
+    static Partial act(U state,Word in,unsigned first,unsigned last) {
+        Partial out;out.word=in;U multiplier=1;
+        for(unsigned i=first;i<last;++i) {
+            auto step=ternary17::stepword(state%3,out.word.bits,out.word.width);
+            state/=3;out.end+=multiplier*step.state;multiplier*=3;
+            out.word={step.bits,step.n};
+            out.costs.slots[i]=step.n;out.costs.marks[i]=__builtin_popcountll(step.bits);
+        }
+        return out;
+    }
+    explicit EmitTable(const ternary17::Tables& table):t(table) {
+        lower_depth=std::min<U>(3,t.depth);
+        lower_states=t.powers[lower_depth];upper_states=t.count/lower_states;
+        upper_offset=lower_states*t.rows.size();
+        lower.resize(upper_offset);stats.resize(upper_offset);
+        std::map<Word,U> unique;
+        for(unsigned i=0;i<250;++i)full[i]=t.token[16][i]*lower_states;
         for(unsigned n=1;n<=16;++n)for(unsigned c=0;c<250;++c){
             if(t.mask[c]>=(1u<<n))continue;
-            unsigned id=t.token[n][c];
-            for(U state=0;state<t.count;++state){
-                B w=t.mask[c];unsigned width=n;U v=state,finish=0;
-                auto& costs=stats[id*t.count+state];
-                for(unsigned d=0;d<t.depth;++d){
-                    auto out=ternary17::stepword(v%3,w,width);v/=3;
-                    finish+=t.powers[d]*out.state;w=out.bits;width=out.n;
-                    costs.slots[d]=width;costs.marks[d]=__builtin_popcountll(w);
-                }
-                if(width>42||finish!=t.rows[id][state])throw std::logic_error("virtual packet disagrees with index");
-                packet[id*t.count+state]=(w<<22)|(B(width)<<16)|finish;
+            U index=t.token[n][c]*lower_states;
+            for(U state=0;state<lower_states;++state){
+                auto partial=act(state,{t.mask[c],n},0,lower_depth);
+                const auto [it,inserted]=unique.emplace(partial.word,unique.size());
+                lower[index+state]=((it->second*upper_states)<<5)|partial.end;
+                stats[index+state]=partial.costs;
             }
+        }
+        upper.resize(unique.size()*upper_states);
+        stats.resize(upper_offset+upper.size());
+        for(auto [word,id]:unique)for(U state=0;state<upper_states;++state){
+            U index=id*upper_states+state;
+            auto partial=act(state,word,lower_depth,t.depth);
+            if(partial.word.width>42||partial.end>=128)throw std::logic_error("split emission packet too wide");
+            upper[index]=(partial.word.bits<<16)|(B(partial.word.width)<<8)|partial.end;
+            stats[upper_offset+index]=partial.costs;
+        }
+        for(U row=0;row<t.rows.size();++row)for(U state=0;state<t.count;++state) {
+            U lo=lower[row*lower_states+state%lower_states];
+            B hi=upper[(lo>>5)+state/lower_states];
+            if((lo&31)+lower_states*(hi&127)!=t.rows[row][state])
+                throw std::logic_error("split tables disagree with exact phase action");
         }
     }
 };
 struct Raw {unsigned n=0;std::vector<B> data;};
-Raw emit(const Source& in,U start,U end,std::vector<B>& hist,const EmitTable& table) {
-    Raw out;out.data.reserve(in.slots/192+3);U state=start;B acc=0;unsigned shift=0;
-    auto push=[&](U row){
-        auto id=row+state;auto p=table.packet[id];++hist[id];
-        state=p&65535;unsigned n=(p>>16)&63;B bits=p>>22;
-        acc|=bits<<shift;shift+=n;
-        if(shift>=64){out.data.push_back(acc);shift-=64;acc=shift?bits>>(n-shift):0;}
-    };
-    for(auto [off,n]:in.frames){
-        for(unsigned i=0;i<n/16;++i) push(table.full[in.bytes[off+i]]);
-        if(n%16)push(table.t.token[n%16][in.bytes[off+n/16]]*table.t.count);
+template<unsigned Width>
+void emit_together(const Source& source, const std::array<U,Width>& begin,
+                   const std::array<U,Width>& expected_end, const std::array<B*,Width>& hist,
+                   std::array<Raw*,Width>& output, const EmitTable& table) {
+    std::array<U,Width> lower{},upper{},shift{};
+    std::array<B,Width> accumulator{};
+    for(unsigned j=0;j<Width;++j){
+        lower[j]=begin[j]%table.lower_states;
+        upper[j]=begin[j]/table.lower_states;
+        output[j]->data.reserve(source.slots/192+3);
     }
-    out.n=64*out.data.size()+shift;if(shift)out.data.push_back(acc);
-    if(state!=end)throw std::logic_error("virtual stripe end");
-    return out;
+    auto push=[&](U row){
+        std::array<U,Width> upper_row{};
+        for(unsigned j=0;j<Width;++j){
+            U id=row+lower[j],action=table.lower[id];
+            ++hist[j][id];lower[j]=action&31;upper_row[j]=(action>>5)+upper[j];
+        }
+        for(unsigned j=0;j<Width;++j){
+            U id=upper_row[j];
+            B p=table.upper[id];
+            ++hist[j][table.upper_offset+id];upper[j]=p&127;
+            unsigned width=(p>>8)&63;B bits=p>>16;
+            accumulator[j]|=bits<<shift[j];shift[j]+=width;
+            if(shift[j]>=64){
+                output[j]->data.push_back(accumulator[j]);shift[j]-=64;
+                accumulator[j]=shift[j]?bits>>(width-shift[j]):0;
+            }
+        }
+    };
+    for(auto [off,n]:source.frames){
+        for(unsigned i=0;i<n/16;++i)push(table.full[source.bytes[off+i]]);
+        if(n%16)push(table.t.token[n%16][source.bytes[off+n/16]]*table.lower_states);
+    }
+    for(unsigned j=0;j<Width;++j){
+        auto& out=*output[j];out.n=64*out.data.size()+shift[j];
+        if(shift[j])out.data.push_back(accumulator[j]);
+        if(lower[j]+table.lower_states*upper[j]!=expected_end[j])
+            throw std::logic_error("split phase endpoint disagrees with the index");
+    }
 }
+
+// Three physical digits share a byte transfer. The cost packet has one
+// ten-bit slot field and one ten-bit mark field per digit. Bounded local
+// chunks can add packets directly without carries between fields.
+struct TailPackets {
+    struct Packet { B word=0,cost=0; };
+    struct Level {
+        unsigned depth,states;
+        std::vector<Packet> packets;
+        explicit Level(unsigned size):depth(size),states(1){
+            for(unsigned i=0;i<size;++i)states*=6;
+            packets.resize(511*states);
+            for(unsigned n=1;n<=8;++n)for(unsigned word=0;word<(1u<<n);++word){
+                unsigned token=(1u<<n)-1+word;
+                for(unsigned start=0;start<states;++start){
+                    unsigned state=start,length=n,finish=0,mul=1;
+                    B bits=word,cost=0;bool valid=true;
+                    for(unsigned digit=0;digit<depth;++digit){
+                        auto x=physical(state%6,bits,length,1);
+                        if(x.state==UINT32_MAX){valid=false;break;}
+                        state/=6;finish+=mul*x.state;mul*=6;
+                        bits=x.bits;length=x.n;
+                        if(length>31)throw std::logic_error("physical byte cost field");
+                        cost|=B(length)<<(20*digit);
+                        cost|=B(__builtin_popcountll(bits))<<(20*digit+10);
+                    }
+                    auto& p=packets[token*states+start];
+                    if(valid){p.word=(bits<<16)|(B(length)<<8)|finish;p.cost=cost;}
+                    else p.word=255;
+                }
+            }
+        }
+    };
+    std::array<Level,3> levels{Level(1),Level(2),Level(3)};
+};
+struct PhysicalTail {
+    struct Block {
+        unsigned state=0;
+        std::array<B,3> slots{},marks{};
+        Raw buffer;
+    };
+    const TailPackets& tables;
+    std::vector<U> initial;
+    std::vector<Block> blocks;
+    PhysicalTail(const std::vector<U>& states,const TailPackets& tab):tables(tab),initial(states) {
+        blocks.resize((states.size()+2)/3);
+        for(size_t j=0;j<states.size();++j)blocks[j/3].state+=states[j]*(j%3==0?1:j%3==1?6:36);
+    }
+    void feed(const Raw& source){
+        const Raw* input=&source;
+        for(size_t k=0;k<blocks.size()&&input->n;++k){
+            auto& b=blocks[k];auto& out=b.buffer;
+            const unsigned d=std::min<size_t>(3,initial.size()-3*k);
+            const auto& tab=tables.levels[d-1];
+            const auto* full=tab.packets.data()+255*tab.states;
+            out.data.clear();out.data.reserve(input->n/64+2);
+            B acc=0,cost=0;unsigned shift=0;U state=b.state;
+            auto push=[&](const TailPackets::Packet* row){
+                auto p=row[state];state=p.word&255;
+                if(state==255)throw std::runtime_error("overlapping marked bursts in physical suffix");
+                unsigned width=(p.word>>8)&31;B bits=p.word>>16;
+                acc|=bits<<shift;cost+=p.cost;shift+=width;
+                if(shift>=64){out.data.push_back(acc);shift-=64;acc=shift?bits>>(width-shift):0;}
+            };
+            auto collect=[&]{
+                for(unsigned j=0;j<d;++j){b.slots[j]+=cost&1023;cost>>=10;b.marks[j]+=cost&1023;cost>>=10;}
+                cost=0;
+            };
+            unsigned bytes=input->n/8,at=0;
+            for(;at<bytes;){
+                unsigned stop=std::min(at+32,bytes);
+                for(;at<stop;++at){auto word=(input->data[at/8]>>(8*(at%8)))&255;push(full+word*tab.states);}
+                collect();
+            }
+            if(auto rem=input->n%8){
+                auto word=(input->data[at/8]>>(8*(at%8)))&((1u<<rem)-1);
+                push(tab.packets.data()+((1u<<rem)-1+word)*tab.states);collect();
+            }
+            out.n=64*out.data.size()+shift;if(shift)out.data.push_back(acc);
+            b.state=state;input=&out;
+        }
+    }
+    void write(std::ostream& stream,B inputs,B input_marks) const {
+        for(size_t j=0;j<initial.size();++j){
+            const auto& block=blocks[j/3];unsigned pos=j%3;
+            U state=block.state/(pos==0?1:pos==1?6:36)%6,old=initial[j];
+            B slots=block.slots[pos],marks=block.marks[pos];
+            if(3*slots+state/2<inputs+old/2)throw std::logic_error("negative physical burst count");
+            B scaled=3*slots+state/2-inputs-old/2;
+            if(scaled%4)throw std::logic_error("physical suffix trit balance");
+            B calls=inputs+2*(scaled/4)+input_marks+old%2-state%2;
+            tiled::write_row(state,slots,calls,2*(slots+marks),stream);
+            inputs=slots;input_marks=marks;
+        }
+    }
+};
+
 struct Pipe {
     using Output=std::vector<Raw>;
     std::mutex lock;std::condition_variable cv;std::deque<Output> queue;bool done=false;std::exception_ptr error;
-    std::vector<tiled::TailDigit>& digits;const tiled::Tables& tables;std::thread thread;
-    Pipe(std::vector<tiled::TailDigit>& d,const tiled::Tables& t):digits(d),tables(t),thread([this]{consume();}){}
+    PhysicalTail& digits;std::thread thread;
+    explicit Pipe(PhysicalTail& d):digits(d),thread([this]{consume();}){}
     void consume()try {
         while(true){Output out;{
             std::unique_lock<std::mutex> lk(lock);cv.wait(lk,[&]{return done||!queue.empty();});
             if(queue.empty())return;out=std::move(queue.front());queue.pop_front();cv.notify_one();
         }
-        for(const auto& frame:out)if(frame.n)tiled::feed_tail(digits,0,frame.data.data(),frame.n,tables);}
+        for(const auto& frame:out)if(frame.n)digits.feed(frame);}
     }catch(...){std::lock_guard<std::mutex> lk(lock);error=std::current_exception();done=true;cv.notify_all();}
     void send(Output&& out){
         std::unique_lock<std::mutex> lk(lock);cv.wait(lk,[&]{return done||queue.size()<4;});
@@ -320,13 +532,13 @@ struct Phase {
 }
 int virtual_advance(int argc,char**argv){
     using namespace virtual17;
-    if(argc!=8 && argc!=9)throw std::runtime_error("vrun FILE CUT DEPTH START_BASE_INDEX COPIES THREADS OUTPUT_PREFIX [PHASE_BATCH] < seed_register");
+    if(argc<8 || argc>10)throw std::runtime_error("vrun FILE CUT DEPTH START_BASE_INDEX COPIES THREADS OUTPUT_PREFIX [PHASE_BATCH [INDEX_FILE]] < seed_register");
     std::string path=argv[1],outbase=argv[7],reg;
     const B base_cut=number(argv[2]), depth=number(argv[3]), workers=number(argv[6]);
     if(base_cut>424||!depth||depth>7||!workers||workers>64)
         throw std::runtime_error("invalid runner dimensions");
     const unsigned cut=base_cut,d=depth,threads=workers;
-    B begin=number(argv[4]),copies=number(argv[5]),batch=argc==9?number(argv[8]):1;
+    B begin=number(argv[4]),copies=number(argv[5]),batch=argc>=9?number(argv[8]):1;
     if(copies>UINT32_MAX || begin>UINT64_MAX-copies)throw std::runtime_error("invalid finite copy range");
     if(!batch||batch>32)throw std::runtime_error("invalid phase batch");
     std::cin>>reg;std::vector<U> states;U flag=0;
@@ -335,7 +547,10 @@ int virtual_advance(int argc,char**argv){
         if((reg[i]!='0'&&reg[i]!='1'&&reg[i]!='2')||(reg[i+1]!='2'&&reg[i+1]!='3')) throw std::runtime_error("invalid register encoding");
         states.push_back(2*(reg[i]=='1'?0:reg[i]=='0'?1:2)+flag);flag=reg[i+1]=='3';}
     if(cut+d>states.size())throw std::runtime_error("short seed register");
-    ternary17::Tables vt(d);EmitTable emitters(vt);Index index(path,vt,threads);
+    ternary17::Tables vt(d);EmitTable emitters(vt);
+    std::ifstream cache;
+    if(argc==10){cache.open(argv[9],std::ios::binary);if(!cache)throw std::runtime_error("cannot open phase index");}
+    Index index=argc==10?Index(cache,vt):Index(path,vt,threads);
     U state=(vt.count-1)/2;
     std::vector<U> orbit;
     do {
@@ -347,9 +562,8 @@ int virtual_advance(int argc,char**argv){
     if(index.inverse[state]!=s0)throw std::runtime_error("seed is not the specified physical phase");
     if(index.slots && copies>(UINT64_MAX/32)/index.slots) throw std::overflow_error("finite pulse count limit");
     std::cerr<<"indexed "<<index.slots<<" slots and "<<index.marks<<" marks at "<<cut<<" from phase "<<begin<<std::endl;
-    std::vector<tiled::TailDigit> tail(states.size()-cut-d);
-    for(size_t i=0;i<tail.size();++i)tail[i].state=states[cut+d+i];
-    tiled::Tables plain;
+    TailPackets physical_tables;
+    PhysicalTail tail(std::vector<U>(states.begin()+cut+d,states.end()),physical_tables);
     std::array<B,7> slots{},marks{};const auto seed_debt=drain(s0,vt);
     for(B first=0;first<copies;){
         U g=std::min<B>(batch,copies-first);std::vector<Phase> phases(g);
@@ -357,10 +571,10 @@ int virtual_advance(int argc,char**argv){
             auto& p=phases[q];p.state=p.start=state;p.before=drain(index.inverse[state],vt);
             state=index.whole[state];p.after=drain(index.inverse[state],vt);
             if(q)p.spool=std::make_unique<Spool>();
-            p.hist.assign(threads,std::vector<B>(emitters.packet.size()));
+            p.hist.assign(threads,std::vector<B>(emitters.stats.size()));
         }
         auto started=std::chrono::steady_clock::now();size_t cursor=0;
-        Pipe pipe(tail,plain);Trim direct(pipe,phases[0].before.bits[d-1],phases[0].after.bits[d-1]);
+        Pipe pipe(tail);Trim direct(pipe,phases[0].before.bits[d-1],phases[0].after.bits[d-1]);
         read_source(path,threads*6,[&](const Batch& b){
             size_t count=g*b.size();std::vector<U> enter(count),end(count);
             std::vector<Raw> output(count);std::exception_ptr failure;
@@ -372,8 +586,23 @@ int virtual_advance(int argc,char**argv){
                 }
             }
             #pragma omp parallel for num_threads(threads) schedule(static)
-            for(size_t v=0;v<count;++v)try{
-                U q=v/b.size();output[v]=emit(b[v%b.size()],enter[v],end[v],phases[q].hist[worker_id()],emitters);
+            for(size_t j=0;j<b.size();++j)try{
+                const unsigned lane=worker_id();
+                auto group=[&](auto width,U first_phase) {
+                    constexpr unsigned W=decltype(width)::value;
+                    std::array<U,W> inputs,ends;std::array<B*,W> hist;
+                    std::array<Raw*,W> outputs;
+                    for(U i=0;i<W;++i){
+                        size_t at=(first_phase+i)*b.size()+j;
+                        inputs[i]=enter[at];ends[i]=end[at];outputs[i]=&output[at];
+                        hist[i]=phases[first_phase+i].hist[lane].data();
+                    }
+                    emit_together<W>(b[j],inputs,ends,hist,outputs,emitters);
+                };
+                U q=0;
+                for(;q+4<=g;q+=4)group(std::integral_constant<unsigned,4>{},q);
+                if(q+2<=g){group(std::integral_constant<unsigned,2>{},q);q+=2;}
+                if(q<g)group(std::integral_constant<unsigned,1>{},q);
             }catch(...){
                 #pragma omp critical(virtual_emit_error)
                 {if(!failure)failure=std::current_exception();}
@@ -391,7 +620,7 @@ int virtual_advance(int argc,char**argv){
             auto& p=phases[q];
             if(p.state!=index.whole[p.start])throw std::logic_error("phase return disagrees with index");
             if(q){
-                Pipe delayed(tail,plain);Trim trim(delayed,p.before.bits[d-1],p.after.bits[d-1]);
+                Pipe delayed(tail);Trim trim(delayed,p.before.bits[d-1],p.after.bits[d-1]);
                 p.spool->replay(trim,vt);trim.finish();delayed.finish();p.spool.reset();
             }
             B elapsed=first+q+1;
@@ -412,7 +641,7 @@ int virtual_advance(int argc,char**argv){
                 tiled::write_row(end,physical_slots,n+2*(scaled/4)+m+states[cut+j]%2-end%2,2*(physical_slots+physical_marks),out);
                 n=physical_slots;m=physical_marks;
             }
-            for(const auto& row:tail)tiled::write_row(row.state,row.slots,row.calls,row.interior,out);
+            tail.write(out,n,m);
             out.close();if(!out||std::rename(tmp.c_str(),name.c_str())!=0)throw std::runtime_error("interval output failed");
             std::cerr<<"base "<<begin+elapsed<<" physical "<<index.inverse[p.state]<<" group seconds "<<std::chrono::duration<double>(std::chrono::steady_clock::now()-started).count()<<std::endl;
         }
@@ -454,5 +683,16 @@ int virtual_probe(int argc,char** argv) {
     std::cout<<'\n';
     std::cerr<<"verified physical suffix of "<<suffix.size()<<" tokens in "
              <<std::chrono::duration<double>(std::chrono::steady_clock::now()-start).count()<<" seconds\n";
+    return 0;
+}
+
+
+int virtual_index(int argc,char** argv){
+    if(argc!=5)throw std::runtime_error("index SOURCE DEPTH THREADS OUTPUT");
+    auto d=number(argv[2]),threads=number(argv[3]);
+    if(d<1||d>7||threads<1||threads>64)throw std::runtime_error("invalid index dimensions");
+    ternary17::Tables t(d);
+    virtual17::Index index(argv[1],t,threads);
+    index.save(argv[4],t);
     return 0;
 }

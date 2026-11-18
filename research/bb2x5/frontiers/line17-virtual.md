@@ -24,6 +24,14 @@ During the same plain continuation, a virtual block emits only zeros. Subtract t
 
 For one pair, let $n,m$ be the input and output slot counts and let $v,v'$ be the physical endpoint trits. The number of compound pulses is $C=(3m+v'-n-v)/4$. With $M$ incoming marks and starting and ending pending bits $p,p'$, the raw call count is $n+2C+M+p-p'$. If $M'$ marks were emitted, the internal move count is $2(m+M')$. The Python driver checks all 424 rows, tests the terminal, adds the exact header and pile costs, and saves the complete physical configuration after each source copy.
 
+## Reducing the cost of each source copy
+
+Across all 250 complete source symbols and 27 possible entrance phases of three trits, only 160 different ordered output words occur. Allowing all legal short final symbols increases that count to 164. The emitter interns each word by both its bits and its length. Its second table applies the remaining four trits to the interned word. Together these tables need 37,638 histogram entries for seven trits, down from 1,972,674. At startup the worker compares every composed ending phase with the independently compiled seven-trit action. Adjacent source copies can then share one disk pass, advancing up to four entrance phases together on each token.
+
+Further down the tape, a table advances three physical pairs per input byte. Each transfer records the emitted word, physical ending state, slots and marks at each pair. The worker adds up to 32 local cost packets before unpacking them. The finite per-packet maximum keeps each ten-bit counter separate. Pending flags are part of the table address. Physical pair counts still reconstruct the elementary clock at every saved endpoint.
+
+On 8,192 genuine cut-110 frames, two threads replayed four different entrance phases in 8.56 seconds with the flat seven-trit emitter and 4.13 seconds with split tables. Both produced the same ordered word and all seven slot and mark totals. In a separate end-to-end test, 160 consecutive copies of the small cut-59 period took 8.03 seconds with the flat emitter, 1.26 seconds with batched split tables and 0.85 seconds after grouping the physical suffix. Every interval's physical rows agreed byte for byte. These shared-host measurements cover the stated inputs and thread counts.
+
 ## Periods beyond the disk budget
 
 The source at cut 110 contains 187,936,890,096 slots and 23,492,006,848 marks. It repeats every 5,353,035,380,209,578,809,758,951,931,904 root sweeps after sweep two. The following orders were computed by composing exact frame actions. The physical suffix check resolved all 2,187 phases of the seven-digit block. An independent direct computation on the 1,296 physical states of four digits reproduced the first four orders.
@@ -51,9 +59,11 @@ python3 frontiers/line17_virtual.py build --engine /tmp/bb25-line17 \
 /tmp/bb25-line17 probe /tmp/line17-cut110.code 110 7 6
 python3 frontiers/line17_virtual.py advance --engine /tmp/bb25-line17 \
   --period /tmp/line17-cut110.code --epochs 100000000000000000000000000000000 \
-  --digits 5 --threads 6 --phase-batch 1 \
+  --digits 7 --threads 6 --phase-batch 8 --index /tmp/line17-cut110-d7.index \
   --checkpoint /tmp/line17-latest.json --counts /tmp/line17-latest.counts
 ```
+
+The optional stripe index saves the transfer of each piece of the source. Its companion checksum binds it to the exact source file and fusion depth. A resumed worker recomposes the whole action and reconstructs the physical phase from the saved trailing source tokens. Every emitted piece is checked against its expected ending phase.
 
 The target is an absolute minimum sweep count. The worker stops at the first whole source copy at or beyond it. To continue from a compatible saved checkpoint, pass `--seed`. Supply its matching `--seed-counts` if cumulative counts are also requested. A new checkpoint is installed after each verified copy. During a batched disk pass several completed copies can become available together. The older fixed-target and packed workers remain available for cross-checks. [Driver](line17_virtual.py) · [Virtual phases](line17_ternary.hpp) · [Physical boundary reconstruction](line17_virtual.hpp)
 

@@ -4,9 +4,9 @@ Machine `1RB2RA3LB---2LB_2LA0LA4RB0RB1LA` starts in A on an all-zero, two-way ta
 
 ## Exact blank-tape run
 
-The full blank-tape simulation reached **144,531,955,265,658,627,863,491,702,161,410 ordinary sweeps** without a halt. The elementary clock is **292452805300800854724425099327062150453788419677098221140374657764 raw instructions** (≈ 2.92453 × 10^65), **182.25 times** the clock at the [preceding aligned checkpoint](https://github.com/valu42/busycoqtesting/blob/77e5095fad7ceddc4fb84832c7d8fa34ad3a314b/research/bb2x5/frontiers/runs/line17-epochs.json). The head is in state A at -289,063,910,531,317,255,726,983,404,323,664. Pair 201 received 1 input slot, the deepest of the 424 zero-indexed pairs reached in this phase. The terminal received zero, so the run contains no further overflow. [Full resumable checkpoint](frontiers/runs/line17-epochs.json) · [All 424 pair counts](frontiers/runs/line17-coded-counts.txt)
+The full blank-tape simulation reached **208,768,379,828,173,573,580,599,125,344,258 ordinary sweeps** without a halt. The elementary clock is **610179309825127709239849898595950492001897895702142809123628681594 raw instructions** (≈ 6.10179 × 10^65), **380.25 times** the clock at the [preceding aligned checkpoint](https://github.com/valu42/busycoqtesting/blob/77e5095fad7ceddc4fb84832c7d8fa34ad3a314b/research/bb2x5/frontiers/runs/line17-epochs.json). The head is in state A at -417,536,759,656,347,147,161,198,250,689,360. Pair 201 received 1 input slot, the deepest of the 424 zero-indexed pairs reached in this phase. The terminal received zero, so the run contains no further overflow. [Full resumable checkpoint](frontiers/runs/line17-epochs.json) · [All 424 pair counts](frontiers/runs/line17-coded-counts.txt)
 
-The [fused simulator](frontiers/line17-virtual.md) reads a periodic pulse stream at cut 110, handles several adjacent register pairs together and sends their ordered output through the rest of the physical tape. One cut-110 source period contains 187,936,890,096 slots and 23,492,006,848 marks, spanning 5,353,035,380,209,578,809,758,951,931,904 sweeps. These 27 complete periods follow the two-sweep origin. Each pair satisfied the pulse, trit and elementary-instruction balance checks. At two earlier overlaps, after 12 and 15 source periods, an independently encoded one-pair-at-a-time simulator matched all 424 cumulative rows byte for byte. The independent packed simulator, the tiled simulator and the physical register interpreter agreed on a further 10,001 sweeps from this checkpoint. [Physical interpreter](frontiers/line17_literal_check.py) · [Reproduction and differential checks](frontiers/line17-virtual.md#running-the-simulator)
+The [fused simulator](frontiers/line17-virtual.md) reads a periodic pulse stream at cut 110, handles several adjacent register pairs together and sends their ordered output through the rest of the physical tape. One cut-110 source period contains 187,936,890,096 slots and 23,492,006,848 marks, spanning 5,353,035,380,209,578,809,758,951,931,904 sweeps. These 39 complete periods follow the two-sweep origin. Each pair satisfied the pulse, trit and elementary-instruction balance checks. At two earlier overlaps, after 12 and 15 source periods, an independently encoded one-pair-at-a-time simulator matched all 424 cumulative rows byte for byte. The independent packed simulator, the tiled simulator and the physical register interpreter agreed on a further 10,001 sweeps from this checkpoint. [Physical interpreter](frontiers/line17_literal_check.py) · [Reproduction and differential checks](frontiers/line17-virtual.md#running-the-simulator)
 
 The [coded worker](frontiers/line17_coded.hpp) represents sixteen slots with one byte by using the 250 masks permitted by the minimum mark gap. It materialized the exact periods through cut 111. The fused phase calculation also determined the closed-prefix periods through cut 117 without writing their full pulse streams to disk. The cut-117 prefix returns after 486 copies of the cut-110 word. The full-machine result above counts only periods propagated through all 424 pairs. [Materialized periods](frontiers/runs/line17-coded-periods.txt) · [Fused prefix periods](frontiers/runs/line17-virtual-periods.json)
 
@@ -27,7 +27,7 @@ The four known marks in the homogeneous region occur at local slots 5, 11, 17 an
 | 10^29 | 173 | 169 | 165 | 161 | 175 |
 | 10^30 | 184 | 180 | 176 | 172 | 186 |
 | 10,706,070,760,419,157,619,517,903,863,810 | 189 | 185 | 181 | 177 | 191 |
-| 144,531,955,265,658,627,863,491,702,161,410 | 199 | 195 | 191 | 187 | 201 |
+| 208,768,379,828,173,573,580,599,125,344,258 | 199 | 195 | 191 | 187 | 201 |
 
 The later rows follow directly from the saved cumulative slot counts. Cut 403 is the entrance to the final 21 pairs. [Earlier mark fronts](https://github.com/valu42/busycoqtesting/blob/12c4acdce3310d435190895136f65826a702f1c8/research/bb2x5/line17-edge-time.md)
 
@@ -113,7 +113,7 @@ python3 frontiers/line17.py --tiled-engine /tmp/bb25-tiles17 --threads 4 --at-le
   --epochs 10000000000000000000000000000000 --word-bits 250000000000 \
   --depth --checkpoint /tmp/line17-aligned.json
 python3 frontiers/line17_virtual.py build --engine /tmp/bb25-tiles17 --cut 110 --period /tmp/line17-cut110.code
-python3 frontiers/line17_virtual.py advance --engine /tmp/bb25-tiles17 --period /tmp/line17-cut110.code --epochs 144531955265658627863491702161410 --digits 5 --threads 6 --checkpoint /tmp/line17-fused.json --counts /tmp/line17-fused.counts
+python3 frontiers/line17_virtual.py advance --engine /tmp/bb25-tiles17 --period /tmp/line17-cut110.code --epochs 208768379828173573580599125344258 --digits 5 --threads 6 --checkpoint /tmp/line17-fused.json --counts /tmp/line17-fused.counts
 python3 frontiers/line17_literal_check.py --self-test
 python3 frontiers/test_line17_pile.py
 python3 frontiers/line17_width.py --engine /tmp/bb25-packed17 --cuts $(seq 10 5 110) > /tmp/widths.jsonl
