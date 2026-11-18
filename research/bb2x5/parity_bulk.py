@@ -1,4 +1,4 @@
-"""Line 36. Exact boundary-free sweep and a finite-window parity theorem."""
+"""Line 36. Exact finite-tape sweeps and eventual parity uniformity for finite bulk seeds."""
 from itertools import product
 
 from prior_frontier import LIST
@@ -72,6 +72,54 @@ def changes(xs):
     return sum((x-y)%2 for x,y in zip(xs,xs[1:]))
 
 
+def domains(row):
+    """First and last distances of the successive parity runs, read from the leader."""
+    runs = []
+    for x in sorted(row):
+        if runs and (x-runs[-1][1])%2 == 0:
+            runs[-1] = (runs[-1][0],x)
+        else:
+            runs.append((x,x))
+    return runs
+
+
+def audit_settling():
+    slowest = []
+    for width in range(1,14):
+        worst = 0
+        for mask in range(1<<max(0,width-2)):
+            row = {0,width-1}|{j+1 for j in range(width-2) if (mask>>j)&1}
+            count = 0
+            old = domains(row)
+            initial_b = (old[-1][1]+len(old)-1-old[0][1])//2
+            while len(old)>1:
+                row = clusters(row)
+                new = domains(row)
+                assert len(new) <= len(old)
+                assert new[-1][1]+len(new) <= old[-1][1]+len(old)+2
+                assert new[0][1] >= old[0][1]+2
+                if len(new)==len(old):
+                    x,y,z = old[-2][1],old[-1][0],old[-1][1]
+                    assert new[-1][1] == z+2
+                    if y==x+1:
+                        assert new[-2][1] >= x+4
+                    else:
+                        assert new[-2][1] == x+2 and new[-1][0] == y
+                old = new
+                count += 1
+            assert count <= initial_b*(initial_b+1)//2
+            assert all(j%2==0 for j in row)
+            worst = max(worst,count)
+        slowest.append(worst)
+    print('Largest bulk settling times exhaustively through width 13:',slowest)
+    for r in range(30):
+        row={0,2*r+1}
+        for _ in range(r):
+            row=clusters(row)
+            assert 2*r+1 in row
+        assert 2*r+1 not in clusters(row)
+
+
 def audit():
     assert LIST[35] == PARITY == '1RB2LA1LA4RA2LA_0LA3RB3LB2RB---'
     for n in range(10):
@@ -110,7 +158,7 @@ def audit():
             row = {0}|{j+1 for j in range(n-1) if (mask>>j)&1}
             for r in range(7):
                 window = 2*r+1
-                stop = (r+1)*(r+2)//2
+                stop = r+1
                 z = row.copy()
                 for _ in range(stop):
                     z = clusters(z)
@@ -120,7 +168,7 @@ def audit():
                     z = clusters(z)
                     low ^= {j+2 for j in low if j+2<=window}
                     assert {j for j in z if j<=window} == low
-    print('Triangular clearing-time bounds and subsequent Rule 90 evolution agree on finite windows.')
+    print('Sharp linear clearing times and subsequent Rule 90 evolution agree on finite windows.')
     for z in range(1,100):
         c = {2*i for i in range(z.bit_length()) if (z>>i)&1}
         row = c.copy()
@@ -141,3 +189,4 @@ def audit():
 
 if __name__ == '__main__':
     audit()
+    audit_settling()

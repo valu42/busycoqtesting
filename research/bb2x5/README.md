@@ -11,11 +11,11 @@ These notes record partial results on the November 3, 2026 list of 37 formal hol
 | 2 | `1RB---4LB0LA4RA_2LB2LA3RA4LB0RB` | A fixed-cut protocol replaces the growing left half. The negative prefix is exact through 2,400 extensions from blank. |
 | 10 | `1RB2RB3LA4LA1LA_2LB3RA---4RA1RB` | Three leading A entries at the fresh edge halt. Cyclic period counts are known. The starting position matters. |
 | 3 | `1RB---0RB0LA2RA_2LB2LA3RA4LB0LB` | Mixed binary/ternary macros give a lower bound exceeding 10¹⁵⁰ defined steps from blank. Higher reset branches remain open. |
-| 36 | `1RB2LA1LA4RA2LA_0LA3RB3LB2RB---` | Boundary-free sweeps erase odd-parity particles in any fixed moving window within a quadratic number of epochs, then obey Rule 90 there. The real header injects new parity changes. |
+| 36 | `1RB2LA1LA4RA2LA_0LA3RB3LB2RB---` | Every finite seed under the boundary-free data sweep eventually follows Rule 90 everywhere. A sharp linear window bound and exact finite-tape boundary rules are known. |
 
 The first four rows are developed in [the research log](research-log.md). The earlier [frontier derivations](frontier-background.md) give the raw pair tables and the initial blank checkpoint. The [mixed-counter and sweep notes](mixed-and-sweeps.md) also record results on lines 12, 21 and 22 and list the exact identities used for the left-half certificates.
 
-The [integer-register derivation](marked-register.md) proves the line-17 running-time bound and describes the remaining branch question. The [column-frontier derivation](column-frontier.md) gives the line-26 fixed-point criterion and a safety bound between width increases. The [parity-sweep derivation](parity-bulk.md) proves a finite-window clearing theorem for the line-36 data dynamics.
+The [integer-register derivation](marked-register.md) proves the line-17 running-time bound and describes the remaining branch question. The [column-frontier derivation](column-frontier.md) gives the line-26 fixed-point criterion and a safety bound between width increases. The [parity-sweep derivation](parity-bulk.md) proves eventual global parity uniformity for the boundary-free line-36 data dynamics.
 
 From the repository root, run these checks with Python 3.10 or later, with assertions enabled. They use only the standard library.
 
