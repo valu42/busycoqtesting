@@ -1,6 +1,6 @@
 # BB(2,5) machine decisions
 
-**Verified decisions from blank: 1 of 37.** Line 36 runs forever. Lines 1–35 remain open here. Line 37 has a reported nonhalting proof awaiting an artifact. The owner asked agents to move on to other machines. [Line 36 theorem](line36-rocq.md) · [Line 37 report][reported37] · [Machine list](BB2x5_Rocq_holdouts_37.txt)
+**Verified decisions from blank: 1 of 37.** Line 36 runs forever. Lines 1–35 and 37 remain open here. The owner clarified that the reported proof was for line 36. [Line 36 theorem](line36-rocq.md) · [Machine list](BB2x5_Rocq_holdouts_37.txt)
 
 ## Pick a research direction
 
@@ -14,6 +14,7 @@ Edit your row on `master` before starting. A claim covers a continuing investiga
 |---|---|---|---|---|
 | 26-RESERVE | SEEN | | **Decide line 26.** Blank halting is equivalent to a fixed point of the width map. At each first Q crossing of k upper pairs, compare the pre-Q clock with k+7. A lower bound of k+7 for every k proves nonhalting. A genuine shortfall gives a width with p(j) ≤ j and hence a finite halt. Check the exact record and recover the physical witness. [Clock identity](column-reserve.md#one-clock-for-all-blank-first-arrivals) · [Fixed-point proof](column-frontier.md) | — |
 | 35-GUARD | SEEN | | **Decide line 35.** The guard already survives all 355 cases with exterior debt at most four. Prove that bound at cut 8 on every blank sweep from epoch 5. If a real sweep exceeds four, follow its actual guard and refine the invariant with the reachable debt history. [Guard certificate and missing middle-word bound](line35-pascal.md#what-a-halt-would-require-in-the-middle-of-the-tape) | — |
+| 35-MIDDLE | CLAIMED | Codex/middle-35 / [research branch](https://github.com/valu42/busycoqtesting/tree/research/bb2x5-line35-middle) | Test a residue-modulo-three bound on interior matching debt and its preservation. Check it against the timed 150,000-sweep blank orbit and an altered tape with 888 identical boundary readings before B4. | 2026-11-20 17:30Z |
 | 22-PHASE | OPEN | | **Decide line 22.** A fresh parent starting with BAAAAA sends the fatal BB to its child. That word already occurs at harmless internal offsets. Track the distinguished start through successive cells on the actual driver. Prove it always avoids that prefix, or produce and replay one anchored occurrence. [Parent-prefix derivation][parent21] | — |
 | 33-REPLY | CLAIMED | Codex/outlook-continuation / [branch](https://github.com/valu42/busycoqtesting/blob/research/bb2x5-next-proof-34/research/bb2x5/halting-outlook/neglected33.md) | From extension 33, seek a closed reserve/shift invariant or certified first exceptional demand. | 2026-11-20 15:42Z |
 | 34-CUT12 | CLAIMED | Codex/outlook-continuation / [branch](https://github.com/valu42/busycoqtesting/blob/research/bb2x5-next-proof-34/research/bb2x5/halting-outlook/target34.md) | Test the folded-coordinate and protected-prefix approaches against the cut-12 obligation and the 15-sweep splice. | 2026-11-20 15:42Z |
@@ -28,7 +29,7 @@ Edit your row on `master` before starting. A claim covers a continuing investiga
 | PORT-07 | OPEN | | Line 7 branch checkpoint for tracing reachable guard exceptions beyond epoch 8,192. [Epoch 9,216 and guard filters][out-seven] | — |
 | 13-TRACE | SEEN | | Lifetime entry traces for the line 13 proof. Cell 155 has only Bs at the saved cutoff. [Trace](line13-edge.md) | — |
 | 26-CALENDAR | SEEN | | Exact calendars exclude fixed points through width 173. The new physical checkpoint fixes p(85)=173. Test a proposed record-time inequality against its incoming carry. [Tape, raw clock and replay](column-time.md) | — |
-| 37-PROOF | OPEN | | Verify the reported proof if its artifact becomes available. Keep the earlier `37-CUT` and `37-STREAM` searches on hold. [Owner report][reported37] | — |
+| 37-CUT | OPEN | | Bound the debt reaching cut 45 on the actual blank orbit, or follow its first violation. The owner clarified that the completed proof was for line 36. [Cut certificate](line37-header.md) · [Exact stream recurrence](line37-stream.md) | — |
 
 <details>
 <summary>Completed work and earlier handoffs</summary>
@@ -78,5 +79,4 @@ Record the full transition string, witness or proof, revision, independent check
 [probe6]: https://github.com/valu42/busycoqtesting/blob/dcacb2022e4ed1ac33f1a11f30391c70abcbb3bb/research/bb2x5/halting-outlook/probe6.md
 [prs]: https://github.com/valu42/busycoqtesting/pulls
 [replay]: https://github.com/valu42/busycoqtesting/actions/runs/44316962368
-[reported37]: https://github.com/valu42/busycoqtesting/blob/c4aeebfe6db4d55330d7e086b214dab5e7904258/research/bb2x5/halting-outlook/remaining.md#line-37
 [right34]: https://github.com/valu42/busycoqtesting/blob/dcacb2022e4ed1ac33f1a11f30391c70abcbb3bb/research/bb2x5/halting-outlook/line34_right.md
