@@ -1,6 +1,6 @@
 # Line 26 at successive dangerous-carry records
 
-The blank run of `1RB2RB4LA2RA1LA_2LA4RA3LA---3RA` executes at least **181,912,616,417,007,775,091,148,375** defined instructions. Every potential halting width through 204 is excluded. The decision for all widths remains open. The following exact recurrence gives one integer to bound per new record. [Physical reduction](column-frontier.md) · [Earlier checkpoint and clock](column-time.md)
+The blank run of `1RB2RB4LA2RA1LA_2LA4RA3LA---3RA` reaches width **205** at tick **1,145,205,194,028**. Every potential halting width through 205 is excluded. The decision for all widths remains open. The following exact recurrence gives one integer to bound per new record. [Physical reduction](column-frontier.md) · [Earlier checkpoint and clock](column-time.md)
 
 ## The record-gap criterion
 
@@ -58,9 +58,23 @@ A full cyclic period at any cut from 3 up has mean gap 9, so averaging floor((b+
 | 602,246,348,619 | 93 | 51 | 94 | 200 |
 | 973,376,362,892 | 94 | 14 | 96 | 204 |
 
-At the last tick A scans the blank at −7,787,010,903,137. The pair counters are u=`0xa9b77faebadafeeee7f315f0` and e=`0x121350c228008e80e01a31540`. The terminal 3 is at coordinate 409. The [tape convention](column-time.md) and these counters specify every cell. The physical weighted visit sum is 112,911,659,423,772. [Full trace](column-records.txt) · [Checksummed checkpoint](frontiers/runs/line26-record96.json)
+At the last record tick the exact clock is 181,912,616,417,007,775,091,148,375 instructions. A scans the blank at −7,787,010,903,137. The pair counters are u=`0xa9b77faebadafeeee7f315f0` and e=`0x121350c228008e80e01a31540`. The terminal 3 is at coordinate 409. The [tape convention](column-time.md) and these counters specify every cell. The physical weighted visit sum is 112,911,659,423,772. [Full trace](column-records.txt) · [Checksummed checkpoint](frontiers/runs/line26-record96.json)
 
-To exclude width 204 itself, let p(j) count allocated pairs at the first dangerous arrival to pair j in the ordinary model. We have p(95)=p(96)=204. The [plateau bound](column-phases.md#the-first-dangerous-arrival-and-a-bound-on-its-plateaux) gives R₁₅=4 and Rⱼ₊₁≤Rⱼ+ceil(Rⱼ/2), hence R₉₆≤775,020,249,331,745 and 3R₉₆<2⁵². Therefore p(148)>204 and p(204)>204 by monotonicity. The trace reaches width 204 safely and hence excludes all smaller eventual halting widths. Together these results exclude every width through 204.
+**The next 107 new deepest stops are guaranteed safe**, regardless of their gaps. Their existence in the ordinary calendar follows from finite-cut periodicity, and the current margin is 204−96=108. After any prefix of at most 107 more records the margin is still at least one. Intermediate stops are shallower. Failure on the 108th new record would require every one of its 108 gaps to be 0, 1, or 2.
+
+## Continuing past the last record
+
+Every future record passes cut 74. Two calendars, restarted from the record-96 tape at cuts 17 and 18, give identical safe counts and root ticks for the next 215 dangerous arrivals at cut 74. The starting tick ends in a passing Q at each input cut, so no input gap straddles the restart. A separate replay applies those 215 messages to the actual upper pairs. The 108th arrival, at tick 1,052,754,703,428, has width 205. The 215th, at tick **1,145,205,194,028**, still has width 205, and its Q stops at pair 75. None of these Qs reaches pair 96. Exactly four P have reached pair 96 since its first Q. [Cut-74 messages](column-cut74.txt) · [Full physical endpoint](frontiers/runs/line26-width205.json)
+
+The new exact raw clock is **251,807,027,794,701,522,123,671,715** defined elementary instructions. At this tick A scans the blank at **−9,161,641,552,225**, and the terminal 3 is at coordinate 411. The physical weighted visit sum is **132,843,802,436,645**. The machine-readable endpoint contains both complete tape counters and a checksum.
+
+To exclude width 205 itself, let p(j) count allocated pairs at the first dangerous arrival to pair j in the ordinary model. We have p(95)=p(96)=204. The tape reaches width 205 before the first Q at cut 97, hence p(97)≥205. The [plateau bound](column-phases.md#the-first-dangerous-arrival-and-a-bound-on-its-plateaux) gives R₁₅=4 and Rⱼ₊₁≤Rⱼ+ceil(Rⱼ/2), hence R₉₇≤1,162,530,373,997,618 and 3R₉₇<2⁵². Therefore p(149)>p(97)≥205 and p(205)>205 by monotonicity. A halt at width 205 would require p(205)=205. Monotone physical allocation excludes every smaller eventual halting width as well.
+
+## A lower bound beyond the fully timed tape
+
+At the timed endpoint the next record gap b₉₆ has already accumulated four P. Its final value is therefore at least four, and the first future record has nonnegative margin change. At that new record the margin is at least 108. Each later record can cost at most one, so **the next 108 record stops after the latest checkpoint are guaranteed safe**. The finite calendars guarantee those records exist in the ordinary model.
+
+Counting only the next 108 Q at cut 60 gives the last at tick **1,146,515,029,924**. Every new record must pass cut 60, so all ticks through that one succeed. The initial tick ended with a Q at pair 75 and therefore aligns with both low calendars used to count these arrivals. For this many successful ticks T the [explicit raw lower bound](column-time.md#bounds-that-hold-beyond-the-computed-checkpoint) exceeds 192T², since the positive linear term exceeds the low-pair correction. The resulting unconditional lower bound is **252,383,369,057,593,078,165,588,992 defined instructions**. The exact physical tape and clock are given at the earlier tick above.
 
 ## Reproduction
 
@@ -73,4 +87,4 @@ python3 check_column_records.py --records /tmp/line26-records --clock /tmp/line2
 python3 frontiers/scoreboard.py --check
 ```
 
-The fast check (omit `--extended`) independently runs the packed-counter equations through the first 200,000 ticks, compares short physical trips with literal transitions, and checks the trace, phase example, and checkpoint arithmetic. Extended mode regenerates the deep records and the full final tape and visit total using two calendar cuts. The record enumerator and weighted clock share the low calendar and use different upper transfer implementations. These are finite computational checks. No kernel-checked blank decision is claimed.
+The fast check (omit `--extended`) independently runs the packed-counter equations through the first 200,000 ticks, compares short physical trips with literal transitions, and checks the trace, phase example, and checkpoint arithmetic. Extended mode regenerates the deep records, the continuation messages, and both fully timed tapes using two calendar cuts. The record enumerator and weighted clock share the low calendar and use different upper transfer implementations. These are finite computational checks. No kernel-checked blank decision is claimed.

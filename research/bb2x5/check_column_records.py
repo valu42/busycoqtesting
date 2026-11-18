@@ -10,6 +10,7 @@ from frontiers.checkpoints import checksum, holdouts
 
 HERE = Path(__file__).resolve().parent
 CHECKPOINT = HERE/'frontiers/runs/line26-record96.json'
+LATEST = HERE/'frontiers/runs/line26-width205.json'
 MACHINE = '1RB2RB4LA2RA1LA_2LA4RA3LA---3RA'
 
 
@@ -94,6 +95,39 @@ def phase_window(gaps, start, count):
     return result
 
 
+def future_arrivals(binary, cut, target, tick, count, digits):
+    result = subprocess.check_output(
+        [binary, '--arrivals', str(cut), str(target), str(tick), str(count), digits],
+        text=True)
+    return rows(result)
+
+
+def small_arrivals(binary):
+    # Tick 1 has full digits 00021. Use individual P and Q updates at cut 3.
+    for target in (4, 5):
+        n = target - 3
+        u, e = 1, 2
+        expected = []
+        safe = 0
+        tick = 1
+        while len(expected) < 20:
+            tick += 1
+            for _ in range(9):
+                old_u, old_e = u, e
+                u, _ = p_step(u, e)
+                # Count the number of scalar P leaving this finite prefix.
+                tokens = 1
+                for i in range(n):
+                    ui, ei = (old_u >> i) & 1, (old_e >> i) & 1
+                    tokens = (2-ei)*((tokens+1-ui)//2)
+                safe += tokens
+            e, stop = q_step(u, e)
+            if stop > n:
+                expected.append((tick, safe))
+                safe = 0
+        assert future_arrivals(binary, 3, target, 1, 20, '00021') == expected
+
+
 def verify_endpoint(payload):
     tick, width = payload['ticks'], payload['width']
     u,e = int(payload['u'],16),int(payload['e'],16)
@@ -101,9 +135,36 @@ def verify_endpoint(payload):
     assert payload['head']==-8*tick-1 and payload['state']=='A'
     assert max(u,e).bit_length()<=width
     last = (e&~u) & -(e&~u)
-    assert last.bit_length()-1==payload['record_depth']
+    assert last.bit_length()-1==payload.get('last_stop',payload['record_depth'])
     return (192*tick*tick-8*tick+3*payload['physical_visit_sum']
             +u.bit_count()+2*e.bit_count()+7*width-3*width*width+5)
+
+
+def check_continuation(start, end, arrivals):
+    cut = 74
+    u, e = int(start['u'],16)>>cut, int(start['e'],16)>>cut
+    width = start['width']
+    pending = 0
+    previous = start['ticks']
+    for tick, gap in arrivals:
+        assert tick > previous and gap >= 0
+        previous = tick
+        for _ in range(gap):
+            # Count scalar safe output at the old record cut 96.
+            sent = 1
+            for i in range(start['record_depth'] - cut):
+                sent = (2-((e>>i)&1))*((sent+1-((u>>i)&1))//2)
+                if not sent:
+                    break
+            pending += sent
+            u, stop = p_step(u,e)
+            width += stop == 0
+        e, stop = q_step(u,e)
+        assert cut+stop-1 < start['record_depth']
+    assert len(arrivals)==215 and arrivals[107][0]==1052754703428
+    assert (tick, width, pending)==(end['ticks'],end['width'],4)
+    assert (u,e)==(int(end['u'],16)>>cut,int(end['e'],16)>>cut)
+    assert cut+stop-1==end['last_stop']
 
 
 def main():
@@ -123,6 +184,13 @@ def main():
     for _ in range(15, p['record_depth']):
         run_bound += (run_bound+1)//2
     assert 3*run_bound < 2**52 and p['record_depth']+52 <= p['width']
+    latest = json.loads(LATEST.read_text())
+    end = latest['payload']
+    assert checksum(end)==latest['sha256'] and verify_endpoint(end)==end['steps']
+    future = rows((HERE/'column-cut74.txt').read_text())
+    check_continuation(p, end, future)
+    run_bound += (run_bound+1)//2
+    assert 3*run_bound < 2**52 and 97+52 <= end['width']
     gap_walk()
     anchored_calendars(records)
     root_replay(records,200000)
@@ -145,6 +213,14 @@ def main():
     print('Cut 6 six-record gain: true start +13; shifted start -4.')
     if args.records:
         binary=args.records.resolve()
+        small_arrivals(binary)
+        u, e = int(end['u'], 16), int(end['e'], 16)
+        digits = ''.join(str(2*((u>>i)&1)+((e>>i)&1)) for i in range(end['width']))
+        guards = [future_arrivals(binary, cut, 60, end['ticks'], 108, digits)
+                  for cut in (15,17)]
+        assert guards[0]==guards[1] and len(guards[0])==108
+        assert guards[0][-1][0]==end['safe_through_tick']
+        print('Next 108 cut-60 arrivals give physical survival through tick', guards[0][-1][0])
         checks=[(3,35),(13,60)]
         if args.extended:
             checks.extend([(17,96),(18,96)])
@@ -152,18 +228,26 @@ def main():
             output=subprocess.check_output([binary,str(cut),str(target)],text=True)
             seed=int(output.splitlines()[1].split()[2])
             assert rows(output)==[r for r in records if seed<r[0] and r[1]<target]
+        if args.extended:
+            u, e = int(p['u'], 16), int(p['e'], 16)
+            digits = ''.join(str(2*((u>>i)&1)+((e>>i)&1)) for i in range(p['width']))
+            arrivals = [future_arrivals(binary, cut, 74, p['ticks'], 215, digits)
+                        for cut in (17,18)]
+            assert arrivals[0] == arrivals[1] == future
+            print('Both calendars match all 215 cut-74 arrivals through tick', end['ticks'])
     if args.clock:
         binary=args.clock.resolve()
         literal_check(binary)
         physical_trips(binary)
         if args.extended:
-            for cut in (17,18):
-                steps,visits,word=recover(binary,cut,p['ticks'])
+            for cut, checkpoint in ((17,p),(18,p),(17,end),(18,end)):
+                steps,visits,word=recover(binary,cut,checkpoint['ticks'])
                 u=sum((digit//2)<<i for i,digit in enumerate(word))
                 e=sum((digit%2)<<i for i,digit in enumerate(word))
                 assert (steps,visits,len(word),hex(u),hex(e))==(
-                    p['steps'],p['physical_visit_sum'],p['width'],p['u'],p['e'])
-                print('Full tape and clock match at calendar cut',cut)
+                    checkpoint['steps'],checkpoint['physical_visit_sum'],checkpoint['width'],
+                    checkpoint['u'],checkpoint['e'])
+                print('Full tape and clock match at calendar cut',cut,'tick',checkpoint['ticks'])
 
 
 if __name__=='__main__':

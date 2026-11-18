@@ -9,7 +9,7 @@ e = 0x2403e802f8d5ac2a11a4b8
 
 This specifies the entire tape. If the head is at −n, the cells −n+1 through 0 contain 4. Cells 1+2i and 2+2i encode the bits 1−uᵢ and eᵢ respectively, writing physical 1 for a set bit and 4 for a clear bit. Cell 347 contains the terminal 3. All other cells are blank. The top 87 pairs have uᵢ=eᵢ=0. This endpoint is the end of tick 54,306,954,019 in the [first-arrival calendar](column-phases.md#extension-through-cut-84). Its last dangerous carry stopped at pair 85, so **p(85)=173** as well. The leading scalar gaps at cuts 84 and 85 are 345 and 346. The decision from blank remains open.
 
-The [record-gap continuation](column-records.md) extends this checkpoint to 204 pairs and includes an exact raw clock and full tape.
+The [record-gap continuation](column-records.md) extends this checkpoint to 205 pairs and includes an exact raw clock and full tape.
 
 ## Converting ordinary visits to elementary time
 

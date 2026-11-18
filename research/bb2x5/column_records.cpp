@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <iostream>
 #include <limits>
+#include <optional>
 #include <stdexcept>
 #include <string>
 
@@ -68,8 +69,7 @@ class Records {
 public:
     Integer width;
     unsigned depth() const { return cut+4*packets.size()+length; }
-    Records(unsigned base, Integer first_gap) : lookup(256*small), cut(base),
-            width(first_gap/2+(first_gap&1)) {
+    explicit Records(unsigned base) : lookup(256*small), cut(base), width(0) {
         for (unsigned state=0; state<256; ++state) {
             for (unsigned g=0; g<small; ++g) {
                 const auto t=block(state,g,true,4);
@@ -77,11 +77,20 @@ public:
                                          std::uint8_t(t.danger)};
             }
         }
+    }
+    Records(unsigned base, Integer first_gap) : Records(base) {
+        width=first_gap/2+(first_gap&1);
         if (first_gap&1) append(2);
         if (depth()>=width) throw std::runtime_error("unsafe initial record");
     }
 
-    void consume(Integer gap, Integer tick) {
+    Records(unsigned base, unsigned target, const std::string& digits) : Records(base) {
+        if (target<=base || target>digits.size() || digits.find_first_not_of("0123")!=std::string::npos)
+            throw std::invalid_argument("cut or checkpoint digits");
+        for (unsigned j=base;j<target;++j) append(digits[j]-'0');
+    }
+
+    std::optional<Integer> arrival(Integer gap) {
         for (std::size_t i=0; i<packets.size(); ++i) {
             auto& packet=packets[i];
             add(packet.pending,gap);
@@ -102,16 +111,23 @@ public:
                     const auto tail=block(partial,gap,false,length);
                     partial=tail.digit; add(gap_at_record,tail.safe);
                 }
-                return;
+                return std::nullopt;
             }
         }
         const auto tail=block(partial,gap,true,length);
         partial=tail.digit;
         add(gap_at_record,tail.safe);
-        if (!tail.danger) return;
+        if (!tail.danger) return std::nullopt;
 
         const Integer b=gap_at_record;
         gap_at_record=0;
+        return b;
+    }
+
+    void consume(Integer gap, Integer tick) {
+        const auto emitted=arrival(gap);
+        if (!emitted) return;
+        const Integer b=*emitted;
         const unsigned residue=b%4;
         const auto previous=depth();
         append((b&1) ? 3 : 0);
@@ -122,10 +138,46 @@ public:
         if (depth()>=width) throw std::runtime_error("candidate blank halt; replay B3");
     }
 };
+// The starting tick must end in a Q at the input cut, so no input gap straddles it.
+void count_arrivals(unsigned cut, unsigned target, Integer start, Integer count,
+                    const std::string& digits) {
+    if (cut<3 || cut>18 || !count) throw std::invalid_argument("calendar cut or count");
+    Records segment(cut,target,digits);
+    Integer period;
+    const auto gaps=calendar(cut,period);
+    const Integer phase=start%period;
+    auto it=std::upper_bound(gaps.begin(),gaps.end(),phase,
+        [](Integer tick, Gap g) { return tick<g.tick; });
+    if (phase && (it==gaps.begin() || (it-1)->tick!=phase))
+        throw std::invalid_argument("checkpoint must end in Q at the calendar cut");
+    Integer offset=start-phase;
+    for (;;) {
+        for (;it!=gaps.end();++it) {
+            const auto safe=segment.arrival(it->p);
+            if (!safe) continue;
+            Integer tick=offset;
+            add(tick,it->tick);
+            std::cout<<tick<<' '<<*safe<<'\n';
+            if (!--count) return;
+        }
+        add(offset,period);
+        it=gaps.begin();
+    }
+}
+
 }
 
 int main(int argc,char** argv) {
-    if (argc!=3) { std::cerr<<"usage: column-records calendar-cut last-record-depth\n"; return 2; }
+    if (argc==7 && std::string(argv[1])=="--arrivals") {
+        count_arrivals(std::stoul(argv[2]),std::stoul(argv[3]),std::stoull(argv[4]),
+                       std::stoull(argv[5]),argv[6]);
+        return 0;
+    }
+    if (argc!=3) {
+        std::cerr<<"usage: column-records calendar-cut last-record-depth\n"
+                 <<"   or: column-records --arrivals calendar-cut target-cut tick count digits\n";
+        return 2;
+    }
     const unsigned cut=std::stoul(argv[1]), goal=std::stoul(argv[2]);
     if (cut<3 || cut>18 || goal>1000000) throw std::invalid_argument("cut or goal");
     Integer period;

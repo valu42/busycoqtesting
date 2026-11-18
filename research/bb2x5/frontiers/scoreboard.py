@@ -93,12 +93,13 @@ def generate():
         raise ValueError('line 4 return differs from its timed recurrence')
     consider(4, p['machine'], steps, path, 'Timed A(6,b) returns')
 
-    path = RUNS/'line26-record96.json'
+    path = RUNS/'line26-width205.json'
     doc = json.loads(path.read_text())
     p = doc['payload']
     if checksum(p) != doc['sha256']:
         raise ValueError('line 26 checkpoint checksum mismatch')
-    consider(26, p['machine'], p['steps'], path, 'Timed pair records')
+    consider(26, p['machine'], p['steps'], path, 'Timed pair checkpoint')
+    bound26 = 192*p['safe_through_tick']**2
 
     path = RUNS/'line5-timed.json'
     timed = line5_timed.load(path)
@@ -120,15 +121,11 @@ def generate():
             != (timed['rounds'], timed['a_hex'], timed['b_hex'], timed['events_hex'])):
         raise ValueError('line 5 identity')
     exponent = int(a5['state']['b_hex'], 16).bit_length()-1
-    phases = (ROOT/'phase-verification.txt').read_text()
-    tick = int(re.search(r'^p\(84\) = 173, first Q at tick (\d+)$', phases, re.M).group(1))
-    epochs26 = 8*(tick-1)
-    bound26 = 5+2*epochs26*(epochs26+1)
     bounds = {3: f'[≥ 10^{len(str(b3))-1}](mixed-verification.txt)',
               4: '[> 10^1,719,137](line4-scalar.md)',
               5: f'[≥ 2^{exponent:,}](accelerator-results/arithmetic5-100k.json)',
               17: '[> 10^36](marked-register.md)',
-              26: f'[≥ {bound26:,}](column-phases.md#extension-through-cut-84)',
+              26: f'[≥ {bound26:,}](column-records.md#a-lower-bound-beyond-the-fully-timed-tape)',
               36: '[Unbounded (proved nonhalting)](line36-nonhalting.md)',
               37: '[≥ 39,999,600,001](line37-header.md)'}
     reports = {7: ('> 10^1,140,000,000', OCTOBER), 13: ('≈ 10^17.50888', COMMUNITY),

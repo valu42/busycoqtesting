@@ -31,7 +31,7 @@ The endpoint column gives the largest exact raw count indexed in this repository
 | 23 | `1RB3LA3LB0RB0LA_2LA4RB1LB1RA---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-23.json) |
 | 24 | `1RB3LA1LA2RB2RA_2LA4RA3LB1RA---` | ≈ 1.77089 × 10^21 | — | — | [Guarded AB sweeps](frontiers/runs/line24-sweeps.json) |
 | 25 | `1RB2LB3LA0RA1LB_2LA4RA3RB3LA---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-25.json) |
-| 26 | `1RB2RB4LA2RA1LA_2LA4RA3LA---3RA` | ≈ 1.81913 × 10^26 | [≥ 377,503,392,604,154,203,337,765](column-phases.md#extension-through-cut-84) | — | [Timed pair records](frontiers/runs/line26-record96.json) |
+| 26 | `1RB2RB4LA2RA1LA_2LA4RA3LA---3RA` | ≈ 2.51807 × 10^26 | [≥ 252,383,369,057,593,078,165,588,992](column-records.md#a-lower-bound-beyond-the-fully-timed-tape) | — | [Timed pair checkpoint](frontiers/runs/line26-width205.json) |
 | 27 | `1RB3LB---4LA1RB_2LA4LA4LB3RB1RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-27.json) |
 | 28 | `1RB3LB4LA0LB---_2LA0LA1RB0RA3RA` | 1,000,000,000,000,000 | — | — | [Six-cell strides](frontiers/runs/stride-28.json) |
 | 29 | `1RB3RB---3LA1RA_2LA3RA4LB0LB1LB` | ≈ 1.09706 × 10^1030 | — | [≥ 10^13,634](https://wiki.bbchallenge.org/wiki/Bonus_Cryptid) | [Timed cryptid sweeps](frontiers/runs/hydra-29.json) |
