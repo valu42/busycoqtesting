@@ -23,8 +23,8 @@ COMMUNITY = 'https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved'
 OCTOBER = 'https://wiki.bbchallenge.org/wiki/TMBR:_October_2026#Holdouts'
 
 
-def display(n):
-    if n < 10**20:
+def display(n, exact=False):
+    if exact or n < 10**20:
         return f'{n:,}'
     mantissa, exponent = format(Decimal(n), '.5E').split('E')
     return f'≈ {mantissa} × 10^{int(exponent)}'
@@ -118,6 +118,24 @@ def generate():
             != (timed['rounds'], timed['a_hex'], timed['b_hex'], timed['events_hex'])):
         raise ValueError('line 5 identity')
     exponent = int(a5['state']['b_hex'], 16).bit_length()-1
+    # The independent pair calendars publish their digit words and visit totals
+    # in a transcript. Recover the clock before selecting the longer endpoint.
+    calendar = (ROOT/'column-time-verification.txt').read_text()
+    pattern = (r'^tick (\d+) width (\d+) head (-?\d+)\n'
+               r'weighted ordinary visits over the final physical width: (\d+)\n'
+               r'defined instructions from blank: (\d+)\npaired digits, low first: ([0-3]+)$')
+    records = re.findall(pattern, calendar, re.M)
+    if not records:
+        raise ValueError('missing line 26 calendar checkpoints')
+    for tick, width, head, visits, raw, digits in records:
+        t, w = int(tick), int(width)
+        u = sum(int(d)//2 for d in digits)
+        e = sum(int(d)%2 for d in digits)
+        clock = 192*t*t - 8*t + 3*int(visits) + u + 2*e + 7*w - 3*w*w + 5
+        if len(digits) != w or int(head) != -8*t-1 or clock != int(raw):
+            raise ValueError('line 26 calendar clock disagrees with its tape')
+        consider(26, '1RB2RB4LA2RA1LA_2LA4RA3LA---3RA', clock,
+                 ROOT/'column-time.md', 'Timed pair checkpoint')
     phases = (ROOT/'phase-verification.txt').read_text()
     tick = int(re.search(r'^p\(84\) = 173, first Q at tick (\d+)$', phases, re.M).group(1))
     epochs26 = 8*(tick-1)
@@ -141,7 +159,8 @@ def generate():
     for line, machine in enumerate(machines, 1):
         n, path, label = best[line]
         report = f'[{reports[line][0]}]({reports[line][1]})' if line in reports else '—'
-        lines.append(f'| {line} | `{machine}` | {display(n)} | {bounds.get(line, "—")} | {report} | [{label}]({path.relative_to(ROOT)}) |')
+        endpoint = display(n, exact=path.name == 'column-time.md')
+        lines.append(f'| {line} | `{machine}` | {endpoint} | {bounds.get(line, "—")} | {report} | [{label}]({path.relative_to(ROOT)}) |')
     lines += ['', 'Line 3’s transcript gives its lower bound in full. Line 4’s lower bound uses the millionth return, while its saved raw clock is at return 1,024. Line 5’s timed replay reaches the same A(4,b) and recurrence count as the earlier checkpoint, which contains b consecutive nonzero cells. Each required a write, so its 173,754-bit b gives the displayed bound. The 8,684,421,216 recurrence events have a separate count. Line 17’s bound uses the distance travelled in its verified header epochs. On line 37 the successful sweeps from epochs 1 through 199,999 each traverse the old word, whose width starts at one and grows by at least two per sweep. Summing the minimum widths gives 199,999² raw steps.', '',
               'The [line 17 first-visit records](frontiers/README.md#line-17-first-arrivals-inside-a-sweep) give exact clocks inside a header sweep. Two input slots determine the first return from coordinate +12. [Decision rule and time bounds](line17-edge-time.md#the-return-depends-on-two-bits)', '',
               'The community describes line 7 as expected to halt, line 13 as a possible halter, line 17 as likely to halt and line 26 as likely nonhalting. [Community holdout notes]('+COMMUNITY+') · [October research report]('+OCTOBER+')', '',
