@@ -209,6 +209,14 @@ def check_controls():
         assert feed(line, 1, 'B') == (4, 'A' if line==22 else 'B')
         for w in PARENTS[line]:
             assert literal_suffix(line, w) == 1
+    # Line 21, cycle 256. The outstanding parent history at 280 is BAA.
+    fatal_21 = tuple(w[3:] for w in PARENTS[21])
+    assert fatal_21 == ('AAA', 'AABB', 'BBA', 'BBBB')
+    for letters in product('AB', repeat=4):
+        word = ''.join(letters)
+        _, sent = feed(21, 4, word)
+        assert sent.startswith('BB') == word.startswith(fatal_21)
+        assert not 'BB'.startswith(sent) or sent == 'BB'
     # At the 64-cycle line-22 checkpoint the final three digits are all 3.
     for letters in product('AB', repeat=4):
         word = ''.join(letters)
@@ -233,6 +241,41 @@ def check_controls():
             if not alive:
                 break
         assert (received, not alive, machine.steps) == (calls, halted, ticks)
+    # The blank run later supplies ABAB at 263. Replay its full positive suffix.
+    machine = TapeMachine(MACHINES[22], (3,3,3))
+    received = {2: '', 3: ''}
+    for a in 'ABAB':
+        machine.head, machine.state = 0, a
+        while machine.head >= 0:
+            old = machine.head
+            assert machine.step()
+            if machine.head > old and machine.head in received:
+                received[machine.head] += machine.state
+    assert received == {2:'BABA', 3:'ABAA'} and machine.steps == 54
+    assert ''.join(str(machine.tape[i]) for i in range(7)) == '3433334'
+    # The next observed advance uses the same five-cell identities on both lines.
+    for line in PARENTS:
+        for initial, word, expected, sent in (
+                ('00000','BABABA','33334',''),
+                ('33334','BAABA','43333','BABABA'),
+                ('43333','BAABA','33334','')):
+            digits, out = [], word
+            for symbol in initial:
+                end, out = feed(line,int(symbol),out)
+                digits.append(str(end))
+            assert (''.join(digits),out) == (expected,sent)
+        machine = TapeMachine(MACHINES[line], (3,3,3,3,4))
+        new_sites = {}
+        for a in 'BAABA':
+            machine.head, machine.state = 0, a
+            while machine.head >= 0:
+                old = machine.head
+                assert machine.step()
+                if machine.head > old and machine.head >= 5:
+                    new_sites[machine.head] = new_sites.get(machine.head,'') + machine.state
+        assert ''.join(str(machine.tape[i]) for i in range(10)) == '4333333334'
+        assert machine.steps == 99
+        assert new_sites == {5:'BABABA', 6:'ABAA', 7:'BAABAB', 8:'AABA', 9:'BAA'}
 
 
 def read_report(lines):
@@ -245,6 +288,87 @@ def read_report(lines):
             assert int(f[0]) == len(prefixes)
             prefixes.append(f[1])
     return records, prefixes
+
+
+def waiting_bound(line, tape, cut, parent, fatal_words):
+    """Maximum allowed cut entries while the specified parent test stays open."""
+    a = b = 1
+    reserve = 0
+    for symbol in tape[cut:parent]:
+        phi = {3: a+b, 4: b, 1: 0}
+        next_a, next_b = 2*a+b, 2*a
+        for state in phi:
+            for letter, cost in (('A',a),('B',b)):
+                end, out = entry(line, state, letter)
+                assert cost <= next_a*out.count('A') + next_b*out.count('B') + phi[state]-phi[end]
+        reserve += phi[int(symbol)]
+        a, b = next_a, next_b
+    undecided = {word[:k] for word in fatal_words for k in range(len(word))}
+    return reserve + max(w.count('A')*a + w.count('B')*b for w in undecided)
+
+
+def check_latest_halt():
+    def mature(word):
+        return ''.join('ABA' if c=='A' else 'AA' for c in word) + 'AB'
+
+    def g(word):
+        return 'BA' + mature(word)
+
+    @cache
+    def latest(line, tape):
+        # Explore all root letters while the final cell can still take B2.
+        answer = 0
+        for word in 'AB':
+            changed = []
+            for i, symbol in enumerate(tape):
+                end, word = feed(line, symbol, word)
+                if end is None:
+                    if i == len(tape)-1:
+                        answer = max(answer, 1)
+                    break
+                changed.append(end)
+            else:
+                if changed[-1] in (0,2):
+                    later = latest(line, tuple(changed))
+                    if later:
+                        answer = max(answer, 1+later)
+        return answer
+
+    # These are words supplied at a fresh positive half. The real root is periodic.
+    a = b = 1
+    reserve = old_b = 0
+    delayed_21, delayed_22 = 'B', ''
+    for x in range(8):
+        upper = reserve + b + 1
+        phi = {0: 2*a+2*b, 1: 0, 2: 2*a+b, 3: a+b, 4: b}
+        for line in PARENTS:
+            for symbol in phi:
+                for letter, cost in (('A',a),('B',b)):
+                    end, out = entry(line, symbol, letter)
+                    if end is not None:
+                        assert cost <= ((2*a+b)*out.count('A') + 2*a*out.count('B')
+                                        + phi[symbol]-phi[end])
+            word = delayed_21+'B' if line==21 else (delayed_22+'A' if x else 'BB')
+            assert len(word) == upper - (old_b if line==22 and x else 0)
+            assert literal_suffix(line,word[:-1]) is None
+            assert literal_suffix(line,word) == x
+            if x <= 4:
+                assert latest(line, (0,)*(x+1)) == len(word)
+            if x >= 2:
+                if line == 22 and x == 2:
+                    continuation = mature('AAA')+'A'
+                else:
+                    inner = 'B' if line == 21 else 'BAAAA'
+                    for _ in range(x-(2 if line==21 else 3)):
+                        inner = g(inner)
+                    continuation = mature(mature(inner))+('B' if line==21 else 'A')
+                assert len('A'+continuation) == len(word)-6
+                assert literal_suffix(line,'A'+continuation) == x
+        delayed_21 = g(delayed_21)
+        delayed_22 = g(delayed_22) if x else 'BAAAA'
+        old_b = b
+        reserve += 2*a+2*b
+        a, b = 2*a+b, 2*a
 
 
 def check_workers(engine, reference):
@@ -289,6 +413,16 @@ def report(line, path):
         assert all(not p.startswith(('BB',)+PARENTS[line]) for p in prefixes)
         if line==22:
             assert all(not p.startswith(grandparent_words()) for p in prefixes)
+    for copies, groups, _, tape in records:
+        if line==21 and copies==256 and groups==140737488486409:
+            limit = waiting_bound(21,tape,66,280,('AAA','AABB','BBA','BBBB'))
+            deadline = groups + (limit//3459723536+1)*549755813888
+        elif line==22 and copies==64 and groups==562949955518597:
+            limit = waiting_bound(22,tape,74,265,('AAAA',))
+            deadline = groups + (limit//7236495225+1)*8796093022208
+        else:
+            continue
+        print(f'line {line} test at cycle {copies} settles by root group {deadline}')
 
 
 def check_bridge(line, old_path, phase_path, engine):
@@ -309,16 +443,33 @@ def check_bridge(line, old_path, phase_path, engine):
     print(f'line {line} agrees at {groups} groups, {steps} steps and all {len(prefixes)} cut histories')
 
 
+def match_checkpoint(saved_path, replay_path):
+    saved = Path(saved_path).read_text().splitlines()
+    replay = Path(replay_path).read_text().splitlines()
+    assert saved[:2] == replay[:2]
+    expected, _ = read_report(saved)
+    actual, histories = read_report(replay)
+    endpoint = actual[-1]
+    assert endpoint in expected
+    for row in saved:
+        fields = row.split()
+        if fields and fields[0] == 'witness' and int(fields[1]) == endpoint[0]:
+            assert histories[int(fields[2])].startswith(fields[3])
+    print(f'checkpoint matches at {endpoint[1]} root groups, including its saved entry witnesses')
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--workers', nargs=2, metavar=('PHASE_ENGINE','REFERENCE_ENGINE'))
     parser.add_argument('--report', nargs=2, metavar=('LINE','TRANSCRIPT'))
     parser.add_argument('--bridge', nargs=4, metavar=('LINE','OLD_JSON','PHASE_TRANSCRIPT','REFERENCE_ENGINE'))
+    parser.add_argument('--match', nargs=2, metavar=('SAVED_CHECKPOINTS','FULL_REPLAY'))
     args=parser.parse_args()
     if not __debug__:
         parser.error('run with assertions enabled')
     check_controls()
     check_cut_263()
+    check_latest_halt()
     for line in PARENTS:
         print(f'line {line} grandparent equivalence checked on {check_grandparents(line)} prefix-trie nodes')
     if args.workers:
@@ -330,6 +481,8 @@ def main():
     if args.bridge:
         line,old,phase,reference=args.bridge
         check_bridge(int(line),old,phase,reference)
+    if args.match:
+        match_checkpoint(*args.match)
 
 
 if __name__=='__main__':

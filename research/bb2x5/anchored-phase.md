@@ -1,6 +1,6 @@
 # Anchored halting tests on lines 21 and 22
 
-The blank-tape decision is open for both machines. There are exactly 36 minimal input prefixes on line 22 and 84 on line 21 that force B2 two cells to the right of a fresh cell. The longest have 18 and 21 letters respectively. The calculation below also determines how far the checked tapes protect the right edge when subsequent root inputs are allowed to vary. It can exclude a halt at cells the machine has yet to visit.
+The blank-tape decision is open for both machines. The checkpoints below permanently exclude halts at specific rightward coordinates. For either machine a two-term recurrence gives the exact latest root entry that can halt at any specified coordinate under arbitrary input. On line 22 exactly 36 minimal input prefixes at a fresh cell force a halt two cells farther right. On line 21 there are 84. The longest prefixes have 18 and 21 letters respectively.
 
 | Line | November 3 encoding |
 |---:|---|
@@ -17,8 +17,8 @@ The rightmost visited cell and the first possible B2 are measured from the initi
 
 | Line | Complete root groups | Defined instructions from blank | Last visited | First possible B2 |
 |---:|---:|---:|---:|---:|
-| [21](frontiers/runs/anchored-phase-21.txt) | 140,737,488,486,409 | 1,029,966,114,604,059,164,430,770,074,110 | 280 | 281 |
-| [22](frontiers/runs/anchored-phase-22.txt) | 562,949,955,518,597 | 16,479,457,925,756,396,852,344,128,697,144 | 265 | 266 |
+| [21](frontiers/runs/anchored-phase-21-followup.txt) | 216,603,790,802,953 | 2,439,694,513,890,935,834,607,685,524,288 | 285 | 286 |
+| [22](frontiers/runs/anchored-phase-22-followup.txt) | 2,251,799,815,782,533 | 263,671,325,338,629,373,356,678,820,819,282 | 274 | 275 |
 
 ## The line 22 grandparent test
 
@@ -72,9 +72,43 @@ On line 21 every mature digit can already supply any future child stream. On lin
 
 Every earlier prefix of the actual driver leading to one of these ambiguous checkpoints also admits both kinds of continuation. Follow the known blank execution to that checkpoint, then use the two constructions. Establishing a verdict for the actual machine requires controlling its specified periodic source beyond that checkpoint.
 
+## Exact latest root entry for a halt at any specified cell
+
+Consider a fresh positive half and allow arbitrary letters at the root. Count an entry when it begins, including the one that reaches the undefined instruction. Define
+$$
+(a_0,b_0)=(1,1),\qquad (a_{j+1},b_{j+1})=(2a_j+b_j,2a_j),\qquad
+D_x=b_x+\sum_{j=0}^{x-1}2(a_j+b_j).
+$$
+On line 21 the latest possible root entry that can halt at coordinate $x$ is exactly $D_x+1$. On line 22 it is $D_x+1-b_{x-1}$ for $x\ge 1$, and it is 2 for $x=0$. For example the latest physical halts at coordinates 1, 2 and 3 occur on root entries 7, 21 and 59 on line 21, and 6, 19 and 53 on line 22. A shorter way to compute the exact deadlines is $H_0=2$, $H_1=7$ on line 21 or $6$ on line 22, and $H_{x+2}=2H_{x+1}+2H_x+3$ on both. The extremal sources are explicit. The actual periodic source is one particular choice.
+
+Give input letters A and B weights $a,b$ with $a\ge b>0$. Give output letters weights $2a+b,2a$. The five tape digits have potentials
+$$
+\phi(0)=2a+2b,\quad \phi(1)=0,\quad \phi(2)=2a+b,\quad \phi(3)=a+b,\quad \phi(4)=b.
+$$
+Every successful one-cell instruction batch satisfies
+$$
+  \operatorname{weight}(\mathrm{input})\le
+  \operatorname{weight}(\mathrm{output})+\phi(\mathrm{start})-\phi(\mathrm{end}).
+$$
+This follows directly from the one-cell table. The silent transitions $0\xrightarrow{B}2$, $2\xrightarrow{A}3$, $3\xrightarrow{A}4$ and $4\xrightarrow{B}1$ spend exactly the lost potential. The returns $1\xrightarrow{A}3$ and $4\xrightarrow{A}3$ emit A and B and also attain equality. From 3, B emits ABA. From 1, B emits A or B and leaves 4, which satisfies the inequality for either output.
+
+Sum the inequality along each word, then across the $x$ cells to the left of the target, using weights $(a_j,b_j)$ at cell $j$. Immediately before the root entry that eventually halts at $x$, all earlier root entries have finished. The input so far at $x$ is empty or a single B. The $x$ initially fresh cells supplied total initial potential $\sum_{j<x}2(a_j+b_j)$. Their final potentials are nonnegative. This bounds the number of completed entries by $D_x$. On line 22 the parent of a future B2 cannot end on digit 1 at this point. Either letter on 1 sends A to the target, permanently clearing it. Every other possible parent digit has potential at least $b_{x-1}$. Subtracting that term gives the sharper bound.
+
+For attainment, take $g(w)=BA\,h(w)\,AB$ with $h(A)=ABA$ and $h(B)=AA$. From a fresh cell, $BA$ silently reaches 3, $h(w)$ sends exactly $w$ and restores 3, and $AB$ silently ends on 1. Every transition used here attains equality. On line 21 supply $g^x(B)$ and one more B. All $x$ parents are on 1, that last B passes through each of them as B, and the target halts. On line 22 with $x\ge1$ supply $g^{x-1}(BAAAA)$ and one more A. The last parent sends one B and waits on 4. Each earlier 1 passes the final A, which makes that 4 send the fatal B. These finite controls issue no call beyond the target. The checker drives the physical instructions for all eight coordinates from 0 through 7 on both machines. It also searches every possible root letter on the finite strips ending at coordinates 0 through 4 and recovers the same maxima.
+
+The first root letter of the blank run is A. Fixing just that letter permanently clears coordinates 0 and 1, and reduces the **exact** latest root entry at every $x\ge2$ from $H_x$ to $H_x-6$. That first A leaves 3 on each of the first two cells and every later cell fresh. Their combined starting potential drops by $(a_0+b_0)+(a_1+b_1)=7$, and one root entry has been spent. To attain the new bound, remove the silent initial BA from the extremal controls on those two cells, which already start on 3. The checker also realizes these constrained maxima through coordinate 7.
+
+The same inequality gives a finite deadline at a deep blank checkpoint. Use the actual potentials of its intervening tape and the largest weight of a still-undecided prefix at the parent. The true periodic word at the chosen cut then supplies a known number of letters per cycle. At the line 22 cycle-64 checkpoint this puts the test for cell 266 before $1.204\times10^{87}$ root groups. A failure to complete a root entry before that bound also requires reaching the target, since the whole finite strip up to it returns while it is unsettled. The report checker computes the integer bound. The source-specific replay below is much faster at deciding individual cells.
+
 ## Exact replay from blank
 
+At the 256-cycle checkpoint on line 21 the entire lifetime input to cell 280 was `BAA`. Its digit was 4 and cell 281 was fresh. The outstanding fatal continuations at 280 were precisely `AAA`, `AABB`, `BBA` and `BBBB`. At cycle 274 the actual history at 280 was `BAAAABAA`. The next four letters had been `AABA`, and cell 281 had received `BA`. This permanently clears 281. The checkpoint was at 150,633,093,136,393 groups and 1,179,897,094,887,568,638,532,449,895,848 defined instructions. The free-continuation calculation first admitted B2 at 282. At cycle 346 the input at 281 had become `BABABABA`, and the actual input at 282 began `ABAAABA`. The run had reached 285, whose input was `BAA`. The same four continuations now test 286. At cycle 394, 216,603,790,802,953 groups from blank, the entire input at 285 was still `BAA`.
+
 At 492,581,211,340,933 root groups on line 22 the last visited coordinate was 258. The exact continuation calculation first admitted B2 at 266, permanently clearing the seven unvisited cells 259 through 265. The 64-cycle checkpoint later visited all seven safely. Its last three digits, at 263 through 265, were 333. At that boundary the next four entries at 265 are decisive for a halt at 266. Four As emit BB. Any other four-letter prefix rules out a halt there. Four Bs supplied at cut 263 give one such halting control and reach B2 in 36 local instructions. Two As supplied there send A first to 266 and complete in 16 local instructions. Pulling the four-A condition back through the two mature cells gives 654 minimal fatal prefixes and 747 minimal clearing prefixes at cut 263. At most 29 future entries there settle coordinate 266. This is sharp. The common 28-letter prefix `ABAAAABAABAAAABAABAAAABAABAA` followed by A forces a halt there, while B clears it. The checker follows both controls with the literal transition table. These controls specify future inputs at 263. The blank source selects its own continuation.
+
+The independent scan from blank at cut 74 reached coordinate 274 after 256 cycles (2,251,799,815,782,533 groups). It recorded the first 12 letters at 263 as `BAABAABABABA`. The first five, `BAABA`, had already arrived at cycle 64. The next four were therefore `ABAB`. With the saved three digits 333, the literal continuation from 263 gives `BABA` at 265 and `ABAA` at 266. It uses 54 defined instructions on this suffix and visits through 269. The first A at 266 permanently rules out a halt there. The independently resumed clock first put the earliest possible B2 beyond 266 at cycle 195. At that checkpoint it had visited through 269, at 1,715,238,141,427,845 groups and 152,986,177,854,060,398,338,777,733,201,624 defined instructions. Reaching 274 also permanently clears every smaller coordinate.
+
+The following five-cell transition occurs on the actual line 22 run. At cycle 195, cells 265–269 were `33334` and the cells to their right were fresh. At cycle 206, the next five entries at 265 had been `BAABA`. They changed those five cells to `43333` and sent `BABABA` into the fresh neighbors. Those neighbors became another `33334` and sent nothing farther. The rightmost cell advanced from 269 to 274 in 99 instructions on this suffix. On both machines a further `BAABA` supplied to the older `43333` would restore `33334` without output. The three block transitions and the 99 physical instructions are checked on both tables. Repeating the advance farther right depends on the actual entries into the new block. At the 256-cycle checkpoint the lifetime input to 274 was `BAA`. The earliest possible B2 is 275, and it requires the next three entries at 274 to be `AAA`.
 
 The worker carries the distinguished first entries at each coordinate. It constructs its cell tables by following the encoded physical instructions, with each successful child call returning in A. At the root it starts with the exact 13-letter period. At a chosen cut it has a finite prefix and a repeating word. These represent the output after a known number of root groups and the additional output per cycle. For each preceding cell the worker processes its prefix and then whole periods until the incoming symbol state repeats. Including the transient periods in the next prefix and all periods in that state cycle in the next repeating word is exact. At the selected cut the worker consumes a finite number of these cycles in chronological chunks over the remaining positive tape. Its four-cell lookup composes the same four single-cell tables and counts the visits inside the block.
 
@@ -97,6 +131,17 @@ The saved transcripts include every visited nonnegative digit and up to 18 initi
 for line in 21 22; do
     cmp "runs/anchored-phase-$line.txt" "/tmp/bb25-phase-$line.txt"
     python3 anchored_phase.py --report "$line" "/tmp/bb25-phase-$line.txt"
+done
+```
+
+The linked follow-up records contain selected complete positive tapes, clocks and initial-entry witnesses. Recreate each latest endpoint directly from blank and compare it to that record. Substituting an earlier cycle recorded in the same file checks that endpoint instead.
+
+```sh
+/tmp/bb25-phase 21 66 394 > /tmp/bb25-last-21.txt
+/tmp/bb25-phase 22 74 256 > /tmp/bb25-last-22.txt
+for line in 21 22; do
+    python3 anchored_phase.py --match "runs/anchored-phase-$line-followup.txt" "/tmp/bb25-last-$line.txt"
+    python3 anchored_phase.py --report "$line" "/tmp/bb25-last-$line.txt"
 done
 ```
 
