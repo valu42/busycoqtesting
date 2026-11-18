@@ -49,6 +49,32 @@ class Line18Tests(unittest.TestCase):
                 return
         self.fail('literal blank orbit did not visit the reported witness')
 
+    def test_one_cell_at_record_9333(self):
+        seed = load(ROOT/'frontiers/runs/line18-returns.json')
+        cut = 9347
+        for altered in (False, True):
+            tm = physical(seed)
+            self.assertEqual(''.join(str(tm.tape[cut+i]) for i in range(6)), '131313')
+            if altered:
+                tm.tape[cut+2] = 3
+            calls, replies = [], []
+            for offset in range(1, 252200):
+                old = tm.head
+                self.assertTrue(tm.step())
+                if (old, tm.head) == (cut-1, cut):
+                    calls.append(tm.state)
+                elif (old, tm.head) == (cut, cut-1):
+                    replies.append((offset, tm.state))
+                if len(replies) == 3:
+                    break
+            self.assertEqual(calls, list('ABB'))
+            if altered:
+                self.assertEqual(replies, [(252139, 'B'), (252189, 'B')])
+                self.assertEqual((tm.head, tm.state, tm.tape[tm.head]), (9352, 'A', 4))
+                self.assertFalse(tm.step())
+            else:
+                self.assertEqual(replies, [(252139, 'B'), (252175, 'B'), (252181, 'B')])
+
     def test_literal_blank_records(self):
         verify()
         tm = TapeMachine(MACHINE)

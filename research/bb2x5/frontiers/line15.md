@@ -2,6 +2,8 @@
 
 At 35,000 periods the blank machine has executed **344,289,925,484 defined instructions** and returned to coordinate zero in B. Its negative half accounts for 68,600,525,016 instructions and the nonnegative half for 275,689,400,468. The [checkpoint](runs/line15-strips.json) stores every nonnegative cell through the last seven-cell strip. The period count determines the negative tape through the existing [left-half certificate](../mixed-and-sweeps.md#5-other-candidates-and-verification).
 
+The [latest full checkpoint](runs/line15-next.json) reaches **20,331,546,024,060 steps** at 245,000 periods, beyond the community-reported 20-trillion-step lower bound. The negative half contributes 3,361,403,675,016 steps and the nonnegative half contributes 16,970,142,349,044. At the cut the head is at zero in B. The nonnegative tape begins with 5,142,098 consecutive digits in {1,2} and ends in `0111`. The run tracked the first five requests at each newly reached nonroot strip. The boundary contains 734,586 seven-cell strips, including the root and a final strip with four requests. [Community report](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved)
+
 ## Seven-cell return model
 
 Consider a seven-cell strip entered at its left end. Each time the head leaves to the right, record the entry letter sent to the next strip, suspend the call, and provisionally resume on the strip's rightmost cell in A. A completed call must return A at the left end. The worker accounts for every original instruction inside the strip, including those that issue or finish a call. It passes the outgoing letters, in order, to a fresh computation on the next strip. A finite batch is accepted only when the last strip issues zero calls. Induction back from there realizes all provisional A replies on the actual tape. A candidate B return or undefined instruction instead triggers chronological bisection to a single period, which the Python driver replays literally on the positive tape. A confirmed B4 or a B return across coordinate −1 saves its own physical event checkpoint.
@@ -61,6 +63,24 @@ The 35,000-period checkpoint starts with **518,087 digits in {1,2}**, followed b
 Thus the altered-input witness establishes a halt on a controlled continuation of the genuine positive tape. The blank machine's decision remains open. Along any trajectory from blank the terminal event has a simple physical signature. A 4 is written only when B on 2 moves right in B. While that request is pending, the next visit to the 4 comes from the right. A call can return B only if it began on B0, because the only write of 0 also exits left immediately. Consequently a scan of B2 with a zero immediately to its right reaches B4 in exactly two defined instructions, and every blank halt must arise this way.
 
 The same construction works at *every* completed positive-group boundary satisfying the startup condition. The last strip ends in `2210111`, giving a mature prefix followed by the same fringe `0111`. It follows that even an arbitrarily long successful run of these startups cannot yield a nonhalting proof that allows unconstrained future inputs to the positive half.
+
+## Reproducing the deeper checkpoint
+
+Starting from the certified 120,000-period configuration, two batch partitions continued independently. One used boundaries at 170,000, 210,000 and 245,000 periods. The other used 195,000, 210,000, 230,000 and 245,000. Both produced byte-identical full checkpoint files at their shared endpoints. The independent physical window simulator then traversed the next period, reproducing both tape halves and the head at raw step **20,331,573,466,142**, 27,442,082 steps after the saved record.
+
+To reproduce with the checked-in executable source, build the worker below, then run from `research/bb2x5`. A single invocation can cross the same interval. These batches also check the required startup letters and allow a restart after each completed boundary.
+
+```sh
+python3 frontiers/line15.py --engine /tmp/bb25-line15 --check-prefix \
+  --groups 35000 --checkpoint /tmp/line15-35000.json
+old=35000
+for target in 120000 170000 210000 245000; do
+  python3 frontiers/line15.py --engine /tmp/bb25-line15 --check-prefix \
+    --groups "$target" --resume "/tmp/line15-$old.json" --checkpoint "/tmp/line15-$target.json"
+  old=$target
+done
+cmp /tmp/line15-245000.json frontiers/runs/line15-next.json
+```
 
 ## Replay and continuation
 

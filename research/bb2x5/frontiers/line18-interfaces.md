@@ -45,3 +45,8 @@ python3 frontiers/test_line18_interfaces.py
 ```
 
 The tests compare every binary word of one through six pairs, with both terminal choices, against literal execution. They check the leading-A result through four pairs and 100 subsequent calls. They also compare projected prefixes with the next 100 blank-orbit records and with artificial suffixes that can actually halt.
+
+
+## A one-cell control at record 9,333
+
+At +9,347 the real six-cell word is `131313`. The next three requests there are ABB, and the machine returns B on all three. Their returns occur 252,139, 252,175 and 252,181 raw instructions after the saved record. Change just cell **+9,349** from 1 to 3 in that configuration. The same cut now sees `133313`, still receives ABB, and the third call reaches **A4 at +9,352 after 252,199 instructions** from the fork. Thus the input stream required by the six-cell halt test actually occurs at this cut. The altered symbol supplies the missing part of the test. The protected-prefix theorem uses the original prefix and does not apply to the fork. Both traces are replayed one instruction at a time in [the checkpoint tests](test_line18.py).

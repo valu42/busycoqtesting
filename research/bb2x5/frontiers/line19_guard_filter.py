@@ -102,8 +102,9 @@ def check_closed(heads, side_words, widths=(LEFT, RIGHT), seeds='AB'):
                 raise ValueError('missing permitted successor window')
 
 
-def permits_aaa(prefix):
-    """Can three calls B, B, A return A, A, A given arbitrary replies on the right?"""
+def aaa_images(prefix):
+    """Final strip words after BBA returns AAA, allowing both exterior replies."""
+    images = set()
     root = (0, 'B', 0, prefix)
     pending, visited = deque([root]), {root}
     while pending:
@@ -112,8 +113,9 @@ def permits_aaa(prefix):
         if pos < 0:
             if state == 'A':
                 if phase == 2:
-                    return True
-                following.append((phase+1, 'BBA'[phase+1], 0, word))
+                    images.add(word)
+                else:
+                    following.append((phase+1, 'BBA'[phase+1], 0, word))
         elif pos == len(word):
             following.extend((phase, reply, pos-1, word) for reply in 'AB')
         else:
@@ -126,7 +128,11 @@ def permits_aaa(prefix):
             if item not in visited:
                 visited.add(item)
                 pending.append(item)
-    return False
+    return images
+
+
+def permits_aaa(prefix):
+    return bool(aaa_images(prefix))
 
 
 def verify():
@@ -136,6 +142,12 @@ def verify():
     launch = {right[1:] for _, q, s, right in heads if q == 'A' and s == '0' and right[0] == '3'}
     if launch != PREFIXES or {p for p in launch if not permits_aaa(p)} != SAFE:
         raise ValueError('guard prefix sets do not match the finite checks')
+    # At a previously visited guard the preceding BBA/AAA packet started
+    # with B on 3 immediately to the right of the departure cell holding 0.
+    earlier = {right for left, q, s, right in heads if (left[0], q, s) == ('0', 'B', '3')}
+    later = {image[:4] for prefix in earlier for image in aaa_images(prefix)}
+    if len(earlier) != 89 or later != PREFIXES - {'3000', '3232'}:
+        raise ValueError('interior guard prefix closure disagrees')
     return len(heads), len(side_words[0]), len(side_words[1])
 
 
