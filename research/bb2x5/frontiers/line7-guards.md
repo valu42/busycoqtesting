@@ -2,6 +2,8 @@
 
 Machine `1RB---3RA2LA2RB_2LB3LA4LB4RA0RA` remains open from the blank tape. Its only undefined instruction is A1. We found a family of suffixes that force the machine to hit A1, an arithmetic test that rules out this route on many actual epochs, and a way to search consecutive epochs with one suffix simulation. A return in A or B means that the head has just crossed the left edge of the named suffix in that state. The suffix retains every write between calls.
 
+At the verified 16,384-epoch checkpoint, the next target is the first A reply from the suffix at cell −89. If its count of prior B replies is congruent to 218 modulo 486, the machine reaches A1 on cell −94 exactly 26 instructions later. Whether the actual suffix reaches that residue remains open. [Six-cell proof and other residues](#a-halting-test-on-five-ternary-digits) · [Checkpoint and blank-orbit results](#results-on-the-blank-tape)
+
 ## Which guards occur from blank
 
 A0 writes 1 and calls the cell to its right in B. A B return consumes the 1 through B1. An A return reaches A1. A halt during the suffix call already ends the computation.
@@ -74,6 +76,12 @@ The permanent outer-header invariant therefore excludes the one-more-reply halt 
 
 When $k=0$ and V begins with the guaranteed pair, the original guard takes the safe AB row if its first A call returns A. If the first A call returns B and the second returns A, V again begins with 22, the BA row requests B, and the original guard halts. Two initial B returns give the safe BB row. A halt inside V still propagates immediately.
 
+### A halting test on five ternary digits
+
+**For $k\ge5$, a first A return at rank $j\equiv218\pmod{243}$ forces A1 exactly 26 instructions later.** This holds in either block for every blank-reachable header with the leading pair. The low five ternary digits of $j$ are 22002. Since $3^k$ is divisible by 243, these are also the five low digits of the within-block offset. The last five suspended twos therefore contain 00330. The first cell of V now contains 2. The head is in A on the last 0. On these six cells alone, 003302 becomes 134244 after 26 defined instructions and A scans the leftmost 1. No exterior cell is read. The halt is always five cells to the left of V.
+
+We also exhaustively checked windows of up to eight suspended twos and the first cell of V. The literal checker stops at a physical halt, a repeated complete local state or the first exit from the known window. Extending just the words without a shorter halting suffix gives 1, 2, 5 and 11 new certificates at widths 5, 6, 7 and 8 respectively. Together these 19 certificates cover **71 distinct ranks modulo $3^8=6561$**. A full physical interpreter replays each certificate on complete constructed tapes in both blocks, checking the halt coordinate, remaining tape window and exact time after the first A. [Exhaustive checker](line7_rank_words.py) · [All 19 traces](runs/line7-halt-rank-words.json)
+
 ## Searching consecutive epochs in one batch
 
 In an uninterrupted stretch of all-B tail replies starting at `3 2^k V`, the total number of A requests to V over $t$ epochs is
@@ -115,6 +123,16 @@ At epoch 8,952 a separate replay from the fixed physical cut at epoch 8,192 repr
 
 At epoch 10,996 the first A arrived on cell −80 at approximately $1.02614\times10^{5210}$ raw steps. The rank was 2 modulo 3. One instruction installed the new guard, and V had just deposited 2. Its B reply therefore took exactly one instruction. The next five A requests to V all returned B, in 3, 205, 3, 215 and 3 instructions. [Exact clock, head and six follow-up calls](runs/line7-first-A-10996.json)
 
+At epoch 11,648 the same temporary guard occurred in the first block. The fixed-cut replay recovered V's first A on cell −82 at approximately $1.95504\times10^{5519}$ raw steps. V again deposited 2. The next six calls were all B and returned B in 1, 67, 1, 27, 1 and 19 instructions. [First-block event and six replies](runs/line7-first-A-11648.json)
+
+The indexed blank run reached **16,384 completed epochs** at approximately **$3.85525\times10^{7775}$ raw steps**. The exact clock has 25,830 bits. A scans cell −16,384, followed by a 3, 16,293 twos and V beginning at cell −89. The stored suffix has 68,035 cells. [Full physical checkpoint](runs/line7-calls.json)
+
+Every epoch from 12,289 through 16,384 completed both blocks with B replies. A batch-size-173 audit from epoch 12,288 and a separate batch-size-256 continuation from epoch 9,856 produced byte-identical checkpoints. The saved intervals contain 17 first A returns in the early sample and four in the two later intervals with exceptions. None satisfies a certified short ternary suffix. [Last 4,096 epochs](runs/line7-blocks-12288-16384.json)
+
+V currently begins with 44, so its first exceptional A must have even rank. Every forced second-block Fibonacci rank above is odd, including the exact power of three. Each all-B epoch consumes an even number of A calls and preserves the initial 44. Thus the Fibonacci family is excluded through the first exceptional reply at this fixed cut, however many ordinary epochs precede it.
+
+**A concrete route remains at the current checkpoint.** Let $J$ count all B replies to successive A requests at cell −89 before the first A. If $J\equiv218\pmod{486}$, machine 7 halts on cell **−94** exactly 26 instructions after that A. The counts spent in any whole intervening epochs are multiples of both 2 and $3^{16293}$, so they preserve the tested residues. The other certificates likewise give 71 compatible even residue classes modulo 13,122. The leading 44 gives $J=2n$ for a normal first A, so the six-cell route corresponds to $n\equiv109\pmod{243}$ for the suffix two cells farther right. Determining the first exceptional rank on that physical suffix, or detecting a prior halt inside a call, remains open.
+
 ## Replay
 
 Run from `research/bb2x5`. Each epoch is one successful extension onto a fresh blank cell to the left. The indexed [checkpoint](runs/line7-calls.json) includes the exact hexadecimal clock, physical head and full located suffix. Each audit links its input and output states by SHA-256.
@@ -137,11 +155,22 @@ python3 frontiers/line7_guards.py --resume /tmp/line7-8192.json --epochs 9216 --
   --checkpoint /tmp/line7-block-9216.json --audit /tmp/blocks-9216.json
 python3 frontiers/line7_guards.py --resume /tmp/line7-10000.json --epochs 12288 --batch 113 \
   --checkpoint /tmp/line7-12288.json --audit /tmp/blocks-12288.json
+python3 frontiers/line7_guards.py --resume /tmp/line7-12288.json --epochs 16384 --batch 173 \
+  --checkpoint /tmp/line7-16384.json --audit /tmp/blocks-16384.json
+cmp /tmp/line7-16384.json frontiers/runs/line7-calls.json
 python3 frontiers/check_line7_first_return.py --resume /tmp/line7-8192.json \
   --audit /tmp/blocks-9216.json --output /tmp/first-A-8952.json
 python3 frontiers/check_line7_first_return.py --resume /tmp/line7-10000.json \
   --audit /tmp/blocks-12288.json --output /tmp/first-A-10996.json
+python3 frontiers/line7.py --resume /tmp/line7-10000.json --epochs 10996 --batch 113 \
+  --checkpoint /tmp/line7-10996.json
+python3 frontiers/line7_guards.py --resume /tmp/line7-10996.json --epochs 11648 --batch 113 \
+  --checkpoint /tmp/line7-11648.json --audit /tmp/blocks-11648.json
+python3 frontiers/check_line7_first_return.py --resume /tmp/line7-10996.json \
+  --audit /tmp/blocks-11648.json --output /tmp/first-A-11648.json
 python3 frontiers/test_line7_guards.py
+python3 frontiers/line7_rank_words.py --width 8 --output /tmp/line7-rank-words.json
+cmp /tmp/line7-rank-words.json frontiers/runs/line7-halt-rank-words.json
 c++ -O3 -std=c++17 frontiers/window.cpp -o /tmp/bb25-window
 BB25_WINDOW=/tmp/bb25-window python3 frontiers/test_line7.py
 ```

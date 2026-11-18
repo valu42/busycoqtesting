@@ -6,6 +6,7 @@ from pathlib import Path
 
 from checkpoints import atomic_json, checksum
 from line7 import Calls, MACHINE, RULES, TWOS, load, save, snapshot
+from line7_rank_words import rank_certificate
 
 
 def trace_prefix(word, state, limit=512):
@@ -238,6 +239,11 @@ class RootRanks:
                 paired = rank_return(k, j, paired=True)
                 if paired['outcome'] in ('safe', 'halt'):
                     prediction = paired['outcome']
+            if width:
+                hit = rank_certificate(k, j)
+                if hit:
+                    self.events[-1]['halt_certificate'] = hit
+                    prediction = 'halt'
             distance = abs(j-block)
             if self.distance is None or distance*self.distance[1] < self.distance[0]*block:
                 self.distance = distance, block
@@ -300,10 +306,16 @@ def audit_blocks(p, target, work, batch):
                 event['prior_B_replies_hex'] = hex(j)
             if reply == 'A':
                 event['after_first_A'] = rank_return(k, j)
+                if rank_bits(vm.tape, k+1)[0]:
+                    hit = rank_certificate(k, j)
+                    if hit:
+                        event['halt_certificate'] = hit
             exceptions.append(event)
 
     while epoch < target:
         count, halted = vm.epoch_block(min(batch, target-epoch), record)
+        if exceptions and exceptions[-1]['epoch'] == epoch+1 and 'halt_certificate' in exceptions[-1] and not halted:
+            raise ValueError('certified rank failed to halt on physical replay')
         epoch += count
         if halted:
             break

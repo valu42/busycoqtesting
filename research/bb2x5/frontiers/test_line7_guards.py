@@ -5,6 +5,7 @@ import unittest
 from check_line7_first_return import follow
 from line7 import Calls, MACHINE, snapshot
 from line7_guards import audit_blocks, rank_bits, rank_return, trace_prefix
+from line7_rank_words import enumerate_words, rank_certificate
 from prior_sweeps import TapeMachine
 
 
@@ -200,6 +201,37 @@ class GuardTests(unittest.TestCase):
                     break
             self.assertEqual(got['after_first_A']['tail_calls'], events)
             self.assertEqual(got['after_first_A']['steps_after_reply'], local_steps)
+
+    def test_modular_witnesses_on_complete_physical_tapes(self):
+        result = enumerate_words(8)
+        self.assertEqual((result['covered_residues'], result['counts_by_width']),
+                         (71, {5: 1, 6: 2, 7: 5, 8: 11}))
+        for hit in result['certificates']:
+            width = len(hit['ternary_suffix'])
+            for extra, block in ((0, 0), (1, 1)):
+                k = width+extra
+                j = block*3**k + hit['residue']
+                self.assertEqual(rank_certificate(k, j), hit)
+                vm = TapeMachine(MACHINE, [0, 3]+[2]*k+register(j, j.bit_length()))
+                cut = k+2
+                while True:
+                    x = vm.head
+                    self.assertTrue(vm.step())
+                    if x == cut and vm.head == cut-1 and vm.state == 'A':
+                        break
+                before = vm.steps
+                for _ in range(hit['steps_after_A']):
+                    self.assertTrue(vm.step())
+                self.assertFalse(vm.step())
+                self.assertEqual((vm.head-cut, vm.steps-before),
+                                 (hit['halt_offset_from_V'], hit['steps_after_A']))
+                word = ''.join(str(vm.tape.get(i, 0)) for i in range(cut-width, cut+1))
+                self.assertEqual(word, hit['final_word'])
+
+        seed = snapshot(1, Calls([3]+[2]*5+register(218, 8), raw=3))
+        end, log = audit_blocks(seed, 3, 10**7, 2)
+        self.assertEqual(end['status'], 'halt')
+        self.assertEqual(log['exceptional_or_literal_epochs'][0]['halt_certificate']['steps_after_A'], 26)
 
     def test_geometric_batches_and_first_exception(self):
         ordinary, batched = Calls(), Calls()
