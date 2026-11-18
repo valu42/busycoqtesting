@@ -26,6 +26,7 @@ The following runs started with an exact repository clock of ten billion steps o
 | 3 | Rightward probes through mixed ternary tokens and binary increments on the left | [Mixed-counter clock](line3-timing.md) |
 | 9 | Pairs of growing left sweeps and their three ordered suffix calls | [BBA sweeps](../line9-sweeps.md) |
 | 14, 16, 28 | Repeated six-cell crossings that restore the entry state and the adjacent guard word | [Six-cell strides](six-cell-strides.md) |
+| 18 | A growing prefix generates an exact number of suffix calls. Two- and three-cell rules count the suffix instructions and track exceptional replies. | [Timed prefix and suffix calls](line18.md) |
 | 20 | Periodic negative-tape returns with an exact replay of the exceptional positive-tape period | [Guarded boundary streams](line20-returns.md) |
 | 24 | Alternating A and B calls after the 46-step seed, with literal recovery on exceptional returns | [Alternating sweeps](line24.md) |
 | 29, 30 | Timed sweeps through the Bonus Cryptid and Hydra tapes, including the early exceptional Bonus Cryptid configurations | [Timed cryptid sweeps](hydra.md) |
@@ -183,8 +184,9 @@ The timestamp and packed workers agree on all 424 pairs and the exact clock at 1
 | 6 × 10²⁸ | 173 | 1 |
 | 7 × 10²⁸ | 173 | 1 |
 | 71812846097182404284260339012 | 174 | 1 |
+| 10²⁹ | 175 | 1 |
 
-The [literal initialization](../frontier-background.md#configuration-and-entry) visits no cell to the right of coordinate 11. At the [checkpoint after first reaching pair 174](runs/line17-epochs.json), the terminal singleton at 11 has still received zero calls. Thus the first visit to coordinate 12 is later than 7.2199 × 10⁵⁸ defined instructions.
+The [literal initialization](../frontier-background.md#configuration-and-entry) visits no cell to the right of coordinate 11. At the [10²⁹-sweep checkpoint](runs/line17-epochs.json), the terminal singleton at 11 has still received zero calls. Thus the first visit to coordinate 12 is later than 1.4 × 10⁵⁹ defined instructions.
 
 The tests exhaust every normal pair/pulse control case, replay the complete physical tape through 425 epochs with an elementary interpreter, and meet the independent 100-million-step moving-window checkpoint. The Python-only timestamp implementation and a native replay using a different cut produce byte-identical full configurations and time at 10¹⁸ epochs. Independent cut choices also agree at 10²¹ and 10²² epochs. At the published endpoint, advancing another 1,000,001 epochs as one batch or in two parts gives the same full checkpoint.
 

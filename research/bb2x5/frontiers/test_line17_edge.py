@@ -129,9 +129,12 @@ class EdgeTests(unittest.TestCase):
             at, row = suffix_event(418, prefix, ZERO)
             self.assertLessEqual(at, 12)
             self.assertEqual(row[-13], wanted)
+            self.assertEqual(possible_symbols(12, positions, 418), (12, (int(wanted),)))
         self.assertEqual(cut_limits(418, 10)[403], 52828727)
         self.assertEqual(possible_symbols(38479820, [5, 11, 17, 23]), (9, (0, 4)))
         self.assertEqual(possible_symbols(52828727, [5, 11, 17, 23]), (10, (4,)))
+        self.assertEqual(possible_symbols(1956632, [4], 406), (10, (4,)))
+        self.assertEqual(possible_symbols(cut_limits(418, 10)[53], [5, 11, 17, 23], 53), (10, (4,)))
         for start in (0, 1, 70, 1000):
             marks = [i for i in (5, 11, 17, 23) if i <= start]
             self.assertEqual(possible_symbols(start, marks)[0], 0)

@@ -10,6 +10,7 @@ from longitudinal import DRIVERS, GUARDED_DRIVERS, Driver
 import hydra
 import line3_timed
 import line9
+import line18
 import line24
 import survey
 import line7
@@ -65,6 +66,10 @@ def generate():
     path = RUNS/'line9-sweeps.json'
     p = line9.load(path)
     consider(9, p['machine'], p['steps'], path, 'Batched BBA sweeps')
+
+    path = RUNS/'line18-returns.json'
+    p = line18.load(path)
+    consider(18, p['machine'], int(p['steps_hex'], 16), path, 'Timed prefix and suffix calls')
 
     path = RUNS/'line24-sweeps.json'
     p = line24.Line24().load(path)

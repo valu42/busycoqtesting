@@ -2,9 +2,10 @@
 
 The [mixed-counter construction](../mixed-and-sweeps.md#1-the-mixed-counter-on-line-3)
 describes a batch of successful right probes, each followed by one binary
-increment to the left of the pivot. The tape at the end of a batch is already
-determined by that construction. The clock below counts the defined instructions
-executed inside the tokens and inside the binary register.
+increment to the left of the pivot. The [arithmetic research pass](https://github.com/valu42/busycoqtesting/blob/680c69635d58a26ad2d33814ac16df4f72a86975/research/bb2x5/halting-outlook/arithmetic.md#line-3)
+derived the timing formula below and recorded checkpoint 300. This
+implementation counts the defined instructions in the existing mixed-counter
+simulator and saves a resumable full tape.
 
 | Right token | Incoming probes | Calls to the next token | Raw instructions on this token |
 |---|---:|---:|---:|
@@ -38,16 +39,21 @@ replay agrees on every nonblank cell, the head and the state at raw step
 4,310,726. Continuing independently from the saved 100,000,000-step window
 meets the blank replay at checkpoint 14, raw step 386,948,416. At checkpoint
 150 the register matches the [earlier transcript](../mixed-verification.txt).
-The [saved run](runs/line3-timed.json) continues to checkpoint 250, raw clock
-approximately $7.15678\times 10^{242}$, with 507 ternary digits, one padding
-cell and counter value zero. It is a finite blank run. The saved tape starts
+At checkpoint 300 the exact clock (approximately $4.74786\times 10^{287}$),
+every nonzero tape cell, the head at −591 in A and the decoded counter tuple
+agree with the [arithmetic pass checkpoint](https://github.com/valu42/busycoqtesting/blob/680c69635d58a26ad2d33814ac16df4f72a86975/research/bb2x5/halting-outlook/arithmetic_line3_checkpoint.json).
+The [saved run](runs/line3-timed.json) continues to checkpoint 320, raw clock
+approximately $3.09717\times 10^{312}$. The head is at −639 in A, with 653
+ternary digits, one padding cell and counter value zero. Continuing the arithmetic
+pass implementation from its saved checkpoint 300 reproduces the complete tape,
+head, state and exact clock at 320. The saved tape starts
 at the absolute coordinate `left`. All cells outside `word` are zero.
 
 These commands reproduce, continue and check the run from `research/bb2x5`.
 
 ```sh
-python3 frontiers/line3_timed.py --checkpoints 250 --output /tmp/line3.json
+python3 frontiers/line3_timed.py --checkpoints 320 --output /tmp/line3.json
 cmp /tmp/line3.json frontiers/runs/line3-timed.json
-python3 frontiers/line3_timed.py --resume /tmp/line3.json --checkpoints 251 --output /tmp/line3-next.json
+python3 frontiers/line3_timed.py --resume /tmp/line3.json --checkpoints 321 --output /tmp/line3-next.json
 python3 -m unittest discover -s frontiers -p test_line3_timed.py
 ```

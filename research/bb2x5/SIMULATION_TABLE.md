@@ -8,7 +8,7 @@ The endpoint column gives the largest exact raw count indexed in this repository
 |---:|---|---:|---:|---:|---|
 | 1 | `1RB---4LB1RA4RA_2LB2LA3RA4LB0RB` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-01.json) |
 | 2 | `1RB---4LB0LA4RA_2LB2LA3RA4LB0RB` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-02.json) |
-| 3 | `1RB---0RB0LA2RA_2LB2LA3RA4LB0LB` | ≈ 7.15678 × 10^242 | [≥ 10^151](mixed-verification.txt) | — | [Timed mixed-counter probes](frontiers/runs/line3-timed.json) |
+| 3 | `1RB---0RB0LA2RA_2LB2LA3RA4LB0LB` | ≈ 3.09717 × 10^312 | [≥ 10^151](mixed-verification.txt) | — | [Timed mixed-counter probes](frontiers/runs/line3-timed.json) |
 | 4 | `1RB3LA1LA1RA3RA_2LB2RA---4RB1LB` | ≈ 5.35561 × 10^1802 | [> 10^1,719,137](line4-scalar.md) | — | [Timed A(6,b) returns](frontiers/runs/line4-return.json) |
 | 5 | `1RB3LA1LA1RA1RA_2LB2RA---4RB1LB` | ≈ 1.99499 × 10^104610 | [≥ 2^173,753](accelerator-results/arithmetic5-100k.json) | — | [Timed A/B returns](frontiers/runs/line5-timed.json) |
 | 6 | `1RB---3LB4RB0LA_2LB3LA3RB4RA0RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-06.json) |
@@ -22,8 +22,8 @@ The endpoint column gives the largest exact raw count indexed in this repository
 | 14 | `1RB2RA4LA1RB4RB_1LB2LA3RA---0LB` | 1,000,000,000,000,000 | — | [≥ 5 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Six-cell strides](frontiers/runs/stride-14.json) |
 | 15 | `1RB3RB1LA2LA3RA_1LB2RA4RB0LA---` | 10,000,000,000 | — | [≥ 2 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Moving window](frontiers/runs/window-15.json) |
 | 16 | `1RB2LA0RB0LB3LB_2LA4RB3RA0RA---` | 1,000,000,000,000,000 | — | — | [Six-cell strides](frontiers/runs/stride-16.json) |
-| 17 | `1RB2RA3LB---2LB_2LA0LA4RB0RB1LA` | ≈ 7.21992 × 10^58 | [> 10^36](marked-register.md) | — | [Timed register sweeps](frontiers/runs/line17-epochs.json) |
-| 18 | `1RB2RA3LB4LA---_2LA0RB1LA2RB0RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-18.json) |
+| 17 | `1RB2RA3LB---2LB_2LA0LA4RB0RB1LA` | ≈ 1.40000 × 10^59 | [> 10^36](marked-register.md) | — | [Timed register sweeps](frontiers/runs/line17-epochs.json) |
+| 18 | `1RB2RA3LB4LA---_2LA0RB1LA2RB0RA` | ≈ 9.24569 × 10^952 | — | — | [Timed prefix and suffix calls](frontiers/runs/line18-returns.json) |
 | 19 | `1RB2RA3LA---2LB_2LA4RA4RB0RB0LA` | 10,000,000,000 | — | [≥ 4 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Moving window](frontiers/runs/window-19.json) |
 | 20 | `1RB2RA3LA4LA2RB_2LA---3LB1RA3RA` | ≈ 6.00000 × 10^22 | — | — | [Guarded boundary streams](frontiers/runs/stream-20.json) |
 | 21 | `1RB2RA3LA4LA2RB_2LA3RB---0RA1LA` | ≈ 5.20000 × 10^23 | — | — | [Boundary streams](frontiers/runs/stream-21.json) |
@@ -35,7 +35,7 @@ The endpoint column gives the largest exact raw count indexed in this repository
 | 27 | `1RB3LB---4LA1RB_2LA4LA4LB3RB1RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-27.json) |
 | 28 | `1RB3LB4LA0LB---_2LA0LA1RB0RA3RA` | 1,000,000,000,000,000 | — | — | [Six-cell strides](frontiers/runs/stride-28.json) |
 | 29 | `1RB3RB---3LA1RA_2LA3RA4LB0LB1LB` | ≈ 1.09706 × 10^1030 | — | [≥ 10^13,634](https://wiki.bbchallenge.org/wiki/Bonus_Cryptid) | [Timed cryptid sweeps](frontiers/runs/hydra-29.json) |
-| 30 | `1RB3RB---3LA1RA_2LA3RA4LB0LB0LA` | ≈ 9.84611 × 10^1443 | — | — | [Timed cryptid sweeps](frontiers/runs/hydra-30.json) |
+| 30 | `1RB3RB---3LA1RA_2LA3RA4LB0LB0LA` | ≈ 2.85901 × 10^7045 | — | — | [Timed cryptid sweeps](frontiers/runs/hydra-30.json) |
 | 31 | `1RB3RB---4RA2RA_2LA2RA3LB4LB1LB` | ≈ 5.00000 × 10^27 | — | — | [Boundary streams](frontiers/runs/stream-31.json) |
 | 32 | `1RB3RB1LB2RA---_2LA2RB1LA4LB0RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-32.json) |
 | 33 | `1RB2LA0RB4LB1RA_1LA3RA1RA---0LA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-33.json) |

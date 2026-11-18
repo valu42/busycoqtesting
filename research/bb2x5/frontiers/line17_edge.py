@@ -208,16 +208,21 @@ def suffix_event(cut, prefix, period, word_limit=2**20):
     return first, row
 
 
-def possible_symbols(through, marks):
-    """Show which branch labels the two observed cut-418 bits still allow."""
+def possible_symbols(through, marks, cut=403):
+    """Propagate a finite mark list and report what its cut-418 bits settle."""
+    if not 53 <= cut <= 418:
+        raise ValueError('choose an input cut from 53 through 418')
     if through < 0 or any(t < 1 or t > through for t in marks):
         raise ValueError('marks must lie within the supplied prefix')
     if any(b-a < 3 for a, b in zip(marks, marks[1:])):
         raise ValueError('mark positions must be increasing with gaps of at least three')
-    if [t for t in marks if t <= 26] != [i for i, bit in enumerate(LOCKED[:through], 1) if bit]:
-        raise ValueError('cut-403 prefix differs from the known blank-orbit prefix')
+    known = LOCKED
+    for i in range(403, cut):
+        known = forced_output(initial(i), known)
+    if [t for t in marks if t <= len(known)] != [i for i, bit in enumerate(known[:through], 1) if bit]:
+        raise ValueError(f'cut-{cut} prefix differs from the known blank-orbit prefix')
     n = through
-    for i in range(403, 418):
+    for i in range(cut, 418):
         state = initial(i)
         outputs = once_counts(n, marks, state).slots
         marks = [t for t in mark_image(marks, n, state) if t <= outputs]
@@ -280,8 +285,9 @@ def main():
     case.add_argument('--period', required=True)
     case.add_argument('--word-limit', type=int, default=2**20)
     sub.add_parser('branches', help='check three continuations of the first true cut-53 period')
-    decision = sub.add_parser('decide', help='check the two decisive slots from a finite cut-403 prefix')
-    decision.add_argument('--through', type=int, required=True, help='number of known cut-403 slots')
+    decision = sub.add_parser('decide', help='check the two decisive slots from a finite prefix at an earlier cut')
+    decision.add_argument('--cut', type=int, default=403, help='input cut from 53 through 418')
+    decision.add_argument('--through', type=int, required=True, help='number of known slots at the input cut')
     positions = decision.add_mutually_exclusive_group(required=True)
     positions.add_argument('--marks', nargs='*', type=int, help='all one-based marks through that slot')
     positions.add_argument('--marks-file', type=Path, help='whitespace-separated positions, in increasing order')
@@ -297,7 +303,7 @@ def main():
                 print(f'Cut-403 gap {gap}, first +12 on cut-403 slot {slot}, cells -1 through 11 = {word}.')
         elif args.command == 'decide':
             marks = args.marks if args.marks_file is None else list(map(int, args.marks_file.read_text().split()))
-            n, symbols = possible_symbols(args.through, marks)
+            n, symbols = possible_symbols(args.through, marks, args.cut)
             print(f'The supplied prefix emits {n} slots at cut 418. The remaining candidate symbols at -1 are {symbols}.')
         else:
             slot, row = suffix_event(args.cut, bits(args.prefix), bits(args.period), args.word_limit)

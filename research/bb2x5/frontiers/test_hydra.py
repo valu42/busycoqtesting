@@ -4,6 +4,7 @@ import json
 import unittest
 from unittest.mock import patch
 
+from checkpoints import checksum
 from hydra import MACHINES, ROOT, Machine, load
 from exact_blocks import Engine, Run
 from line4_cert import ZERO, verify_rule
@@ -74,6 +75,20 @@ class HydraTests(unittest.TestCase):
             while raw.steps < old.steps:
                 self.assertTrue(raw.step())
             self.assertEqual((raw.head, raw.state, raw.tape), (old.head, 'AB'[old.state], old.sparse_tape(engine)))
+
+    def test_published_hydra_normal_form(self):
+        # Re-encode our physical tape in the other replay's checkpoint format.
+        # hydra.md links its exact source and commit; this check works offline.
+        m = Machine(30)
+        m.advance(329461)
+        self.assertEqual(m.left, [])
+        self.assertEqual(m.state, 'A')
+        a = m.right[2][1]
+        self.assertEqual(m.right, [(2, 1), (3, 9889), (0, a), (2, 1), (0, 1)])
+        normal = {'machine': m.code, 'events': 20000, 'a_hex': hex(a), 'b': m.right[1][1],
+                  'left_hex': hex(m.head + 1), 'head_hex': hex(m.head), 'state': m.state,
+                  'raw_steps_hex': hex(m.steps), 'normal_form': '2 0^a 3^b 2; head on blank left of first 2'}
+        self.assertEqual(checksum(normal), '7e16ac0a179fdd5ebee8c31d8da51191013b14d6d1ffcee96c5ec7277009043d')
 
     def test_replay_and_published_bonus_entry(self):
         for line in MACHINES:
