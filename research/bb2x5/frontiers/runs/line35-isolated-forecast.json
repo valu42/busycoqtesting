@@ -1,0 +1,97 @@
+{
+  "machine": "1RB2LA4RA1LA3LA_0LA3RB3LB2RB---",
+  "origin": {
+    "kind": "checkpoint"
+  },
+  "start": {
+    "epoch": 365537,
+    "steps": 436079626737,
+    "head": -377861,
+    "cells": 743397
+  },
+  "starting_checkpoint_sha256": "21bea94d42845dd24edfbe68f0dbbaf184dab676391e18267b56a2be4fc8eda4",
+  "attempted_sweeps": 54,
+  "successful_sweeps": 54,
+  "last_boundary": {
+    "epoch": 365591,
+    "steps": 436208497795,
+    "head": -377915,
+    "cells": 743505
+  },
+  "guard_histogram": {
+    "0": 26,
+    "1": 28
+  },
+  "exterior_histogram": {
+    "0": 44,
+    "1": 9,
+    "2": 1
+  },
+  "closest": {
+    "epoch": 365586,
+    "steps": 436196390168,
+    "head": -377910,
+    "cells": 743495,
+    "cut": 28,
+    "prefix": "2132131232311112311232111312",
+    "prefix_balance": 5,
+    "prefix_deficit": 1,
+    "threshold": 11,
+    "exterior_debt": 0,
+    "exterior_margin": 11,
+    "guard_debt": 1,
+    "unmatched_in_prefix": [
+      1
+    ],
+    "crossings": []
+  },
+  "strongest": {
+    "epoch": 365574,
+    "steps": 436167755864,
+    "head": -377898,
+    "cells": 743471,
+    "cut": 28,
+    "prefix": "2132131232311112311111211311",
+    "prefix_balance": 10,
+    "prefix_deficit": 1,
+    "threshold": 16,
+    "exterior_debt": 2,
+    "exterior_margin": 14,
+    "guard_debt": 1,
+    "unmatched_in_prefix": [
+      1
+    ],
+    "crossings": [
+      {
+        "cell": 29,
+        "right_index": 743442,
+        "birth_epoch": 365560,
+        "birth_digit": 2,
+        "absorbed_by": {
+          "cell": 28,
+          "right_index": 743443,
+          "birth_epoch": 365561,
+          "birth_digit": 3
+        }
+      },
+      {
+        "cell": 31,
+        "right_index": 743440,
+        "birth_epoch": 365559,
+        "birth_digit": 1,
+        "absorbed_by": {
+          "cell": 27,
+          "right_index": 743444,
+          "birth_epoch": 365561,
+          "birth_digit": 1
+        }
+      }
+    ]
+  },
+  "pulse_window": {
+    "cut_28_sweeps": 54,
+    "readings_above_two": 0,
+    "first_above_six_epoch_and_debt": null,
+    "shortest_gap_and_its_epochs": null
+  }
+}

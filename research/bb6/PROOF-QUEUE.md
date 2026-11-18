@@ -1,20 +1,18 @@
 # BB(6) research and the next machines to prove
 
-On November 18, 2026 the local import of the October 30 list had 608 permanent lines. It marked 523 `OPEN`, 49 with proposed nonhalting proofs, 28 with proposed halting proofs, seven with simulation-reported halts, and one with a proposed equivalence. The open rows include a few machines for which a published proof still needs matching and replay here. Use the full transition string when comparing different lists. [Register](MACHINES.csv) · [Claim board](ROADMAP.md#claim-board) · [October list and tracking history][bb6]
+On November 18, 2026 the register credits 80 published blank-tape decisions in the October 30 list of 608 machines. There are 30 halters, 50 nonhalters, seven simulation-reported halts, one proved equivalence and 520 open representatives. Lines 117 and 405 have the same unclassified outcome. Match the complete transition table and blank start when comparing lists. [Register](MACHINES.csv) · [Claim board](ROADMAP.md#claim-board) · [October list and tracking history][bb6]
+
+The original import already linked proofs for 77 of the 80 decisions. Three more open rows matched published theorems. Line 173 runs forever by BusyCoq's `TM3.nonhalt`. Lines 539 and 608 halt by Fractal Geometry Explorer's `H155900.v` and `H181655.v`. Each register entry credits the proof and links its source. [Line 173](https://github.com/ccz181078/busycoq/blob/33209bc7dc282b38c8cd6be507bfc551fea56108/verify/FIBv7.v#L2678) · [Line 539][539] · [Line 608][608]
 
 ## Proof queue
 
-The first two rows are the shortest routes found to a verified local decision. For new mathematics, the order below favors machines whose missing case can already be exhibited on the real blank run. Only line 133 is claimed by this campaign.
+These open machines have a concrete missing case on the actual blank run. The order reflects how much proved machinery can already be reused.
 
 | Order | October line / ID | Starting evidence | Next result to check |
 |---:|---|---|---|
-| 1 | **539 / 155900** | A published Coq file ends in a halting theorem for the exact blank machine. The author reports a full build in about 33 minutes. | Rebuild `H155900.v` with the evaluated run and check `Print Assumptions halt`. [Proof, build script and log][539] |
-| 2 | **608 / 181655** | A second Coq file uses the same underlying simulator from another initial state and proves that a detour either preserves the simulated path or halts earlier. The author's full build took 6,573 seconds with concurrent jobs. | Rebuild `H181655.v`, check the detour theorem and the blank-start conclusion. [Proof, build script and log][608] |
-| 3 | **133 / 35069**, claimed | A sound counter simulator for line 581 applies to a different blank seed here. A reachable exception now has a general recovery theorem. | Prove the carry beyond a run of all-one separator bits. The first test case in the checkpoint crosses a `11101` marker and expands eight bits to eleven. [Proof and replay](line133-odometer.md) |
-| 4 | **33 / 9146** | Four whole-round branches are already proved in Lean. The blank run reaches counter 19,199 with tail `TD(15998)` at step 1,842,640,229. | Prove the observed transition to counter 28,802, then check whether its new tail belongs to a family closed under rounds. [Round theorems and next configuration][33] |
-| 5 | **393 / 111043** | The author proved local sweeps over repeated words in Lean. A saved configuration has 453 blocks, with several kinds of separators. | Derive the first rule that propagates a change between successive large blocks and tracks whether D can read a one. [Sweep rules and checkpoint][393] |
-
-The recorded build times help order the first two replays. They are the proof author's measurements. Both machines are still marked `OPEN` pending independent verification here. For an unstaffed machine beyond this shortlist, look first for a blank-start proof or witness tied to its full table, then a reusable sound simulator with a known missing branch. A reduction to an open arithmetic orbit is a longer-term project.
+| 1 | **133 / 35069**, claimed | A sound counter simulator for line 581 applies to a different blank seed here. A reachable exception now has a general recovery theorem. | Prove the carry beyond a run of all-one separator bits. The first test case in the checkpoint crosses a `11101` marker and expands eight bits to eleven. [Proof and replay](https://github.com/valu42/busycoqtesting/blob/3e3f590c9dfe00c4d9f585b5a94998a9ed366604/research/bb6/line133-odometer.md) |
+| 2 | **33 / 9146** | Four whole-round branches are already proved in Lean. The blank run reaches counter 19,199 with tail `TD(15998)` at step 1,842,640,229. | Prove the observed transition to counter 28,802, then check whether its new tail belongs to a family closed under rounds. [Round theorems and next configuration][33] |
+| 3 | **393 / 111043** | The author proved local sweeps over repeated words in Lean. A saved configuration has 453 blocks, with several kinds of separators. | Derive the first rule that propagates a change between successive large blocks and tracks whether D can read a one. [Sweep rules and checkpoint][393] |
 
 ## What BB(6) research has established
 
