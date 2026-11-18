@@ -18,7 +18,7 @@ The endpoint column gives the largest exact raw count indexed in this repository
 | 10 | `1RB2RB3LA4LA1LA_2LB3RA---4RA1RB` | ≈ 2.10250 × 10^22 | — | — | [Boundary streams](frontiers/runs/stream-10.json) |
 | 11 | `1RB2LA4LA1RA1LA_2LB3RB4RB---2RA` | ≈ 2.81543 × 10^50 | — | — | [Boundary streams](frontiers/runs/stream-11.json) |
 | 12 | `1RB4RB4RA1LA3LA_1LB2LA3RB2RB---` | ≈ 2.67029 × 10^82 | — | — | [Boundary streams](frontiers/runs/stream-12.json) |
-| 13 | `1RB3RA3RB4LA1LA_1LB2LA1LA---1RB` | ≈ 6.00000 × 10^33 | — | [≈ 10^17.50888](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Boundary streams](frontiers/runs/stream-13.json) |
+| 13 | `1RB3RA3RB4LA1LA_1LB2LA1LA---1RB` | ≈ 1.26213 × 10^34 | — | [≈ 10^17.50888](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Boundary streams](frontiers/runs/stream-13.json) |
 | 14 | `1RB2RA4LA1RB4RB_1LB2LA3RA---0LB` | 10,000,000,000 | — | [≥ 5 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Moving window](frontiers/runs/window-14.json) |
 | 15 | `1RB3RB1LA2LA3RA_1LB2RA4RB0LA---` | 10,000,000,000 | — | [≥ 2 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Moving window](frontiers/runs/window-15.json) |
 | 16 | `1RB2LA0RB0LB3LB_2LA4RB3RA0RA---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-16.json) |
