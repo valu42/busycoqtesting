@@ -4,7 +4,7 @@ import argparse
 from pathlib import Path
 import subprocess
 
-from line17 import DATA, digits, mark_image, mark_step, once_counts, periodic_marks, word_counts
+from line17 import DATA, deepest_probe, digits, load, mark_image, mark_step, once_counts, periodic_marks, word_counts
 from marked_register import finite_event
 from prior_frontier import marks_on_word, pulse_on_tail
 
@@ -236,6 +236,41 @@ def possible_symbols(through, marks, cut=403):
     return n, (0,) if 10 in marks else (4,)
 
 
+def locked_depths(register):
+    """Recover the deepest pair reached by each known mark from a single boundary."""
+    marks = [i for i, bit in enumerate(LOCKED, 1) if bit]
+    fronts = dict.fromkeys(marks)
+    last = deepest_probe(register)
+    if last is None or last[0] < 53:
+        return fronts
+    if last[0] >= 403:
+        raise ValueError('the deepest visited pair is beyond the homogeneous block')
+    data = digits(register)
+    state, emitted = (1, 0), 0
+    lengths = {(emitted, state): 0}
+    for n, bit in enumerate(LOCKED, 1):
+        v, p, out = mark_step(*state, bit)
+        state = v, p
+        emitted += len(out)
+        if (emitted, state) in lengths:
+            raise ValueError('ambiguous input length in the locked prefix')
+        lengths[emitted, state] = n
+    if emitted <= marks[-1]:
+        raise ValueError('known prefix does not extend beyond all four marks')
+    child = 0
+    for i in range(last[0], 52, -1):
+        key = child, (data[i][0], data[i-1][1])
+        if key not in lengths:
+            raise ValueError(f'pair {i} disagrees with the locked prefix')
+        child = lengths[key]
+        for m in marks:
+            if m <= child and fronts[m] is None:
+                fronts[m] = i
+        if child >= marks[-1]:
+            break
+    return fronts
+
+
 def branch_witnesses():
     """Lift three conditional right-edge histories through all 350 equal pairs."""
     period = cut53_period()
@@ -285,6 +320,8 @@ def main():
     case.add_argument('--period', required=True)
     case.add_argument('--word-limit', type=int, default=2**20)
     sub.add_parser('branches', help='check three continuations of the first true cut-53 period')
+    fronts = sub.add_parser('fronts', help='locate the first four marks on a saved register in the homogeneous phase')
+    fronts.add_argument('checkpoint', type=Path)
     decision = sub.add_parser('decide', help='check the two decisive slots from a finite prefix at an earlier cut')
     decision.add_argument('--cut', type=int, default=403, help='input cut from 53 through 418')
     decision.add_argument('--through', type=int, required=True, help='number of known slots at the input cut')
@@ -301,6 +338,10 @@ def main():
         elif args.command == 'branches':
             for gap, slot, word in branch_witnesses():
                 print(f'Cut-403 gap {gap}, first +12 on cut-403 slot {slot}, cells -1 through 11 = {word}.')
+        elif args.command == 'fronts':
+            for slot, pair in locked_depths(load(args.checkpoint)['register']).items():
+                print(f'Marked slot {slot}: deepest pair {pair}.' if pair is not None
+                      else f'Marked slot {slot} has yet to arrive at cut 53.')
         elif args.command == 'decide':
             marks = args.marks if args.marks_file is None else list(map(int, args.marks_file.read_text().split()))
             n, symbols = possible_symbols(args.through, marks, args.cut)

@@ -8,7 +8,7 @@ import unittest
 import line17
 from line17_edge import (DATA, DIGITS, LOCKED, ROOT_PERIOD, ZERO, bits, branch_witnesses,
                          cut_limits, edge_bound, forced_output, initial, packed_source_slot,
-                         possible_symbols, source_slot, suffix_event)
+                         locked_depths, possible_symbols, source_slot, suffix_event)
 from prior_frontier import force_prefix, mark_step, marks_on_word, periodic_marks, pulse_on_tail
 
 
@@ -84,6 +84,16 @@ class EdgeTests(unittest.TestCase):
             self.assertEqual(limits[i], 3*limits[i+1]-49)
         self.assertEqual(edge_bound(), edge_bound(53, PACKED, 2**20))
         self.assertEqual(suffix_event(403, b'', bits('000010'))[0], 9058530)
+
+    def test_locked_depths_against_forward_slot_counts(self):
+        for epochs in (100, 10**9, 10**14):
+            worker = subprocess.check_output([str(PACKED), str(epochs), str(2**20), str(10**7)],
+                                             input=DATA, text=True)
+            rows = line17.native_counts(worker.splitlines(), 4*epochs, len(DIGITS))
+            state = line17.record(epochs, rows)
+            for mark, deepest in locked_depths(state['register']).items():
+                expected = max((i for i in range(53, 403) if rows[i-1].slots >= mark), default=None)
+                self.assertEqual(deepest, expected)
 
     def test_cached_period_ranks_and_clocks(self):
         # The narrow pass reaches cut 50 with a repeated 83,556-slot word.

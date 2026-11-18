@@ -166,7 +166,7 @@ BB25_WINDOW=/tmp/bb25-window BB25_MARK17=/tmp/bb25-marks17 \
   BB25_PACK17=/tmp/bb25-packed17 python3 frontiers/test_line17.py
 ```
 
-The timestamp and packed workers agree on all 424 pairs and the exact clock at 10²³ sweeps. At 10²⁸ sweeps a single-digit packed replay from the initial register agrees byte for byte with a two-digit continuation from 10²⁷. The earlier saved phases at 10²³, 10²⁵ and 10²⁶ sweeps also produce the same 10²⁷ checkpoint. The terminal singleton received zero calls throughout.
+The timestamp and packed workers agree on all 424 pairs and the exact clock at 10²³ sweeps. At 10²⁸ sweeps a single-digit packed replay from the initial register agrees byte for byte with a two-digit continuation from 10²⁷. The earlier saved phases at 10²³, 10²⁵ and 10²⁶ sweeps also produce the same 10²⁷ checkpoint. The 10²⁹ boundary was reached both in one run from 6 × 10²⁸ and by resuming the sweep that first reached pair 174, stopping again at 9 × 10²⁸. The complete register and raw clock agree. The terminal singleton received zero calls throughout.
 
 `--depth` reports the deepest data pair reached since the 424-pair register was initialized. A compound pulse always emits a child slot. A simple pulse at trit two also emits one. Hence the last pair reached can receive only one or two simple pulses, each strictly increasing its trit. Its trit must differ from the starting register and all deeper pairs retain their initial values. The greatest differing trit index therefore gives the exact depth. Its increase gives the exact number of slots that reached it.
 
@@ -184,6 +184,8 @@ The timestamp and packed workers agree on all 424 pairs and the exact clock at 1
 | 6 × 10²⁸ | 173 | 1 |
 | 7 × 10²⁸ | 173 | 1 |
 | 71812846097182404284260339012 | 174 | 1 |
+| 9 × 10²⁸ | 174 | 1 |
+| 93632537728139673817050223734 | 175 | 1 |
 | 10²⁹ | 175 | 1 |
 
 The [literal initialization](../frontier-background.md#configuration-and-entry) visits no cell to the right of coordinate 11. At the [10²⁹-sweep checkpoint](runs/line17-epochs.json), the terminal singleton at 11 has still received zero calls. Thus the first visit to coordinate 12 is later than 1.4 × 10⁵⁹ defined instructions.
@@ -192,17 +194,18 @@ The tests exhaust every normal pair/pulse control case, replay the complete phys
 
 ## Line 17 first arrivals inside a sweep
 
-The first visit here means the first arrival since initialization of the 424-pair register. Pair i begins at coordinate −837 + 2i. All three arrivals below occur on the fourth slot of their sweep and the eleventh raw probe of the fixed register. The head is in B scanning an untouched zero. Each record includes the preceding sweep boundary and the complete tape at arrival. Outside the stored word the tape is blank.
+The first visit here means the first arrival since initialization of the 424-pair register. Pair i begins at coordinate −837 + 2i. All four arrivals below occur on the fourth slot of their sweep and the eleventh raw probe of the fixed register. The head is in B scanning an untouched zero. Each record includes the preceding sweep boundary and the complete tape at arrival. Outside the stored word the tape is blank.
 
 | Pair | First sweep | Raw steps from blank | Tape record |
 |---:|---:|---:|---|
 | 172 | 11840961663945926410138685478 | 1962917223778519152015725775755397582293923538151475191627 | [B at −493](runs/line17-first-172.json) |
 | 173 | 19429584031498541211591659716 | 5285122298918883479636507313442998830910499909878996228407 | [B at −491](runs/line17-first-173.json) |
 | 174 | 71812846097182404284260339012 | 72199188104086485049931058427412460738846051298049904858637 | [B at −489](runs/line17-first-174.json) |
+| 175 | 93632537728139673817050223734 | 122738729699760992018224200752726973004558037906774074004819 | [B at −487](runs/line17-first-175.json) |
 
 The packed worker can locate the source of a pair's first input. It saves the unrepeated prefix, period and suffix at each digit. At the finite end it finds the first productive 65,536-slot chunk, then replays that chunk one slot at a time. Working back toward the header, it identifies the parent input of each selected output. At a repeated digit state it skips all complete periods before that output in one multiplication. The worker uses a temporary file for saved words during the search. The ordinary checkpoint worker checks that the target was still untouched at the start of the selected sweep.
 
-Within that sweep the fixed register is small enough to run literally up to the target. Each raw request into it has a finite trace in the innermost `12` pair and one in its parent. Beyond those two, the request number is unchanged through the rest of the pile. Literal two-cell traces give a repeated suspended word of `42`, `04` or `44` and respectively 12, 22 or 26 local instructions per outer pair. The clock adds these instructions, the header's local trace and the fixed register's executed instructions. At all three recorded visits the whole pile is `44` repeated once per starting pair. The tests compare both the raw clock and every written cell with an elementary interpreter on small sweeps.
+Within that sweep the fixed register is small enough to run literally up to the target. Each raw request into it has a finite trace in the innermost `12` pair and one in its parent. Beyond those two, the request number is unchanged through the rest of the pile. Literal two-cell traces give a repeated suspended word of `42`, `04` or `44` and respectively 12, 22 or 26 local instructions per outer pair. The clock adds these instructions, the header's local trace and the fixed register's executed instructions. At all four recorded visits the whole pile is `44` repeated once per starting pair. The tests compare both the raw clock and every written cell with an elementary interpreter on small sweeps.
 
 From `research/bb2x5`, the following search resumes the 10²⁸-sweep checkpoint built above. Omit `--resume` to start at the original register. Choose a starting boundary before the target's first visit.
 
@@ -213,10 +216,11 @@ python3 frontiers/line17_visit.py find --pair 172 --through 12000000000000000000
 python3 frontiers/line17_visit.py check frontiers/runs/line17-first-172.json
 python3 frontiers/line17_visit.py check frontiers/runs/line17-first-173.json
 python3 frontiers/line17_visit.py check frontiers/runs/line17-first-174.json
+python3 frontiers/line17_visit.py check frontiers/runs/line17-first-175.json
 BB25_PACK17=/tmp/bb25-packed17 python3 frontiers/test_line17_visit.py
 ```
 
-The short `check` command replays the physical arrival from the enclosed boundary. To independently reproduce blank-orbit provenance, rebuild the preceding boundary with the ordinary packed worker and compare it with `before` in the record. For pairs 172 and 173, bisecting ordinary sweeps and locating the source slot directly gave byte-identical records. For pair 174, restarting an ordinary replay at 7 × 10²⁸ sweeps and using a different word budget reproduced the complete first-visit record.
+The short `check` command replays the physical arrival from the enclosed boundary. To independently reproduce blank-orbit provenance, rebuild the preceding boundary with the ordinary packed worker and compare it with `before` in the record. For pairs 172 and 173, bisecting ordinary sweeps and locating the source slot directly gave byte-identical records. For pair 174, restarting an ordinary replay at 7 × 10²⁸ sweeps and using a different word budget reproduced the complete first-visit record. For pair 175, a search from the sweep after first reaching pair 174 and a search from the 9 × 10²⁸ boundary produced byte-identical records. A one-sweep replay independently confirms that the deepest input moves from pair 174 to 175 in that sweep.
 
 When probing beyond a saved depth, pass `--miss-checkpoint /tmp/line17-next.json` to `find`. If the target receives zero inputs, the search saves the complete physical register and raw clock at the horizon in the same pass. All digits from the target onward retain their starting state. The next search can resume from this file. A successful visit still writes its witness to `--output`.
 

@@ -16,6 +16,8 @@ The same identity checks the raw clock independently across adjacent digits. Wri
 
 The true stream at cut 53 has period 147,740 and starts with the 26-slot word `00001000001000001000001000`. A digit starting at trit 1 with clear pending bit preserves this whole prefix. In particular, the fifth mark at cut 403 can be no earlier than slot 27. To check the preservation, emit the known input, then enumerate the next five output bits over legal continuations. A legal mark has at least two preceding unmarked slots after the previous mark and cannot overlap a pending pulse. Retain the common prefix. All 350 digits at indices 53 through 402 start in the required state. Applying the same finite check to the 21 remaining digits supplies a guaranteed prefix at each of their inputs.
 
+At the 10²⁹-sweep blank checkpoint, the four marked slots 5, 11, 17 and 23 have reached pairs **173, 169, 165 and 161**, respectively. At 10²⁸ sweeps they had reached 169, 165, 161 and 157. These counts can be recovered from the tape alone. Start beyond the deepest visited pair with zero received slots. For each preceding pair, the number emitted, ending trit and ending pending bit identify a unique input length in the known prefix. Silent inputs advance the trit without wrapping, so two lengths with the same cumulative output count have different ending trits. The first 26 inputs emit 25 slots, enough to invert every step until all four marks have been located. The `fronts` command performs this calculation while the deepest visited pair is in the homogeneous block.
+
 Start at the singleton with required output rank one. At each preceding digit, append zeros to its guaranteed input prefix and find the input slot that emits the required rank. The identity above proves that the true digit emits at least that many slots by then. Repeating the calculation right to left gives required slot **81,526,541 at cut 403**. Independently, supplying its guaranteed prefix and then only zeros, propagating those specified streams, and running the triggering pulse on the physical suffix gives the first visit on precisely that slot. The word on cells −1 through 11 in this example is `4444040444444`.
 
 ## Translating cut slots into raw time from blank
@@ -68,6 +70,7 @@ c++ -O3 -std=c++17 frontiers/line17_packed.cpp -lgmpxx -lgmp -o /tmp/bb25-packed
 python3 frontiers/line17_edge.py bound --cut 95 --packed-engine /tmp/bb25-packed17
 python3 frontiers/line17_edge.py suffix --prefix 00001000001000001000001000 --period 0
 python3 frontiers/line17_edge.py decide --through 52828727 --marks 5 11 17 23
+python3 frontiers/line17_edge.py fronts frontiers/runs/line17-epochs.json
 python3 frontiers/line17_edge.py branches
 BB25_PACK17=/tmp/bb25-packed17 python3 frontiers/test_line17_edge.py
 ```
