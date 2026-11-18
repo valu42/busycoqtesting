@@ -1,0 +1,2 @@
+signed P and Q accounting and closed halting test: 19110 word/gap checks
+all-one suffix threshold checked on 5400 cases
