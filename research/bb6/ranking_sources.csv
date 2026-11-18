@@ -1,0 +1,159 @@
+line,machine_id,kind,label,source
+8,2327,structure,stack invariant,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0LE_1LC0RE_0RA0LD_1LA1LF_0LC0RE_0LAHHH.lean#L1735
+9,2336,structure,mixed-radix odometer,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0LD_0RCHHH_1LD0RF_0LE0RA_0RA1LF_0LA1LB.lean#L550
+22,6741,structure,stack reduction,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB1LD_1RC0LE_1LA1RE_0LF1LA_1RB0RB_HHH0LB.lean#L481
+26,8084,checkpoint,"Cubic Mess, test b = 3",https://github.com/valu42/busycoqtesting/blob/632d9e666d26f9429aecfae44812cd4e69968703/research/holdouts-623/CUBIC26.md
+26,8084,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1LC_1LC1RD_1LA0LB_0RB1RE_1RF0RA_HHH0RC.lean#L729
+28,8754,replay,Lean halting theorem,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Halt/M_1RB0RE_1RC0RA_0LD0LB_0LA1LE_1LC1LF_0LAHHH.lean#L276
+34,9169,structure,stack invariant,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0LE_1LC0RE_0RA0LD_1LA1LF_0LC0RE_0LCHHH.lean#L1532
+35,9516,checkpoint,"WF17 from (3, 0, 0)",https://github.com/valu42/busycoqtesting/blob/632d9e666d26f9429aecfae44812cd4e69968703/research/holdouts-623/CUBIC_FAMILY.md
+35,9516,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB0LE_1LC1RA_1RA1LD_0LC0LA_0RE1RF_0RCHHH.lean#L785
+36,9785,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1RA_0LC1LE_1LD1LC_1LA0LB_1LF1RE_HHH0RA.lean#L660
+48,12891,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB0LD_0RC1RB_0RD0RA_1LE0RD_1LFHHH_0LA1LA.lean#L1098
+51,13743,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L244
+51,13743,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB0LC_0LC1RF_1LE1RD_0RC1RC_0LA1LA_HHH1RA.lean#L1489
+56,15252,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L260
+56,15252,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB0LF_1LC0LD_1RD1LB_HHH1RE_0RA1RE_1LA0LE.lean#L1632
+57,15414,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L688
+57,15414,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RBHHH_0RC0LD_1LB1RC_0LE0LF_1RD1LE_1RF1RA.lean#L465
+62,17454,structure,stack reduction,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RBHHH_0RC0RE_1RD1RF_1LE0LB_1RC0LD_1RC1RA.lean#L1193
+64,18046,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0RE_0RC1RE_1RD1LE_0LEHHH_1RA1LF_1RF0LC.lean#L789
+72,20053,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB0LC_1LC0RD_1LF1LA_1LB1RE_1RB1LE_HHH0LE.lean#L1301
+75,21328,structure,segmented tape,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RBHHH_1LC0RB_0LD0LC_1RE1RB_1RD1LF_1LA0LE.lean#L657
+81,21883,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L319
+81,21883,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1LF_1RC1RF_0LD1RE_HHH1LC_0RB1RE_1LA0LE.lean#L1749
+82,22247,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RBHHH_1LC0RF_0RA0LD_1LE1LA_1RF0LF_0LC0RA.lean#L1259
+83,22262,structure,segmented tape,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB1RF_1RC0RA_1LD1RB_1LE0LD_0RA0LB_0RBHHH.lean#L730
+89,24009,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1RA_0RC1RC_1LD0LF_0LE1LE_1RA0LB_HHH0LC.lean#L1421
+92,25221,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L586
+92,25221,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0RB_1RC0LE_1LD1LA_HHH0LC_1RF1LE_1RA0RA.lean#L667
+93,25239,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1LE_1LB1LC_1RD0LE_HHH0RB_1RF1LA_0RA0RD.lean#L1374
+94,25358,replay,Lean nonhalting theorem,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/NonHalt/M_1RB0LC_1LC0RB_0LE0LD_1LCHHH_0RA1LF_1LA1LF.lean#L3882
+101,25899,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L711
+101,25899,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB1RF_1LC1LF_HHH1LD_1LE0RA_1RE1LB_1RD0LD.lean#L706
+103,26350,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RBHHH_1RC1LE_0RD0RF_0RE0LA_1LF0LB_1LA1LD.lean#L2057
+110,28035,analogy,compare the rightward visit laws for three proposed halters,https://github.com/ccz181078/busycoq/pull/59
+112,28830,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L343
+112,28830,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1LD_1RC0RA_1LA1RE_0LA0LB_0RB1RF_HHH1RD.lean#L1588
+117,30773,map,TailWord.f from cfg0,https://github.com/ccz181078/busycoq/blob/7e615fbe1d20a2424bbcdbca84dbafbb17929841/verify/Eqv_TailWord.v#L357
+120,31371,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1LA_0LC0RC_1LE1RD_1RE1RC_1LF0LA_HHH1LE.lean#L627
+135,35167,checkpoint,"WF35 from (0, 1, 1)",https://github.com/valu42/busycoqtesting/blob/632d9e666d26f9429aecfae44812cd4e69968703/research/holdouts-623/CUBIC_FAMILY.md
+135,35167,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L99
+135,35167,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1RD_0LC1RA_1LA1LC_1RA1LE_1RF0LD_HHH0RE.lean#L796
+136,35366,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L190
+136,35366,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1LF_0RC1RD_1LA1LD_1LE0RA_HHH1LC_0LA1LA.lean#L1424
+139,36498,structure,stack reduction,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB1RA_1LC0RC_HHH0LD_0LE0RF_1RE0RA_0LF1LB.lean#L1114
+153,40361,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB1RF_1LC0RE_1RD0LC_0LB0RA_1LD1RD_1RBHHH.lean#L521
+156,41157,structure,stack reduction,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB1RC_1LC0LE_1RD1RC_1LB0RA_HHH0LF_1RD1LF.lean#L855
+164,43701,structure,stack invariant,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0LE_1LC0RE_0RA0LD_1LA0LF_0LC0RA_0REHHH.lean#L1187
+166,44531,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB1RE_1LC0RC_1RA1LD_1RB0LA_0LC1RF_HHH1RD.lean#L595
+173,45924,replay,Rocq TM3.nonhalt,https://github.com/ccz181078/busycoq/blob/33209bc7dc282b38c8cd6be507bfc551fea56108/verify/FIBv7.v#L2678
+177,48098,replay,Lean nonhalting theorem,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/NonHalt/M_1RB0RA_0RC0LD_1LA1RF_1LE1LD_1LB1RE_HHH1RA.lean#L45
+179,48709,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB0RE_1LC1LD_0RA0LD_1LB0LA_1RF1RA_HHH1LB.lean#L595
+180,48788,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB0LB_1LC0RE_1LA1LD_0LCHHH_0RB0RF_1RE1RB.lean#L2865
+185,50114,structure,stack reduction,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RBHHH_0RC1RD_1LA0LA_1LE0RB_1LF1LE_1LC0LD.lean#L1856
+186,50372,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB0LD_1LC0RA_1RA1LB_1LA1LE_1RF0LC_HHH0RE.lean#L2963
+189,50923,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1RA_0LC0RE_1LF1LD_1LA0LA_1LC1RB_HHH1LC.lean#L784
+198,53489,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB0RB_1LC1RE_1LF0LD_1RA1LD_1RC1RB_HHH1LC.lean#L649
+199,54294,replay,Lean nonhalting theorem,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/NonHalt/M_1RB0RA_0RC0LE_1LD1RF_1LB1RD_1LD1LE_HHH1RA.lean#L6654
+206,55410,structure,stack invariant,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0LD_0LC0RE_1LA0RD_0RB0LF_1RC1LA_0RBHHH.lean#L1183
+207,55861,replay,Lean halting theorem,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Halt/M_1RB0LC_1LC0RE_1RF1LD_1LA0LB_1RD1RA_1LBHHH.lean#L553
+211,57056,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB1LF_0RC0RB_0LD1RB_1LE0LB_0LA1LC_0LBHHH.lean#L260
+212,58362,structure,stack reduction,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB1RD_1LC0LE_1RA0LB_1RA1RF_0RA0RC_1REHHH.lean#L118
+225,60779,structure,stack invariant,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0LE_1LC0RE_0RA0LD_1LA1LF_0LC0RE_1LAHHH.lean#L1543
+226,61234,structure,stack invariant,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0LE_1LC0RE_0RA0LD_1LA1LF_0LC0RA_0LEHHH.lean#L1458
+230,64715,structure,stack invariant,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0LE_1LC0RE_0RA0LD_1LA1LF_0LC0RE_1LEHHH.lean#L1682
+242,66280,structure,stack invariant,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0LE_1LC0RE_0RA0LD_1LA1LF_0LC0RA_0LBHHH.lean#L1469
+245,66813,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L80
+245,66813,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1LC_1RC0RF_1RD0LB_1RE0LD_1LFHHH_0RA1LA.lean#L3068
+258,69308,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB1RE_1LC0RA_HHH1LD_1LA0LF_0LB0LC_1RB0LB.lean#L772
+264,70028,checkpoint,"WF32 from (0, 1, 0)",https://github.com/valu42/busycoqtesting/blob/632d9e666d26f9429aecfae44812cd4e69968703/research/holdouts-623/CUBIC_FAMILY.md
+264,70028,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L120
+264,70028,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1RD_0LC1RA_1RA1LC_0RB1LE_1RF0LD_HHH0RE.lean#L1359
+275,72026,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0LE_0RC0RA_1RD1RB_0LA0RB_1LFHHH_1LD1LF.lean#L310
+284,74998,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB0LC_0LC0RF_1RD1LC_0RA1LE_HHH0LD_1LF1LA.lean#L895
+288,75625,structure,stack reduction,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0RE_0RCHHH_1LD1LE_1LE1LD_1RF0LC_1RA1RF.lean#L1694
+296,78424,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L568
+296,78424,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB1LA_1LA0RC_1RD1RC_1LE0RC_HHH0LF_1LE0LA.lean#L566
+303,82614,structure,segmented tape,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RBHHH_0RC0RB_1LD1LE_1LC1RF_1RB0LE_1RA0RD.lean#L651
+312,85227,structure,mixed-radix odometer,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0LB_0RC0LD_1LD1RE_0LA0RF_0RD1RF_0RCHHH.lean#L520
+314,86694,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB0RB_1LB0LC_1RD1LC_1RE0RA_0RF1RA_HHH1LB.lean#L710
+317,87254,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1RE_1LC0RA_1RD0LB_1LB1RC_1LF0RD_HHH0LE.lean#L1205
+320,89542,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1LE_0LC0LB_1RD1LC_1RD1RA_1RF0LA_HHH1RE.lean#L662
+321,89641,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB1LB_1LC1LA_1RD0LB_1RA1RE_1RF0RD_HHH1RD.lean#L1025
+323,90097,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L174
+323,90097,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB0LF_1RC1RA_0RD0RB_1LEHHH_0LA1LE_1RD1LA.lean#L1663
+325,91443,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1LD_1RC1RE_0LA1LB_0LD1LC_1RF0RA_HHH0RC.lean#L837
+330,92633,replay,Lean nonhalting theorem,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB0LF_1RC0RA_1LD0RB_0LE0LC_0LA0LC_0LBHHH.lean#L383
+331,92948,structure,segmented tape,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0RE_1RCHHH_0RD0RC_1LE1LF_1LD1RA_1RC0LF.lean#L651
+350,97525,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L359
+350,97525,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB0RC_1LC1RE_1RA1LD_0LC0LA_1RF1RD_HHH0RD.lean#L1560
+355,98995,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0RE_1RC1RE_1LD1LC_0RB0LC_1RF0RB_HHH1RA.lean#L554
+361,100296,structure,stack reduction,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0LC_1LC0RE_1LD1LC_1LA1RD_HHH0RF_0LB0RD.lean#L454
+366,101957,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1LA_1LC0RE_1LF1LD_0RB0LA_1RC1RE_HHH0LD.lean#L607
+369,103424,structure,stack reduction,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0RE_1LC0RA_1LA1LD_1LC1LF_0LC0LB_1LEHHH.lean#L120
+377,104936,structure,stack reduction,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0LC_1RC1RE_1LA0LD_0RB0RA_1RB1RF_1RDHHH.lean#L118
+383,107208,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1RE_1LC0RA_0RD1LB_HHH1RC_1LF1RE_0LB0LE.lean#L703
+385,107543,structure,segmented tape,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0LD_0RC1RD_1LA1RA_1LE0LE_1RF0LA_0RAHHH.lean#L692
+396,112145,analogy,compare the token invariant proposed for line 471,https://github.com/ccz181078/busycoq/pull/55
+396,112145,checkpoint,"packet catalogue and 500,000-round checkpoint",https://github.com/valu42/busycoqtesting/blob/632d9e666d26f9429aecfae44812cd4e69968703/research/holdouts-623/PACKET_STREAM.md
+399,113170,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1LE_1LC0RA_0RF0LD_1LE1LA_1RC0LB_HHH1RC.lean#L1446
+400,113619,checkpoint,"WF36 from (0, 0, 1)",https://github.com/valu42/busycoqtesting/blob/632d9e666d26f9429aecfae44812cd4e69968703/research/holdouts-623/CUBIC_FAMILY.md
+400,113619,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L151
+400,113619,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1RD_0LC1RA_0RA1LC_1RA1LE_1RF0LD_HHH0RE.lean#L1278
+402,113824,structure,segmented tape,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0RE_1LC1RA_1LD0LC_0RE0LA_1RA1RF_0RAHHH.lean#L731
+412,116538,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1RE_1LC1LD_HHH1LA_1LB1LE_0RF0RA_1LD1RF.lean#L906
+416,118184,structure,stack reduction,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB1LA_1RC0RF_1RDHHH_0LE1RB_HHH0LA_1LD1RF.lean#L434
+419,119593,structure,segmented tape,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0RF_1LCHHH_1RD0LC_0RE0RD_1LF1LC_1LE1RA.lean#L650
+421,121010,structure,segmented tape,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0LA_0RC0RB_1LD1LA_1LC1RE_1RF0RD_1LCHHH.lean#L640
+425,122751,structure,odometer invariant,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0LD_0LC0RE_1LA0RD_0RB0LD_1RC1RF_1RAHHH.lean#L533
+430,124060,replay,Lean halting theorem,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Halt/M_1RB1RF_0RC0RE_0RD1RA_1LE0LA_1LB0LD_0RDHHH.lean#L377
+445,127123,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L282
+445,127123,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB0RE_1LC0RA_1RF0RD_HHH1LE_0LB1LE_1LE1RC.lean#L1760
+459,130861,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1LA_1LC0RE_1LF1LD_1RE0LC_1LB1RA_HHH0LA.lean#L1541
+462,131953,structure,segmented tape,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0RA_0LC0RE_1LE1LD_0LEHHH_1LF0LC_1RA1LE.lean#L730
+464,132148,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L381
+464,132148,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1RF_1LCHHH_1LE1RD_1RA0RC_0LF0LA_0LD0RB.lean#L1002
+470,133227,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L402
+470,133227,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB0LE_0RC1RC_0RD1LA_1LD0LA_1LF1LC_HHH0LA.lean#L1741
+471,133258,checkpoint,"packet catalogue and 300,000-round checkpoint",https://github.com/valu42/busycoqtesting/blob/632d9e666d26f9429aecfae44812cd4e69968703/research/holdouts-623/PACKET_STREAM.md
+476,134470,structure,segmented tape,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0RF_1LCHHH_1LF1LD_1RE0LD_0RC0RE_1LC1RA.lean#L640
+478,135376,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1RD_1LC0RD_1RF1RB_1LE0RA_0LB0LE_HHH0RC.lean#L1072
+483,137865,checkpoint,"WF33 from (2, 2, 1)",https://github.com/valu42/busycoqtesting/blob/632d9e666d26f9429aecfae44812cd4e69968703/research/holdouts-623/CUBIC_FAMILY.md
+483,137865,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L444
+483,137865,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1LE_1RC1RA_0LD1RB_1LE1LD_1RF0LA_HHH0RE.lean#L2089
+488,139516,structure,odometer invariant,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RBHHH_1RC0LE_0LD0RF_1LB0RE_0RC0LE_1RD1RA.lean#L512
+492,140043,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB1LA_1LC0RE_HHH0LD_1RE0LF_1RA1RE_1LA0LB.lean#L711
+495,141118,structure,stack reduction,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB1RA_1LC0RC_1RE0LD_0RE0LF_1RAHHH_1RB1LF.lean#L439
+496,141594,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L631
+496,141594,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0LD_1LC1RD_0LE1LA_0RB1RD_HHH0LF_1RA1LF.lean#L409
+497,141950,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB0LD_1RC1RF_1LA0RA_0LA0LE_1LD1LA_0RBHHH.lean#L4924
+503,144815,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB0RF_1RC1RF_1LD0LE_HHH1LC_1RA1LE_1LC1RB.lean#L728
+508,145825,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0LE_1LB1RC_0RF0RD_1RE0LA_1LA1RE_HHH0RB.lean#L721
+512,147335,replay,Lean halting theorem,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Halt/M_1RB1RC_1LC0LF_1RF0LD_0RE1LB_1RCHHH_1LD0RA.lean#L379
+514,147851,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L672
+514,147851,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB1RA_1RC1LB_1LD0RA_HHH0LE_1LC0LF_1RE0LB.lean#L569
+520,149707,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L465
+520,149707,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1RF_1LC1LF_0RE1LD_0LB1LD_HHH1RC_1RA0RD.lean#L2089
+522,150065,checkpoint,"SOC25 from (2, 4)",https://github.com/valu42/busycoqtesting/blob/632d9e666d26f9429aecfae44812cd4e69968703/research/holdouts-623/SOC25_DEQUE.md
+524,151747,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L494
+524,151747,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1RC_1LC1LC_1RE0LD_1LB1RF_HHH1RA_0RD1RD.lean#L1175
+525,151878,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1RF_0LC0RF_1RD1LC_HHH0LE_0RC1LF_1RA0LE.lean#L918
+528,152765,replay,Lean nonhalting theorem,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/NonHalt/M_1RB1RA_0LC0RA_1RC1LD_0LB1LE_1LF0RC_HHH0LD.lean#L4469
+536,155226,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB0LD_1RC1RA_1LD0RB_1LE1LA_1RF0RC_HHH1RE.lean#L364
+548,159080,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L221
+548,159080,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1RB_1LC0RE_HHH1LD_0RA1LB_1RA1LF_0LE1LE.lean#L964
+552,160156,structure,segmented tape,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0LA_0RC0RB_1LD1LA_1LC1RE_1RF0RD_1LAHHH.lean#L647
+558,163183,checkpoint,"SOC25 from (1, 3)",https://github.com/valu42/busycoqtesting/blob/632d9e666d26f9429aecfae44812cd4e69968703/research/holdouts-623/SOC25_DEQUE.md
+559,163594,checkpoint,"SOC25 from (1, 2)",https://github.com/valu42/busycoqtesting/blob/632d9e666d26f9429aecfae44812cd4e69968703/research/holdouts-623/SOC25_DEQUE.md
+565,165234,halt_case,halting residue class,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/HardnessEvidence.lean#L520
+565,165234,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB0LF_1LC1RA_0RE0RD_HHH1LE_1LF1RC_1LC1LA.lean#L746
+567,166072,structure,word transducer,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB0LD_0RCHHH_0LD0RF_1LE1LD_0LA0RD_0RB1RA.lean#L488
+568,166286,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB1LB_1RC0RD_0LA1RE_0RF1LC_1LA0RB_HHH1LC.lean#L589
+569,166535,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB0RD_0RC1RE_1RD0LA_1LE1LC_1RF0LD_HHH0RA.lean#L942
+573,167198,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1LC_1RC0LD_1LA0RB_1LB1LE_1RF0LA_HHH0RE.lean#L2963
+574,168016,replay,Lean nonhalting theorem,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/NonHalt/M_1RB1RA_1RC1LB_0LD0RA_1RF1LE_HHH1LF_1LC0LF.lean#L277
+587,173741,map,highLevelNext from highLevelStart,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB1LD_0RC0LF_1LD1RE_0LA0RB_0RD1RB_0LDHHH.lean#L878
+591,174634,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/M_1RB1RC_1LC1LE_1RA1RD_0RF0RE_1LA0LB_HHH1RA.lean#L710
+595,175628,map,next from start,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/Accelerations/M_1RB1RE_1LC1LB_1LE0LD_1LE1LC_0RF1RA_HHH1RA.lean#L448
+603,180313,replay,Lean nonhalting theorem,https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/NonHalt/M_1RB0RA_1RC0LC_0LD1RF_1RA1LE_1LD0LB_0REHHH.lean#L2309
