@@ -5,6 +5,7 @@
 #include <bit>
 #include <charconv>
 #include <cstdint>
+#include <fstream>
 #include <iostream>
 #include <limits>
 #include <stdexcept>
@@ -54,6 +55,41 @@ struct Writer {
     void finish() {
         word.size = size();
         if (used) word.data.push_back(pending);
+    }
+};
+
+// The last word is zero padded. The file uses little-endian uint64 words.
+class Archive {
+    std::ofstream file;
+    Word buffer;
+    Writer writer{buffer};
+
+    void flush() {
+        if constexpr (std::endian::native == std::endian::little) {
+            file.write(reinterpret_cast<const char*>(buffer.data.data()),
+                       std::streamsize(buffer.data.size() * sizeof(Count)));
+        } else {
+            for (Count value : buffer.data)
+                for (unsigned i = 0; i < 8; ++i)
+                    file.put(char((value >> (8 * i)) & 255));
+        }
+        buffer.data.clear();
+    }
+
+public:
+    void open(const char* path) {
+        file.exceptions(std::ios::failbit | std::ios::badbit);
+        file.open(path, std::ios::binary);
+    }
+    void append(const Word& word) {
+        for (Count pos = 0; pos < word.size; pos += 64)
+            writer.append(word.data[pos / 64], unsigned(std::min<Count>(64, word.size - pos)));
+        if (buffer.data.size() >= 32768) flush();
+    }
+    void finish() {
+        if (writer.used) buffer.data.push_back(writer.pending);
+        flush();
+        file.close();
     }
 };
 
@@ -117,33 +153,92 @@ struct Tile {
     unsigned start = 0;
 };
 
+// Read complete packed words in sequence and preserve the true length at wrap.
+class DiskPeriod {
+    std::ifstream file;
+    const Count period_length;
+    Word buffer;
+    Count pos = 0, file_pos = 0;
+
+    void refill() {
+        if (file_pos == period_length) {
+            file.seekg(0);
+            file_pos = 0;
+        }
+        buffer.size = std::min(Count{1} << 20, period_length - file_pos);
+        buffer.data.resize((buffer.size + 63) / 64);
+        file.read(reinterpret_cast<char*>(buffer.data.data()),
+                  std::streamsize(8 * buffer.data.size()));
+        if constexpr (std::endian::native != std::endian::little) {
+            for (Count& word : buffer.data) {
+                auto* bytes = reinterpret_cast<unsigned char*>(&word);
+                std::reverse(bytes, bytes + sizeof(word));
+            }
+        }
+        pos = 0;
+        file_pos += buffer.size;
+    }
+
+public:
+    DiskPeriod(const char* path, Count length) : period_length(length) {
+        file.exceptions(std::ios::failbit | std::ios::badbit);
+        file.open(path, std::ios::binary | std::ios::ate);
+        if (file.tellg() != std::streamoff(8 * ((length + 63) / 64)))
+            throw std::runtime_error("incorrect packed period length");
+        file.seekg(0);
+    }
+
+    void fill(std::vector<Tile>& tiles, Count total) {
+        for (auto& tile : tiles) {
+            Count needed = std::min(total, tile_size);
+            total -= needed;
+            Writer out{tile.word};
+            tile.word.data.reserve((needed + 63) / 64);
+            while (needed) {
+                if (pos == buffer.size) refill();
+                unsigned k = unsigned(std::min({Count{64}, needed, buffer.size - pos}));
+                Count bits = buffer.read(pos, k);
+                tile.bs += std::popcount(bits);
+                out.append(bits, k);
+                pos += k;
+                needed -= k;
+            }
+            out.finish();
+        }
+    }
+};
+
+void fill_memory(const Word& base, Count offset, std::vector<Tile>& tiles, Count total) {
+    #pragma omp parallel for schedule(static)
+    for (unsigned j = 0; j < tiles.size(); ++j) {
+        auto& tile = tiles[j];
+        Count length = std::min(tile_size, total - tile_size * j);
+        Count pos = (offset + tile_size * j) % base.size;
+        tile.word.data.reserve((length + 63) / 64);
+        Writer writer{tile.word};
+        while (length) {
+            unsigned k = unsigned(std::min({Count{64}, length, base.size - pos}));
+            Count bits = base.read(pos, k);
+            writer.append(bits, k);
+            tile.bs += std::popcount(bits);
+            length -= k;
+            pos += k;
+            if (pos == base.size) pos = 0;
+        }
+        writer.finish();
+    }
+}
+
 // Input at the split is the first n letters of base repeated. Each tile
 // keeps its chronological place. Displacement n - 2b equals n + b mod 3,
 // so starting phases are known before any of the tile images are evaluated.
-void finish_tail(const Word& base, Count n, unsigned split, std::vector<Row>& rows) {
-    Count offset = 0;
+template<class Fill>
+void finish_tail(Count n, unsigned split, Count last_cell, std::vector<Row>& rows, Archive* archive, Fill fill) {
     while (n) {
         Count total = std::min(n, batch_size);
         unsigned num = unsigned((total + tile_size - 1) / tile_size);
         std::vector<Tile> tiles(num), next(num);
-        #pragma omp parallel for schedule(static)
-        for (unsigned j = 0; j < num; ++j) {
-            auto& tile = tiles[j];
-            Count length = std::min(tile_size, total - tile_size * j);
-            Count pos = (offset + tile_size * j) % base.size;
-            tile.word.data.reserve((length + 63) / 64);
-            Writer writer{tile.word};
-            while (length) {
-                unsigned k = unsigned(std::min({Count{64}, length, base.size - pos}));
-                Count bits = base.read(pos, k);
-                writer.append(bits, k);
-                tile.bs += std::popcount(bits);
-                length -= k;
-                pos += k;
-                if (pos == base.size) pos = 0;
-            }
-            writer.finish();
-        }
+        fill(tiles, total);
         for (unsigned x = split;; ++x) {
             if (rows.size() == x) rows.emplace_back();
             Row& row = rows[x];
@@ -159,6 +254,11 @@ void finish_tail(const Word& base, Count n, unsigned split, std::vector<Row>& ro
             if (!length) break;
             row.length += length;
             row.phase = phase;
+            if (x == last_cell) {
+                if (archive)
+                    for (const auto& tile : tiles) archive->append(tile.word);
+                break;
+            }
             #pragma omp parallel for schedule(static) if(length > 262144)
             for (unsigned j = 0; j < num; ++j) {
                 auto& output = next[j];
@@ -171,7 +271,6 @@ void finish_tail(const Word& base, Count n, unsigned split, std::vector<Row>& ro
             }
             tiles.swap(next);
         }
-        offset = (offset + total) % base.size;
         n -= total;
     }
 }
@@ -184,11 +283,34 @@ Count number(std::string_view s) {
     return n;
 }
 
+void print_rows(const std::vector<Row>& rows, unsigned start) {
+    for (unsigned x = start; x < rows.size() && rows[x].length; ++x)
+        std::cout << x << ' ' << rows[x].length << ' ' << rows[x].phase
+                  << ' ' << rows[x].prefix << '\n';
+}
+
 int main(int argc, char** argv) try {
-    if (argc != 3) throw std::runtime_error("usage: line31_phase GROUPS SPLIT_CELL");
+    if (argc == 4 && std::string_view(argv[1]) == "--from56") {
+        DiskPeriod disk(argv[2], 53'427'204'485);
+        Count n = number(argv[3]);
+        build_packets();
+        std::vector<Row> rows(56);
+        finish_tail(n, 56, std::numeric_limits<Count>::max(), rows, nullptr,
+                    [&](auto& tiles, Count total) { disk.fill(tiles, total); });
+        print_rows(rows, 56);
+        return 0;
+    }
+    if (argc < 3 || argc > 5)
+        throw std::runtime_error("usage: line31_phase GROUPS SPLIT_CELL [LAST_CELL [PACKED_OUTPUT]]");
     Count groups = number(argv[1]), split = number(argv[2]);
+    Count last_cell = argc >= 4 ? number(argv[3]) : std::numeric_limits<Count>::max();
     if (!groups || groups > std::numeric_limits<Count>::max() / 5)
         throw std::runtime_error("5 * GROUPS must fit in a nonzero uint64");
+    Archive archive;
+    if (argc == 5) {
+        archive.open(argv[4]);
+        split = std::min(split, last_cell);
+    }
     build_packets();
     Count n = 5 * groups;
     Word word{{4}, 5}; // AABAA, first letter in the low bit
@@ -196,7 +318,12 @@ int main(int argc, char** argv) try {
     bool periodic = true;
     for (unsigned x = 0; n; ++x) {
         if (x == split) {
-            finish_tail(word, n, x, rows);
+            Count offset = 0;
+            finish_tail(n, x, last_cell, rows, argc == 5 ? &archive : nullptr,
+                        [&](auto& tiles, Count total) {
+                            fill_memory(word, offset, tiles, total);
+                            offset = (offset + total) % word.size;
+                        });
             break;
         }
         rows.emplace_back();
@@ -238,11 +365,11 @@ int main(int argc, char** argv) try {
             row.phase = phase;
             n = image.size;
         }
+        if (x == last_cell) break;
         word = std::move(image);
     }
-    for (unsigned x = 0; x < rows.size() && rows[x].length; ++x)
-        std::cout << x << ' ' << rows[x].length << ' ' << rows[x].phase
-                  << ' ' << rows[x].prefix << '\n';
+    if (argc == 5) archive.finish();
+    print_rows(rows, 0);
 } catch (const std::exception& e) {
     std::cerr << e.what() << '\n';
     return 1;

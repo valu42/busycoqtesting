@@ -36,7 +36,7 @@ The endpoint column gives the largest exact raw count indexed in this repository
 | 28 | `1RB3LB4LA0LB---_2LA0LA1RB0RA3RA` | 1,000,000,000,000,000 | — | — | [Six-cell strides](frontiers/runs/stride-28.json) |
 | 29 | `1RB3RB---3LA1RA_2LA3RA4LB0LB1LB` | ≈ 1.09706 × 10^1030 | — | [≥ 10^13,634](https://wiki.bbchallenge.org/wiki/Bonus_Cryptid) | [Timed cryptid sweeps](frontiers/runs/hydra-29.json) |
 | 30 | `1RB3RB---3LA1RA_2LA3RA4LB0LB0LA` | ≈ 2.85901 × 10^7045 | — | — | [Timed cryptid sweeps](frontiers/runs/hydra-30.json) |
-| 31 | `1RB3RB---4RA2RA_2LA2RA3LB4LB1LB` | ≈ 5.00000 × 10^33 | — | — | [Aligned boundary streams](frontiers/runs/line31-phase.json) |
+| 31 | `1RB3RB---4RA2RA_2LA2RA3LB4LB1LB` | ≈ 2.74695 × 10^35 | — | — | [Aligned boundary streams](frontiers/runs/line31-phase.json) |
 | 32 | `1RB3RB1LB2RA---_2LA2RB1LA4LB0RA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-32.json) |
 | 33 | `1RB2LA0RB4LB1RA_1LA3RA1RA---0LA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-33.json) |
 | 34 | `1RB2LA4RA1LA3LA_0LA2RB3RB2LB---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-34.json) |
