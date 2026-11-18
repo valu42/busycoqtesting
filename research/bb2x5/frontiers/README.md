@@ -26,12 +26,14 @@ The following runs started with an exact repository clock of ten billion steps o
 | 3 | Rightward probes through mixed ternary tokens and binary increments on the left | [Mixed-counter clock](line3-timing.md) |
 | 9 | Pairs of growing left sweeps and their three ordered suffix calls | [BBA sweeps](../line9-sweeps.md) |
 | 14, 16, 28 | Repeated six-cell crossings that restore the entry state and the adjacent guard word | [Six-cell strides](six-cell-strides.md) |
+| 15 | Seven-cell right-side returns under the periodic source on the negative tape | [Timed strips and the frontier halt condition](line15.md) |
 | 18 | A growing prefix generates an exact number of suffix calls. Two- and three-cell rules count the suffix instructions and track exceptional replies. | [Timed prefix and suffix calls](line18.md) |
+| 19, 23 | Two distinct blank runs on the same reflected transition table, with exact clocks and all three replies at the potential halting guard | [Reflection and literal controls](line19-pair.md) · [Guard traces](spaghetti-guards.md) |
 | 20 | Periodic negative-tape returns with an exact replay of the exceptional positive-tape period | [Guarded boundary streams](line20-returns.md) |
 | 24 | Alternating A and B calls after the 46-step seed, with literal recovery on exceptional returns | [Alternating sweeps](line24.md) |
 | 29, 30 | Timed sweeps through the Bonus Cryptid and Hydra tapes, including the early exceptional Bonus Cryptid configurations | [Timed cryptid sweeps](hydra.md) |
 
-Lines 15 and 19 still have ten-billion-step repository checkpoints. Their community-reported runs reach at least 20 trillion and 40 trillion steps, respectively. A machine-specific simulation that can reproduce those runs would give the repository a new full-tape checkpoint to continue. The short replays on lines 29 and 30 establish local exact clocks for two machines with much deeper published trajectories and evidence favoring nonhalting. [Community holdout table](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) · [Hydra and Bonus Cryptid analysis](https://www.sligocki.com/2024/05/10/bb-2-5-is-hard.html)
+Lines 15 and 19 have independent community-reported runs of at least 20 trillion and 40 trillion steps, respectively. The table lists those beside the exact repository checkpoints. The short replays on lines 29 and 30 establish local exact clocks for two machines with much deeper published trajectories and evidence favoring nonhalting. [Community holdout table](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) · [Hydra and Bonus Cryptid analysis](https://www.sligocki.com/2024/05/10/bb-2-5-is-hard.html)
 
 ## Exact batches of boundary crossings
 

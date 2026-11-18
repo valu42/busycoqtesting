@@ -57,6 +57,27 @@ Two calculations with B=17 and B=18 agree on V_M=6,299,606,942,741, both packed 
 
 The checker compares every one of the first 64 computed tapes and times with a literal two-state interpreter. A second check counts individual physical pair trips and compares four further checkpoints through tick 12,345, at 29,264,811,755 instructions.
 
+## Bounds that hold beyond the computed checkpoint
+
+The ordinary process admits a lower bound on the first time a dangerous carry can reach a new cut. For every $s\ge0$, through root tick $4^s$ **no** $Q$ can arrive at cut $3+s+2\cdot3^s$. In particular the first-arrival time for cut $3+k$ is $\Omega(k^{\log_3 4})$. This is a statement about the total ordinary process and makes no assumption about physical survival.
+
+Indeed, cut $3+s$ receives exactly $3^s$ dangers and $9\cdot3^s$ safe scalar tokens in its first complete period of $4^s$ ticks. Start the counters to the right of that cut at zero. After $q$ dangers the local $e$ has bit length at most $2q$. Even with intervening safe tokens the local $u$ has bit length at most $2q+1$, since the safe selector is $2e+1$. The next $Q$ stops no higher than the first position above both supports, at index at most $2q+1$. This proves the bounds by induction, including the initially empty counters. Thus the last of $3^s$ dangers stops no higher than local index $2\cdot3^s-1$. For the asymptotic claim take the largest $s$ with $s+2\cdot3^s\le k$.
+
+There are also uniform time estimates on all *successful* blank prefixes. Write $\alpha=\log_4 3$. The exact raw clock satisfies
+$$
+ R(T)=192T^2+O(T^{2\alpha}),\qquad
+ R(T)\ge192T^2+340T-O(T^{\alpha}+\log^2(2T)).
+$$
+To see the upper bound, take $s=\lceil\log_4 T\rceil$. At cut $3+s$ at most $9\cdot3^s$ safe and $3^s$ dangerous tokens have arrived. At most every other safe token can wrap, since every safe token flips the first upper $u$ bit and every second one stops there. Thus $M\le\lceil9\cdot3^s/2\rceil$. There are at most $10\cdot3^s$ physical arrivals at this cut, and each can visit at most $M$ physical data pairs. Below this cut the sum of visit counts is $O(T+3^s)$, by summing at each cut $3+i$ at most $10\cdot3^i(1+T/4^i)$ visits. The three lower cuts contribute $O(T)$. An occupied visit costs at most six, with at most five extra instructions at each allocation. This proves the upper estimate by adding the guard and blank-entry time.
+
+For the lower estimate take $s=\lfloor\log_4 T\rfloor$ and $B=3+s$. The $B$ low pairs exist by time $T$ on any successful run, since the complete period at cut $B$ ends in a passing $Q$. The three lowest ordinary pairs cost exactly $183T$ in total by the physical rows. The ordinary pair at cut $3+i$ costs $133\cdot3^i$ per $4^{i+1}$ ticks. Over that period it receives $12\cdot3^i$ letters a, $12\cdot3^i$ letters b, and $4\cdot3^i$ letters d, emits $3\cdot3^i$ dangers, and returns to zero bits. Discard the costs of the incomplete periods. Subtract the $3B(B-1)$ cost of the virtual visits deleted in those $B$ cells. Together with the guard this gives the explicit lower bound
+$$
+ 192T^2+207T+5+
+ 133\sum_{i=0}^{s-1}3^i\left\lfloor\frac{T}{4^{i+1}}\right\rfloor
+ -3B(B-1).
+$$
+Using $\lfloor x\rfloor\ge x-1$ and summing the two geometric series gives the claimed estimate. Neither bound decides whether infinitely many physical ticks succeed.
+
 From this directory, use Python 3.10 or later and a C++20 compiler, with assertions enabled.
 
 ```sh

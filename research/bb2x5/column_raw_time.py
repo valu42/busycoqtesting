@@ -19,6 +19,12 @@ def recover(binary, cut, ticks):
     physical_visits = visits-2*allocated*(width-allocated)
     raw = (192*ticks*ticks - 8*ticks + 3*physical_visits + ones_u + 2*ones_e
            + 7*allocated - 3*allocated*allocated + 5)
+    s = (ticks.bit_length()-1)//2
+    low_pairs = 3+s
+    full_cost = sum(133*3**i*(ticks//4**(i+1)) for i in range(s))
+    assert raw >= 192*ticks*ticks+207*ticks+5+full_cost-3*low_pairs*(low_pairs-1)
+    cover = s if ticks == 4**s else s+1
+    assert allocated <= (9*3**cover+1)//2
     return raw,physical_visits,digits
 
 
