@@ -9,6 +9,8 @@ import zlib
 
 from longitudinal import (CandidateUndefined, DRIVERS, Driver, HALTED, ROOT, TapeMachine,
                           literal_group, resolve_candidate)
+from replay_streams import join_prefixes, trace_record
+from checkpoints import checksum
 import survey
 
 ENGINE = Path(os.environ.get('BB25_STREAM', '/tmp/bb25-stream'))
@@ -32,6 +34,7 @@ class LongitudinalTests(unittest.TestCase):
             driver=Driver(line)
             machine=TapeMachine(driver.machine)
             seed=driver.blank()
+            lifetime=[]
             for groups in (1,17,7):
                 final, prefixes=driver.run_batch(ENGINE,seed,groups,1<<20,23)
                 words={}
@@ -47,7 +50,9 @@ class LongitudinalTests(unittest.TestCase):
                         words[machine.head]=words.get(machine.head,'')+machine.state
                 self.assertEqual(prefixes,[words[i][:23] for i in range(len(words))])
                 self.assertEqual(final,driver.advance(ENGINE,seed,groups,1<<20))
+                join_prefixes(lifetime,prefixes,23)
                 seed=final
+            self.assertEqual(lifetime,driver.run_batch(ENGINE,driver.blank(),25,1<<20,23)[1])
 
     def test_finite_streaming_preserves_counts_and_first_letters(self):
         for line in DRIVERS:
@@ -91,6 +96,51 @@ class LongitudinalTests(unittest.TestCase):
         self.assertEqual(''.join(child_entries),'BBA')
         self.assertEqual((machine.head,machine.state,machine.tape[1]),(1,'B',3))
 
+    def test_line13_occupied_cell_word_rules(self):
+        rules=TapeMachine(Driver(13).machine).rules
+        def image(symbol,word):
+            child=[]
+            for entry in word:
+                q=entry
+                while True:
+                    symbol,move,q=rules[q,symbol]
+                    if move<0:
+                        self.assertEqual(q,'A')
+                        break
+                    child.append(q)
+                    q='A'
+            return ''.join(child),symbol
+        for k,j in itertools.product(range(8),repeat=2):
+            self.assertEqual(image(4,'B'*k+'A'+'B'*j+'A'),('BA'*k+'AB'[j%2],4))
+        for symbol,word in ((1,'BBA'),(4,'BAB')):
+            self.assertEqual(image(symbol,'BABA'),(word,symbol))
+
+    def test_saved_line13_lifetime_entries(self):
+        driver=Driver(13)
+        base=ROOT/'frontiers/runs'
+        final=driver.load(base/'stream-13.json')
+        doc=json.loads((base/'line13-entry-prefixes.json').read_text())
+        p=doc['payload']
+        words=p['entry_prefixes']
+        self.assertEqual(doc['sha256'],checksum(p))
+        self.assertEqual((p['line'],p['machine'],p['prefix_length']),(13,driver.machine,48))
+        self.assertLessEqual(p['groups'],final['groups'])
+        self.assertLessEqual(p['steps'],final['steps'])
+        if p['groups']==final['groups']:
+            self.assertEqual(doc,trace_record(final,48,words))
+            self.assertEqual(len(words),len(final['positive_tape']))
+            self.assertEqual(final['positive_tape'][-1],'1' if len(words[-1])%2 else '2')
+        _,earlier=driver.run_batch(ENGINE,driver.blank(),10**6,1<<24,48)
+        for i,w in enumerate(words):
+            self.assertTrue(0<len(w)<=48 and set(w)<={'A','B'})
+            self.assertEqual(w[0],'AB'[i%2])
+            if i<len(earlier):
+                self.assertTrue(w.startswith(earlier[i]))
+            if i%2 and 'A' in w:
+                self.assertEqual((len(w)-len(w.lstrip('B')))%2,1)
+        self.assertLess(len(words[-1]),48)
+        self.assertEqual(set(words[-1]),{'B'})
+
     def test_literal_and_negative_driver(self):
         for line in DRIVERS:
             with self.subTest(line=line):
@@ -119,7 +169,7 @@ class LongitudinalTests(unittest.TestCase):
             with self.subTest(line=line):
                 driver = Driver(line)
                 checkpoint = driver.load(ROOT/'frontiers/runs'/f'stream-{line:02}.json')
-                self.assertEqual(checkpoint['groups'], sum(n*k for n,k in recipes[str(line)]))
+                self.assertEqual(checkpoint['groups'], sum(row[0]*row[1] for row in recipes[str(line)]))
                 for start in (driver.blank(), checkpoint):
                     direct = driver.advance(ENGINE, start, 50001, 1 << 24)
                     split = driver.advance(ENGINE, start, 20000, 1 << 24)

@@ -82,6 +82,7 @@ def generate():
               5: f'[≥ 2^{exponent:,}](accelerator-results/arithmetic5-100k.json)',
               17: '[> 10^36](marked-register.md)',
               26: '[≥ 2,752,226,320,489,425,129,509](column-phases.md#a-time-stamped-bound-from-the-actual-blank-tape)',
+              36: '[Unbounded (proved nonhalting)](line36-nonhalting.md)',
               37: '[≥ 39,999,600,001](line37-header.md)'}
     reports = {7: ('> 10^1,140,000,000', OCTOBER), 13: ('≈ 10^17.50888', COMMUNITY),
                14: ('≥ 5 × 10^13', COMMUNITY), 15: ('≥ 2 × 10^13', COMMUNITY),

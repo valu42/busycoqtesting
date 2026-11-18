@@ -16,6 +16,22 @@ Every defined instruction writes a nonzero symbol. B0 is the only instruction th
 
 Coordinate zero first receives A, so the first entry at coordinate one is B. A cell whose first entry was B can only open the following coordinate through the odd or positive-even row. The odd row sends A. The positive-even row halts at the parent as soon as its child returns. Induction gives an A first at every even parent that opens a new cell before a halt and a B first at every odd parent. The exceptional even child entered in B at the halting event immediately returns to its odd parent.
 
+At a completed batch boundary, every nonnegative coordinate strictly to the left of the rightmost visited cell is permanently clear of the exceptional case. Each has already visited its child. The rightmost cell is odd and has only received B entries. Its tape symbol encodes the parity of those entries. A 1 means the count is odd and a 2 means it is even. This permits the edge test to resume from the ordinary tape checkpoint.
+
+## A word rule for the occupied interior
+
+Once a cell has opened its right neighbor, all completed calls to that neighbor return in A. The following table gives the ordered child entries and the final symbol after one input. The empty word is ε.
+
+| Starting symbol | Input A | Input B |
+|---:|---|---|
+| 1 | A, ends in 4 | ε, ends in 2 |
+| 2 | B, ends in 4 | ε, ends in 1 |
+| 4 | ε, ends in 1 | BA, ends in 4 |
+
+Thus a cell starting on 4 maps `B^k A B^j A` to `(BA)^k X` and ends on 4. Here X is A for even j and B for odd j. This identity holds for arbitrary nonnegative k and j. At the next occupied cell, two copies of `BA` map to `BBA` starting on 1, or `BAB` starting on 4, and restore that starting symbol. These rules allow repeated blocks to pass through two cells using only counts and parity. A remaining suffix that reaches a fresh neighbor uses the edge test above.
+
+There is also a finite-width route to a nonhalting certificate. Start with the exact ultimately periodic root input. For each successive cell, process the transient and track its symbol and fresh-child flag at period boundaries. When the same state recurs, the intervening output is one period of the child's input. An empty output period leaves only a finite child word. If an odd coordinate's entire resulting input consists of Bs, it never opens the next cell. Its explicit returns then justify every shallower call by induction back to the root, provided all shallower transitions succeeded.
+
 ## Reading an edge trace
 
 From `research/bb2x5`, the following run reports the first 48 rightward entry letters seen at each coordinate during one batch. The array index is the physical coordinate. Short words contain every entry through the end of the batch.
@@ -27,5 +43,14 @@ python3 frontiers/longitudinal.py --line 13 --engine /tmp/bb25-stream \
 ```
 
 This blank run visits coordinates 0 through 127. Of the odd coordinates, 61 start with `BA`. Coordinates 91 and 97 start with `BBBA`. Coordinate 127 has received just `B` at this endpoint. If resuming from a checkpoint, each trace begins at that batch's first entry. Complete the prefix at a previously visited coordinate by concatenating its entries across batches in order, truncating only after enough letters have been collected.
+
+At 10¹⁷ source groups the machine has executed 150,000,000,000,000,003,612,281,246,951,610,338 defined steps and reached coordinate 155. Seventy-five odd coordinates began with `BA`. The other two that received A, coordinates 91 and 97, began with `BBBA`. Coordinate 155 has received only `B`. Every earlier odd coordinate is permanently clear. [First 48 lifetime entries at every reached coordinate](frontiers/runs/line13-entry-prefixes.json)
+
+To reproduce this record, run the following command with the same native worker. The record includes the checksum of the reconstructed full tape and clock.
+
+```sh
+python3 frontiers/replay_streams.py --line 13 --engine /tmp/bb25-stream --until-groups 100000000000000000 --trace-prefix 48 > /tmp/line13-entries.json
+cmp /tmp/line13-entries.json frontiers/runs/line13-entry-prefixes.json
+```
 
 An externally supplied input `ABBAAA` at coordinate zero sends `BBA` to coordinate one and halts there. This gives a short control case for the positive-even branch. The blank input at coordinate zero is A followed by repeated `BABAB`. Deciding whether this particular source produces an exceptional odd coordinate remains open.

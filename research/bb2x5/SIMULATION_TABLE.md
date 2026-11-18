@@ -18,7 +18,7 @@ The endpoint column gives the largest exact raw count indexed in this repository
 | 10 | `1RB2RB3LA4LA1LA_2LB3RA---4RA1RB` | ≈ 2.10250 × 10^22 | — | — | [Boundary streams](frontiers/runs/stream-10.json) |
 | 11 | `1RB2LA4LA1RA1LA_2LB3RB4RB---2RA` | ≈ 2.81543 × 10^50 | — | — | [Boundary streams](frontiers/runs/stream-11.json) |
 | 12 | `1RB4RB4RA1LA3LA_1LB2LA3RB2RB---` | ≈ 2.67029 × 10^82 | — | — | [Boundary streams](frontiers/runs/stream-12.json) |
-| 13 | `1RB3RA3RB4LA1LA_1LB2LA1LA---1RB` | ≈ 1.26213 × 10^34 | — | [≈ 10^17.50888](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Boundary streams](frontiers/runs/stream-13.json) |
+| 13 | `1RB3RA3RB4LA1LA_1LB2LA1LA---1RB` | ≈ 1.50000 × 10^35 | — | [≈ 10^17.50888](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Boundary streams](frontiers/runs/stream-13.json) |
 | 14 | `1RB2RA4LA1RB4RB_1LB2LA3RA---0LB` | 10,000,000,000 | — | [≥ 5 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Moving window](frontiers/runs/window-14.json) |
 | 15 | `1RB3RB1LA2LA3RA_1LB2RA4RB0LA---` | 10,000,000,000 | — | [≥ 2 × 10^13](https://wiki.bbchallenge.org/wiki/BB%282%2C5%29#Unsolved) | [Moving window](frontiers/runs/window-15.json) |
 | 16 | `1RB2LA0RB0LB3LB_2LA4RB3RA0RA---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-16.json) |
@@ -41,7 +41,7 @@ The endpoint column gives the largest exact raw count indexed in this repository
 | 33 | `1RB2LA0RB4LB1RA_1LA3RA1RA---0LA` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-33.json) |
 | 34 | `1RB2LA4RA1LA3LA_0LA2RB3RB2LB---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-34.json) |
 | 35 | `1RB2LA4RA1LA3LA_0LA3RB3LB2RB---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-35.json) |
-| 36 | `1RB2LA1LA4RA2LA_0LA3RB3LB2RB---` | 10,000,000,000 | — | — | [Moving window](frontiers/runs/window-36.json) |
+| 36 | `1RB2LA1LA4RA2LA_0LA3RB3LB2RB---` | 10,000,000,000 | [Unbounded (proved nonhalting)](line36-nonhalting.md) | — | [Moving window](frontiers/runs/window-36.json) |
 | 37 | `1RB2LA3LA4RA1LA_0LA3LB3RB1RB---` | 10,000,000,000 | [≥ 39,999,600,001](line37-header.md) | — | [Moving window](frontiers/runs/window-37.json) |
 
 Line 3’s transcript gives its lower bound in full. Line 4’s lower bound uses the millionth return, while its saved raw clock is at return 1,024. Line 5’s timed replay reaches the same A(4,b) and recurrence count as the earlier checkpoint, which contains b consecutive nonzero cells. Each required a write, so its 173,754-bit b gives the displayed bound. The 8,684,421,216 recurrence events have a separate count. Line 17’s bound uses the distance travelled in its verified header epochs. On line 37 the successful sweeps from epochs 1 through 199,999 each traverse the old word, whose width starts at one and grows by at least two per sweep. Summing the minimum widths gives 199,999² raw steps.
