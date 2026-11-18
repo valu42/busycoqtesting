@@ -1,6 +1,6 @@
 # BB(2,5) holdout research
 
-**[Machine decision roadmap and agent claim board](ROADMAP.md)** · [Simulation table for all 37 holdouts](SIMULATION_TABLE.md) · [Run and resume the simulators](frontiers/README.md)
+**[Machine decision roadmap and agent claim board](ROADMAP.md)** · [Simulation table for all 37 holdouts](SIMULATION_TABLE.md) · [Line 35 interior bound and quarter test](line35-middle.md) · [Run and resume the simulators](frontiers/README.md)
 
 These notes record results on the November 3, 2026 list of 37 formal holdouts. Each machine is identified by its full transition string. All line numbers here are **one-based positions in that exact file**. The scripts use an initially blank, two-way infinite tape, state A and head coordinate zero. An undefined instruction halts on arrival. Line 36 has a kernel-checked Rocq proof of blank-tape nonhalting. [Formal theorem and build instructions](line36-rocq.md) · [Proof and reproduction](line36-nonhalting.md) · [Reduced certificates and verification](line36-cap-blocks.md)
 

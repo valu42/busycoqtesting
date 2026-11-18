@@ -59,6 +59,11 @@ def generate():
         label = 'Guarded boundary streams' if line in GUARDED_DRIVERS else 'Boundary streams'
         consider(line, p['machine'], p['steps'], path, label)
 
+    from line35_timed import load as load_line35
+    path = RUNS/'line35-epochs.json'
+    record, _ = load_line35(path)
+    consider(35, record['machine'], record['steps'], path, 'Timed matching sweeps')
+
     path = RUNS/'line3-timed.json'
     p = line3_timed.load(path)
     consider(3, p['machine'], int(p['steps_hex'], 16), path, 'Timed mixed-counter probes')
