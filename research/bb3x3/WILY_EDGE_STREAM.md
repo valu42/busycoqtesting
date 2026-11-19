@@ -1,6 +1,6 @@
 # Wily Coyote from blank and from a family of alternate tapes
 
-Both #531 and #532 complete at least **$2^{192}$ sweeps from blank**, with the same 577-bit suffix at that checkpoint. Each takes at least $2^{191}(2^{192}+1)>1.9701\times 10^{115}$ raw transitions. The eventual outcome of either blank tape is open. The four-carry sweep and raw-clock lower bound come from the [existing reduction and raw-tape checks](RANKINGS.md#wily-coyote-and-397--finite-blank-tape-runs).
+The later [integer-map certificate](WILY_INTEGER_MAP.md) reaches $2^{256}$ sweeps with a 769-bit suffix. The earlier checkpoint below establishes **$2^{192}$ sweeps from blank** for #531 and #532, with the same 577-bit suffix at that checkpoint. Each takes at least $2^{191}(2^{192}+1)>1.9701\times 10^{115}$ raw transitions. The eventual outcome of either blank tape is open. The four-carry sweep and raw-clock lower bound come from the [existing reduction and raw-tape checks](RANKINGS.md#wily-coyote-and-397--finite-blank-tape-runs).
 
 At a sweep boundary, a word beginning with the eight bits **00000100** admits a complete decision for every finite choice of the remaining bits. For a continuation of length $n$, exactly $(2^n-(-1)^n)/3$ continuations halt. Every other continuation runs forever. This result starts the word in the initial sweep phase. In this notation the actual blank starts at the shorter word **00**. Bit 0 denotes tape symbol 2 and bit 1 denotes tape symbol 1.
 

@@ -63,7 +63,7 @@ def length(runs):
     return sum(size for _, size in runs)
 
 
-def blank_checkpoint(rounds):
+def blank_checkpoint(rounds, observe_extension=None):
     if rounds < 0:
         raise ValueError("negative sweep count")
     runs = [(0, 1), (1, 1)]
@@ -82,6 +82,9 @@ def blank_checkpoint(rounds):
             pending.extend(extension)
             runs = drop_first(runs, periodic)
             remaining -= 1
+            if observe_extension is not None:
+                following = runs[0][0] if remaining else None
+                observe_extension(len(suffix), mode, following)
 
         bit = pending.popleft()
         if periodic:
@@ -213,6 +216,8 @@ CHECKPOINTS = {
     96: (291, "2227cc873414ca1f243bc4281e0fa4f472146fffaab72223428979796be99bd1"),
     128: (383, "0b594c2242ceba0cd1a6c4d5ac6bd0388906f2ae0916910db037518ab0f377b0"),
     192: (577, "567df9a7f34a5764e1a90917ef2f35cfbb4984790de9560d8310261718d0f2d6"),
+    224: (671, "362cb38741c073c3a7df3fc243f8677904fbdebe3cf4fdba8567c331adbcfc2e"),
+    256: (769, "f0ac9e6cda66dec901cf94a99712f66b3b839bee692ab8ff7e9265455556e903"),
 }
 
 
