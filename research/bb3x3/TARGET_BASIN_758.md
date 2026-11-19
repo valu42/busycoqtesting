@@ -6,7 +6,7 @@ $$
 $$
 eventually halts, for $H=(3^{307}-8,282,708,212)/13,959,275$. This joins every gap through scale 20. The scale-19 interval contained 17,821,304,912,273,704,228 seeds. A proof that the actual blank orbit enters the new interval would settle both #758 and #153. [Original contiguous interval](LOWER_SCALE_GATES_758.md)
 
-A [further contiguous extension](HALTING_COLLAR_758.md) reaches 61,410,570,681,242,627,565 halting reset seeds.
+A [further contiguous extension](HALTING_COLLAR_758.md) reaches 64,916,341,784,242,015,837 halting reset seeds.
 
 ## From a reset to a rational direction
 
