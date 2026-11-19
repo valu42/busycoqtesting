@@ -90,3 +90,5 @@ After B1 rewrites the fresh marker, `3` followed by `223233003` is exactly `H3`.
 At extension 5 the residual after removing H is `032032`. The prefix by itself admits halting continuations. For every $k ≥ 0$, the auxiliary word `H^k3` halts in exactly $31k+6$ defined steps from the fresh A0 checkpoint. Indeed the final B probe on the single 3 and its blank tail returns in A after five steps. This covers arbitrary prefix multiplicity and leaves open the behavior of the specific residual from blank.
 
 Run `python3 line6.py` in this directory. It checks all 3,280 words of stored length at most seven against the independent literal interpreter, including halts, words on return and defined-step counts. It also checks every full blank checkpoint through left extension 376, the complete header traces and the reported prefix counts.
+
+[Matching and crossing histories](line6-prefix.md) gives an adjacent-pair invariant, a quadratic time bound, the single-request header classification, and two ordered tile examples with opposite probe replies.
