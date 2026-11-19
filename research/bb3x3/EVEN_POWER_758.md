@@ -1,10 +1,10 @@
-# Certifying the gaps after the doubled powers at exponents 32 and 33
+# Certifying the gaps after the doubled powers at exponents 32 through 34
 
 The even-reset worker certifies the same crossing statement as the ordinary window checker. Every reset in the 5,001-seed incoming window visits a reset in the 5,001-seed outgoing window. The selected outgoing resets are all even. A receipt gives the lower input cut, the output cut, the minimum and maximum possible output, the number of symbolic blocks, and the number of exact even-to-even calls. The last four fields can differ from the ordinary checker's receipt.
 
 ## The paired return
 
-Write $P=3^m$ and take $m=32$ or $33$. Throughout the supported interval the odd return is $N(s)=s+2m+5+2[s\equiv3\pmod4]$. On an even input define $N(s)=s$. The odd word and its corridor follow from the ordered endpoint proof in [the power gates](POWER_GATES_758.md).
+Write $P=3^m$ and take $32\le m\le34$. Throughout the supported interval the odd return is $N(s)=s+2m+5+2[s\equiv3\pmod4]$. On an even input define $N(s)=s$. The odd word and its corridor follow from the ordered endpoint proof in [the power gates](POWER_GATES_758.md).
 
 An even reset first takes $I J^m$ to $(4P-1,s-2P+2m+5)$. At an odd-left state put $u=(a+2c-1)/2$ and $d=(c-1)/2$. The launch point is
 
@@ -37,9 +37,9 @@ where $e$ and $g$ depend on the single residue $A d+B u\bmod D$. Starting with $
 
 To prove the single-residue claim, consider the suffix after the first symbol, with coefficients $A_1,B_1,D_1$. If the first symbol is J, its affine substitution makes the suffix projection the full initial projection plus a constant modulo $D=D_1$. If the first symbol is LL, the full projection is $9A_1d+4B_1u$ modulo $D=4D_1$. Since $A_1$ is odd, this determines $r=d\bmod4$. After LL, four times the suffix projection is the full projection plus $A_1 b_r+4B_1g_r$. Consequently the suffix residue modulo $D_1$ and all its corrections are determined. Induction finishes the proof. Setting $u=0$ and ranging $d$ over $0,\ldots,D-1$ visits every residue because $A$ is odd.
 
-Each shared word is divided into blocks of at most 16 operations and five LL pairs. The checker precomputes $e,g$ from the $D$ representatives for each block. At the first block the initial projection follows directly from the affine launch in the half-seed.
+Each shared word is divided into blocks of at most 16 operations. A block contains at most five LL pairs for exponents 32 and 33, and four LL pairs for exponent 34. The checker precomputes $e,g$ from the $D$ representatives for each block. At the first block the initial projection follows directly from the affine launch in the half-seed.
 
-The computed numerator is an unsigned 64-bit residue. Because $0\le d'\le u'/2$ and $u'\le3P+50,000$, even the largest $D=1024$ gives $Dd'<2^{63}$ at both supported exponents. Its residue therefore reconstructs the exact quotient after shifting. The implementation checks at most 256 shared operations and 5,000 subsequent paired operations. With each paired move adding at most nine to $u$, a returned odd seed is less than 50,000 above its source. The ordinary symbolic bound is also less than 50,000 from its 10,000-step limit and maximum mass gain nine. The worker rejects input windows too close to the end of the proved odd corridor.
+The computed numerator is an unsigned 64-bit residue. Because $0\le d'\le u'/2$ and $u'\le3P+50,000$, the largest allowed $D$ gives $Dd'<2^{64}$ at all three exponents. For $m=34$, $D\le256$ and $P=16{,}677{,}181{,}699{,}666{,}569$. A compile-time integer bound checks each scale. Its residue therefore reconstructs the exact quotient after shifting. The implementation checks at most 256 shared operations and 5,000 subsequent paired operations. With each paired move adding at most nine to $u$, a returned odd seed is less than 50,000 above its source. The ordinary symbolic bound is also less than 50,000 from its 10,000-step limit and maximum mass gain nine. The worker rejects input windows too close to the end of the proved odd corridor.
 
 ## Symbolic crossing
 
@@ -49,7 +49,7 @@ For an odd gain bound, add $2m+7$ to allow the following odd return. Every even 
 
 ## Reproduction
 
-Place the two sources and audit beside the repository's reset-cover header. The default evaluates $2\cdot3^{33}$ to $3^{34}$. Pass `-DPOWER_EXPONENT=32` to target the preceding doubled-to-single gap.
+Place the two sources and audit beside the repository's reset-cover header. The default evaluates $2\cdot3^{33}$ to $3^{34}$. Pass `-DPOWER_EXPONENT=32` or `-DPOWER_EXPONENT=34` when compiling both programs to target either adjacent doubled-to-single gap.
 
 ```sh
 g++ -O3 -std=c++17 cross_even_power_758.cpp -o cross_even

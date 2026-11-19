@@ -6,9 +6,14 @@
 #define POWER_EXPONENT 33
 #endif
 
-static_assert(POWER_EXPONENT == 32 || POWER_EXPONENT == 33, "verified word-size range");
+static_assert(POWER_EXPONENT >= 32 && POWER_EXPONENT <= 34, "verified word-size range");
 constexpr int exponent = POWER_EXPONENT;
-constexpr Num power = exponent == 32 ? 1853020188851841LL : 5559060566555523LL;
+constexpr Num power_of_three(int n) {
+    Num result = 1;
+    for (int i = 0; i < n; ++i) result *= 3;
+    return result;
+}
+constexpr Num power = power_of_three(exponent);
 constexpr int launch_mass = 2*exponent + 4;
 constexpr int launch_offset = exponent + 2;
 constexpr int odd_gain = 2*exponent + 5;

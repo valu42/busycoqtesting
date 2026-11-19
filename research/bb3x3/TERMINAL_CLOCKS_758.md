@@ -8,7 +8,7 @@ The blank tape's halting time depends on which terminal it reaches. The followin
 | $H-2$ or $H$, $H\approx2.1447\times10^{139}$ | 307 | $2.7926\times10^{279}$ | $4.4119\times10^{413}<T<2.1922\times10^{417}$ |
 | $H_{242952}-2$ or $H_{242952}$, $H_{242952}\approx3.7586\times10^{115917}$ | 242,967 | $8.5772\times10^{231835}$ | $2.8680\times10^{347745}<T<1.1801\times10^{347752}$ |
 
-For the first row a wide interval of earlier resets is known to skip both seeds. The actual blank crossing remains open. The third row is the first larger member of the same exact terminal family as $H$ and represents a mathematically distinct possibility. None of the rows provides an upper bound on every possible blank-tape halt. The joined machine #153 uses 50,707 fewer raw transitions. [Fifth crossing](FIFTH_CROSSING_758.md) · [Lifted family](LIFTS758.md) · [Raw join](RANKINGS.md)
+For the first row a wide interval of earlier resets is known to skip both seeds. The actual blank orbit was subsequently proved to skip both seeds, so the first row is now counterfactual. [Exact fifth crossing](FIFTH_BLANK_CROSSING_758.md) The third row is the first larger member of the same exact terminal family as $H$ and represents a mathematically distinct possibility. None of the rows provides an upper bound on every possible blank-tape halt. The joined machine #153 uses 50,707 fewer raw transitions. [Fifth crossing](FIFTH_CROSSING_758.md) · [Lifted family](LIFTS758.md) · [Raw join](RANKINGS.md)
 
 The bounds in this table use one method applicable across all three scales. At the main target the tighter conditional range is $2.10448\times10^{414}<T<8.206\times10^{416}$. [Current bounds and estimate](HALTING_TIME_758.md)
 

@@ -30,10 +30,13 @@ inline Ang advance_pair(Ang s, Phase action) {
 // A common J/LL word has d'=(A*d+B*u+e)/2^k, u'=u+g. Corrections
 // (e,g) depend only on the single residue (A*d+B*u) modulo 2^k.
 // Unsigned products retain the low 64 numerator bits. The exact final
-// 2^k*d' is positive and smaller than 2^64 at the two supported scales.
+// 2^k*d' is positive and smaller than 2^64 at every supported scale.
 class Packed {
     static constexpr int region_bits = 19;
-    static constexpr int max_pairs = 5, max_ops = 16;
+    static constexpr int max_pairs = exponent == 34 ? 4 : 5, max_ops = 16;
+    // Since d' <= u'/2 and u' <= 3*power + 50000, the true
+    // numerator 4^max_pairs * d' fits before the unsigned right shift.
+    static_assert((3*power + 50000)/2 <= UINT64_MAX / (1ULL << (2*max_pairs)));
     struct Adjustment { Num additive; int gain; };
     struct Op {
         int bits = 0, mask = 0;

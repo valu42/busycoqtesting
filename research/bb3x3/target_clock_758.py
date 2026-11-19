@@ -39,45 +39,45 @@ def timed_return(seed, batch=True):
 
 
 @cache
-def polynomial(residue):
-    seed = ORIGIN+residue
-    samples = [timed_return(seed+j*MODULUS) for j in range(4)]
+def polynomial(residue,origin,modulus):
+    seed = origin+residue
+    samples = [timed_return(seed+j*modulus) for j in range(4)]
     gain = samples[0][0]-seed
-    assert all(nxt == seed+j*MODULUS+gain for j,(nxt,_) in enumerate(samples))
+    assert all(nxt == seed+j*modulus+gain for j,(nxt,_) in enumerate(samples))
     a,b,c,d = (dt for _,dt in samples)
     second = c-2*b+a
     assert d-2*c+b == second
     return gain,a,b-a,second
 
 
-def evaluate(seed):
-    q,residue = divmod(seed-ORIGIN,MODULUS)
-    gain,a,b,c = polynomial(residue)
+def evaluate(seed,origin=ORIGIN,modulus=MODULUS):
+    q,residue = divmod(seed-origin,modulus)
+    gain,a,b,c = polynomial(residue,origin,modulus)
     return seed+gain,a+b*q+c*comb(q,2)
 
 
-def cycle_cost(seed, length, stride):
-    origin = seed
+def cycle_cost(seed,length,stride,origin,modulus):
+    initial = seed
     elapsed = 0
     for _ in range(length):
-        seed,delta = evaluate(seed)
+        seed,delta = evaluate(seed,origin,modulus)
         elapsed += delta
-    assert seed == origin+stride
+    assert seed == initial+stride
     return elapsed
 
 
 @cache
-def first_pass(seed):
+def first_pass(seed,origin=ORIGIN,edge=EDGE,modulus=MODULUS,max_gain=647):
     count = clock = 0
     seen = {}
-    while seed <= EDGE:
-        residue = (seed-ORIGIN) % MODULUS
+    while seed <= edge:
+        residue = (seed-origin) % modulus
         if residue in seen:
             old,index = seen[residue]
             stride,length = seed-old,count-index
-            copies = (EDGE-seed)//stride
+            copies = (edge-seed)//stride
             if copies >= 4:
-                a,b,c,d = [cycle_cost(seed+j*stride,length,stride) for j in range(4)]
+                a,b,c,d = [cycle_cost(seed+j*stride,length,stride,origin,modulus) for j in range(4)]
                 second = c-2*b+a
                 assert d-2*c+b == second
                 clock += copies*a+comb(copies,2)*(b-a)+comb(copies,3)*second
@@ -85,10 +85,10 @@ def first_pass(seed):
                 count += copies*length
             seen.clear()
         seen[residue] = seed,count
-        seed,delta = evaluate(seed)
+        seed,delta = evaluate(seed,origin,modulus)
         count += 1
         clock += delta
-    assert seed <= EDGE+647
+    assert seed <= edge+max_gain
     return seed,count,clock
 
 
