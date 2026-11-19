@@ -25,6 +25,7 @@ GATES_NEW = {
     16: (396_028_998_050_602_388, 660_048_330_084_337_306),
     17: (1_188_086_994_151_807_156, 1_980_144_990_253_011_922),
     18: (3_564_260_982_455_421_460, 5_940_434_970_759_035_762),
+    19: (10_692_782_947_366_264_372, 17_821_304_912_277_107_282),
 }
 HERE = Path(__file__).resolve().parent
 
@@ -102,7 +103,7 @@ def check_dyadics(worker, join, max_pairs, expected):
     assert max(maxima[p] for p in range(1,24)) == 187
     for p in range(small+1,max_pairs+1):
         # b determines the number of letters on each side of the join.
-        b,bits = {26:(23,32),27:(25,36)}[p]
+        b,bits = {26:(23,32),27:(25,36),28:(26,35)}[p]
         for line in run(join,p,b,189,bits).splitlines():
             if line.startswith('long_tail '):
                 _,reported,n,depth = line.split()
@@ -139,6 +140,8 @@ def main():
     receipts = high_receipts()
     minimum = {r:min(p for rr,p in receipts if rr==r) for r in range(lo,hi+1)}
     max_pairs = max(minimum.values())-1
+    if args.dyadic and max_pairs > 27 and not args.join:
+        parser.error("scale 19 needs --join to verify the p=28 directions")
     tails = read_tails(max_pairs)
     if args.dyadic:
         check_dyadics(args.dyadic.resolve(),args.join.resolve() if args.join else None,max_pairs,tails)

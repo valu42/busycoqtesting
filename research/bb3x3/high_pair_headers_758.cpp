@@ -22,7 +22,7 @@ std::vector<int> residues;
 std::vector<unsigned> next_bin(bin_count+1);
 std::vector<unsigned> residue_index(period/128 + 2);
 struct Counts { UInt cells=0, probes=0, tests=0, exact=0, survivors=0; };
-std::array<Counts,31> counts;
+std::array<Counts,32> counts;
 unsigned cutoff, minimum_pairs;
 
 void make_residues() {
@@ -61,7 +61,14 @@ void mark_bins(Wide a, UInt four, unsigned m) {
 bool escapes(UInt n,unsigned pairs,unsigned depth) {
     // Lower and upper endpoints, in units of 2^-60, always enclose the orbit.
     constexpr UInt unit=UInt(1)<<60;
-    UInt lo=n<<(60-2*pairs), hi=lo;
+    UInt lo, hi;
+    if (pairs == 31) {
+        // A numerator on the 2^-62 grid can lie between two working-grid points.
+        lo = n/4;
+        hi = (n+3)/4;
+    } else {
+        lo = hi = n<<(60-2*pairs);
+    }
     for (unsigned m=depth; m<=limit;) {
         if (3*hi<unit) { lo*=3; hi*=3; ++m; }
         else if (9*lo>5*unit) {
@@ -134,7 +141,7 @@ int main(int argc,char **argv) {
         first=std::atoi(argv[1]); last=std::atoi(argv[2]); minimum_pairs=std::atoi(argv[3]);
         if (argc==5) limit=std::atoi(argv[4]);
     } else if (argc!=1) return 2;
-    if (first<2 || first>last || last>60 || limit<last+42 || limit>1000 || minimum_pairs<12 || minimum_pairs>30) return 2;
+    if (first<2 || first>last || last>61 || limit<last+42 || limit>1000 || minimum_pairs<12 || minimum_pairs>31) return 2;
     powers[0]=1;
     for (size_t i=1; i<powers.size(); ++i) powers[i]=3*powers[i-1];
     make_residues();

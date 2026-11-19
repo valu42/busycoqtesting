@@ -2,7 +2,7 @@
 
 Consider the exact normalized direction $x=N/4^p$ for an odd positive multiple $N$ of five below $4^p$. A jump $J$ sends $x$ to $3x$ for $x<1/3$. A pair $P$ sends it to $(9x-5)/4$ for $x>5/9$. In the middle interval the ordinary word ends. The table measures its length in elementary moves, counting one for $J$ and two for $P$. A final returning bulk is excluded. The denominator is a power of two and the numerator stays odd, so none of the four endpoints $0,1/3,5/9,1$ can occur.
 
-Exactly **224** eligible dyadic directions with $p\le27$ have a tail of at least 189 elementary moves. The [complete ledger](dyadic_long_tails_758.tsv) gives each numerator and its exit length.
+Exactly **224** eligible dyadic directions with $p\le27$ have a tail of at least 189 elementary moves. At $p=28$ the two-sided search found 748 more, giving 972 in total. It tested 15,211,551,150 interval matches and replayed 1,568,831,850 candidates exactly. The [complete ledger](dyadic_long_tails_758.tsv) gives each numerator and its exit length.
 
 The table certifies the maximum over every direction in each row, including directions that need not arise from the blank orbit. For $p=1$ there is no eligible numerator. For a cusp header, suppose $x=D h_d/3^e$ with $h_d$ even. The first normalized pair produces an odd numerator divisible by five. Reading to the first grouped boundary at elementary depth $e$ or $e+1$ removes the factors of three and gives the reduced denominator $4^p$, where $p$ is the number of pairs read. The remaining normalized word then satisfies the corresponding bound. [Why these dyadics occur](RATIONAL_HEADERS_758.md)
 
@@ -34,6 +34,7 @@ The table certifies the maximum over every direction in each row, including dire
 | 25 | 210 | 242,035,771,586,755 | 1 |
 | 26 | 207 | 905,466,298,629,265 | 2 |
 | 27 | 235 | 16,596,468,157,584,215 | 1 |
+| 28 | 243 | 62,420,325,085,947,185 | 1 |
 
 ## Exhaustion of the search
 
@@ -80,4 +81,5 @@ g++ -O3 -std=c++17 -fopenmp dyadic_tail_join_758.cpp -lgmpxx -lgmp -o dyadic_tai
 python3 check_dyadic_join_758.py ./dyadic_tail_join
 ./dyadic_tail_join 26 23 189 32
 ./dyadic_tail_join 27 25 189 36
+./dyadic_tail_join 28 26 189 35
 ```
