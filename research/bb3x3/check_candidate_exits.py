@@ -19,10 +19,14 @@ def trace(candidate):
             result = first_return(seed, batch=False)
             assert result is not None and result > seed
             seed = result
-        exit_seed = outputs.get(seed, seed)
+        crossing = outputs[seed] if seed in outputs else (path[-1], seed)
         for entry in path:
-            outputs[entry] = exit_seed
-        exits.add(exit_seed - candidate)
+            outputs[entry] = crossing
+        exits.add(crossing[1] - candidate)
+    if candidate == CASES[0][0]:
+        assert set(outputs.values()) == {(candidate - 17, candidate + 50)}
+    if candidate == CASES[2][0]:
+        assert set(outputs.values()) == {(candidate - 96, candidate + 140)}
     return tuple(sorted(exits)), len(outputs)
 
 

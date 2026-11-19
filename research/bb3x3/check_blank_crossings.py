@@ -8,6 +8,8 @@ from tempfile import TemporaryDirectory
 from check_bb33 import champion_step, first_return
 from check_candidate_exits import CASES, trace
 from check_confluence import LOW as PUBLISHED
+from jump_after_third import verify as jump_after_third
+from exact_second_758 import GATE, KNOWN_CUT, exact_second
 
 HERE = Path(__file__).resolve().parent
 FIRST_FORWARD = 1_080_000_000_055_450
@@ -48,11 +50,16 @@ def cuts(section):
     return list(range(start, limit, SPAN)) + [limit]
 
 
-def run_window(exe, pair):
+def run_window(executables, pair):
     lo, hi = pair
-    proc = subprocess.run([str(exe), str(lo), str(hi)], capture_output=True, text=True)
-    if proc.returncode:
-        raise RuntimeError(f"Window {lo}..{hi} failed: {proc.stderr.strip()}")
+    errors = []
+    for exe in executables:
+        proc = subprocess.run([str(exe), str(lo), str(hi)], capture_output=True, text=True)
+        if proc.returncode == 0:
+            break
+        errors.append(proc.stderr.strip())
+    else:
+        raise RuntimeError(f"Window {lo}..{hi} failed: {' | '.join(errors)}")
     start, cut, first, last, blocks, calls = map(int, proc.stdout.split())
     assert (start, cut) == (lo, hi) and hi <= first <= last <= hi + WIDTH
     assert blocks >= 0 and calls >= 0
@@ -64,6 +71,8 @@ def main():
     parser.add_argument("--section", choices=("all", *NAMES), default="all")
     parser.add_argument("--jobs", type=int, default=4, help="parallel C++ workers")
     parser.add_argument("--chunk", type=int, help="verify only this zero-based window index")
+    parser.add_argument("--reference", action="store_true",
+                        help="use only the scalar interval checker")
     args = parser.parse_args()
     if not __debug__ or args.jobs < 1:
         parser.error("run without -O and use at least one worker")
@@ -72,24 +81,36 @@ def main():
 
     sections = NAMES if args.section == "all" else (args.section,)
     with TemporaryDirectory() as temp, ThreadPoolExecutor(max_workers=args.jobs) as pool:
-        exe = Path(temp) / "cross_758"
-        subprocess.run(["c++", "-std=c++17", "-O3", str(HERE / "cross_758.cpp"),
-                        "-o", str(exe)], check=True)
+        names = ["cross_758"] if args.reference else ["cross_758_fast", "cross_758"]
+        executables = []
+        for name in names:
+            exe = Path(temp) / name
+            subprocess.run(["c++", "-std=c++17", "-O3", str(HERE / (name+".cpp")),
+                            "-o", str(exe)], check=True)
+            executables.append(exe)
         for section in sections:
             if section == "prefix":
                 prefix_entry()
             grid = cuts(section)
             windows = list(zip(grid, grid[1:]))
+            if section == "second":
+                # From this grid point the affine proof gives the exact exit.
+                pivot = grid.index(KNOWN_CUT)
+                windows = windows[:pivot] + [(KNOWN_CUT, GATE)]
             if args.chunk is not None:
                 if not 0 <= args.chunk < len(windows):
                     parser.error(f"{section} has {len(windows)} windows")
                 windows = [windows[args.chunk]]
-            largest = max(pool.map(lambda pair: run_window(exe, pair), windows))
+            largest = max(pool.map(lambda pair: run_window(executables, pair), windows))
             print(f"{section}: {len(windows)} windows passed, maximum excess {largest}.", flush=True)
             if section in NAMES[2:] and args.chunk is None:
                 candidate, expected, edges = CASES[NAMES.index(section) - 2]
                 assert trace(candidate) == (expected, edges)
                 print(f"Local exits above {candidate}: {expected}", flush=True)
+                if section == "second":
+                    exact_second()
+                if section == "third":
+                    jump_after_third()
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 """Lower-bound the #758 raw clock from any attained two-counter mass."""
-from check_bb33 import champion_step
+from check_bb33 import HALTING_TARGET, champion_step
 from timing_758 import branch_cost
 
 
@@ -44,11 +44,35 @@ def check_block(a, c):
     raise AssertionError("unbalanced complete block")
 
 
+def conditional_target_clock():
+    """Clock bounds only if the blank orbit reaches A(1,H)."""
+    mass = 2*HALTING_TARGET + 1
+    a, c, suffix = 1, HALTING_TARGET, 0
+    for call in range(1, 308):
+        suffix += branch_cost(a, c)
+        state = champion_step(a, c)
+        if state is None:
+            assert call == 307
+            break
+        a, c = state
+    else:
+        raise AssertionError("target did not halt on call 307")
+    upper_prefix = 2 + (mass**3 + 45*mass**2 + 585*mass) // 36
+    return raw_lower_bound(mass) + suffix, upper_prefix + suffix
+
+
 def audit():
     for a in range(48):
         for c in range(1, 48):
             if a == 1 or c % 2:
-                assert branch_cost(a, c) >= 3*min(a, c)**2
+                mass = a + 2*c
+                clock = branch_cost(a, c)
+                assert 3*min(a, c)**2 <= clock
+                assert 3*clock <= mass**2 + 30*mass + 195
+                state = champion_step(a, c)
+                if state is not None:
+                    na, nc = state
+                    assert 4 <= na + 2*nc - mass <= 9
                 check_block(a, c)
     for base in (10**4, 10**9, 10**15, 10**139):
         for small in (0, 1, 2, 3, 7, 19):
@@ -78,3 +102,7 @@ if __name__ == "__main__":
         target = 2*c + 1
         print(f"A(1,{c}): mass {target}, block {block_size(target)}, "
               f"lower bound {raw_lower_bound(target):,} raw steps")
+    low, high = conditional_target_clock()
+    assert low > 441*10**411 and high < 220*10**415
+    print("If blank reaches A(1,H), the halting time is between "
+          "4.41e413 and 2.20e417 raw steps.")

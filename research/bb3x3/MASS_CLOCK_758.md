@@ -22,3 +22,7 @@ $$
 $$
 
 For V = 6,670,872,679,866,767, the verifier gives B = 90 and N = 8,235,645,283,786. It evaluates the sum exactly in constant time after finding B. Run `python3 mass_clock_758.py` beside [check_bb33.py](check_bb33.py) and [timing_758.py](timing_758.py). The checks compare the formula against direct summation at small masses, compare one hundred blank-orbit masses with their exact clocks, and replay the balanced-state argument at small and large seeded configurations. [Verifier](mass_clock_758.py)
+
+## Conditional clock at the known halting seed
+
+**If the blank orbit reaches A(1,H), #758 halts after more than 4.41 × 10⁴¹³ and fewer than 2.20 × 10⁴¹⁷ raw steps.** The lower bound above uses V = 2H+1 and B = 795. For the upper bound, every branch costs at most W²/3 + 10W + 65 since min(a,c) ≤ W/3. Each continuing blank-domain mass increment is at least four. Integrating this increasing cost bound over the disjoint mass intervals of those calls bounds the prefix clock by 2 + V³/36 + 5V²/4 + 65V/4. The verifier adds the exact cost of the 307-call halting suffix. Blank-tape reachability of A(1,H) remains open.
