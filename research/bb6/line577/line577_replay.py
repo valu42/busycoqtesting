@@ -302,6 +302,32 @@ class Replay:
         state, direction, left, right = config
         return 1, 1 + 2 * (state == "A" and peek(left if direction == "L" else right, 1) == "0")
 
+def fingerprint(config):
+    return hashlib.sha256(json.dumps(config, separators=(",", ":")).encode()).hexdigest()
+
+def read_checkpoint(path, state):
+    record = json.loads(path.read_text())
+    if record["outcome"] != "running" or record["state"] != state:
+        raise ValueError("Checkpoint state or run does not match")
+    q, direction, left, right = record["config"]
+    if q not in tuple("ABCDEF") or direction not in ("L", "R"):
+        raise ValueError("Invalid control state")
+    stacks = []
+    for side in (left, right):
+        runs = []
+        for bits, count in side:
+            if not isinstance(bits, str) or not bits or set(bits) - {"0", "1"} or type(count) is not int or count < 1:
+                raise ValueError("Invalid compressed tape")
+            runs.append((bits, count))
+        stacks.append(tuple(runs))
+    config = q, direction, *stacks
+    if fingerprint(config) != record["config_sha256"]:
+        raise ValueError("Checkpoint configuration digest does not match")
+    ticks = tuple(record[k] for k in ("commands", "reference_steps", "weighted_steps"))
+    if any(type(n) is not int or n < 0 for n in ticks):
+        raise ValueError("Invalid checkpoint clock")
+    return config, *ticks
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("lean_source", type=Path)
@@ -309,6 +335,7 @@ def main():
                         help="C is the line 577 run. A is the published glider control.")
     parser.add_argument("--commands", type=int, required=True)
     parser.add_argument("--report", type=int, default=100000, help="progress interval")
+    parser.add_argument("--resume", type=Path, help="continue a saved running checkpoint to the total --commands limit")
     parser.add_argument("--dump", type=Path, help="write the final compressed configuration and exact clocks as JSON")
     parser.add_argument("--literal-checkpoints", type=Path,
                         help="write small complete tapes at intervals for the independent C++ simulator")
@@ -324,6 +351,10 @@ def main():
     config = (args.state, "R", (), ())
     ref_steps, weighted_steps, executed = 0, 0, 0
     outcome = "running"
+    if args.resume:
+        config, executed, ref_steps, weighted_steps = read_checkpoint(args.resume, args.state)
+        if executed > args.commands:
+            parser.error("requested command limit precedes the checkpoint")
     if args.literal_checkpoints:
         args.literal_checkpoints.write_text("")
     while executed < args.commands:
@@ -344,16 +375,15 @@ def main():
                     print("".join(w * n for w, n in side).rstrip("0"), file=stream)
         if executed % args.report == 0:
             print(executed, ref_steps, weighted_steps, flush=True)
-    payload = json.dumps(config, separators=(",", ":")).encode()
-    fingerprint = hashlib.sha256(payload).hexdigest()
+    digest = fingerprint(config)
     print("outcome", outcome, "commands", executed)
     print("reference steps", ref_steps)
     if args.state == "C":
         print("line 577 steps", weighted_steps)
-    print("compressed configuration SHA-256", fingerprint)
+    print("compressed configuration SHA-256", digest)
     if args.dump:
         args.dump.write_text(json.dumps(dict(outcome=outcome, state=args.state, commands=executed,
-            reference_steps=ref_steps, weighted_steps=weighted_steps, config=config), indent=2) + "\n")
+            reference_steps=ref_steps, weighted_steps=weighted_steps, config_sha256=digest, config=config), indent=2) + "\n")
 
 if __name__ == "__main__":
     main()

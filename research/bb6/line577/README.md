@@ -2,7 +2,8 @@
 
 The machine is `1RB0LD_1LC1RE_1LA1RC_1RA0LC_0RF---_0LD1RB`, started in A on an all-zero tape. The pinned ranking places it at rank 149 and holdout line 577. The only missing transition is E reading 1. [Pinned rankings](https://github.com/valu42/busycoqtesting/blob/175f2c272c1d5dfd1ff16f277839f19877cb2364/research/bb6/RANKINGS.md#L217)
 
-The blank run executes at least **86597105634550683242220399832625532065265089196529793180480570975610884882393403647014563450505554078284888955574375286937328747915272052514346715229369099735730293270875253729127481455956835** transitions. The run is open at this checkpoint. After 1,000,000 replay commands the compressed configuration has SHA-256 `f2dbf8f9632b8de0c010723421b5ce84051f89ad153284c62cea09156c3a2de3`.
+The blank run executes at least **1816237653300109484588239803869288593171206283766581214355270571533687296985304426289368816596076019360296629571543237341430580536440233676927059617381600255456005274874058572127203497318971240551486175344671132385923635912393767304248643298549519931056732692752102091322904383137859831818184618392009892495572101560399186246666749835737568544136881494873005340239196037507960064945264591444610043495064457261409412286652147482278161673035261107118367528850787** transitions. This is a finite lower bound. The blank-start halting question remains open. At replay command 3,600,000, the compressed configuration has SHA-256 `fb6dca975e425a6e6f6e89eca8426c41a6f0c9f93a9e0a4790f98bec21ff3c2b`.
+
 
 ## Prior work
 
@@ -28,6 +29,18 @@ The program stores each half of the tape as words with integer repetition counts
 4. For the clock, charge each outer call its finite reset, each visited digit its checked local cost, and each crossed wall one wall-call cost. A gap initially containing `n` walls contributes `n` to each forwarded call, less all walls consumed up to that call. Walls emitted into that gap by the next digit contribute on its *subsequent* calls. The two prefix sums in `batch_clocks` compute precisely these adjustments. Prior complete periods contribute an arithmetic series. Both the ordinary and B0-adjusted clocks use the same number of wall visits. A wall costs 44 ordinary moves or 48 adjusted moves. A reset costs 31 or 35.
 5. The terminal checks are the undefined E1 and the 125-transition glider. The glider checker executes one full period on a finite window, treating the left tail as arbitrary. It verifies the head moves right by one, a 1 is added behind it, and the fixed words are restored. Induction gives non-halting from any phase that matches the verified template.
 
+## Two terminal suffixes
+
+The incoming call interface and its normal return are defined in the replay section. Write `Dp` for digit word `p` in the pinned file, `W` for wall `101111111`, and place infinite zeros after the displayed final bit. Each call can have an arbitrary left tail beyond its nine specified left cells.
+
+| Right suffix on the first call | Normal returns before the outcome | Outcome inside the next call |
+|---|---:|---|
+| `D7 W W D18 W 1` | 24 | The 25th call reaches E1. The calls together take 8,297 ordinary reference moves. |
+| `D18 1` | 7 | The eighth call reaches the translating glider. The calls together take 1,030 ordinary reference moves before detection. |
+| `D18 W 1` | 3 | On the fourth call the head crosses the left boundary in F. Continuation depends on the outer tape. |
+
+`line577_suffix.py` uses only literal single-cell steps and the verified glider pattern. It stops at the first access to the unspecified left tail. For a normal return it preserves the entire resulting right half and passes this to the next call. The counts exclude time spent in the caller between visits. Applying either terminal result to the blank start would require reaching the suffix and supplying the indicated number of calls. The blank replay continues through a collision between two digits near the outer edge. It has yet to establish either terminal condition.
+
 ## Independent controls
 
 The C++ program reads the original twelve-entry ranking table and executes exactly one transition per loop. It compares the state and **both complete head-relative half-tapes**, trimming only the infinite blank ends. Six comparisons from the blank start passed. The reflected reference was also run independently to all six corresponding clocks.
@@ -45,12 +58,13 @@ As a positive control, the state-A run entered the published glider after 288,31
 
 ## Reproduce
 
-Run from the directory containing the two Python files. The only dependency beyond Python 3.10 or later is the pinned text file. The C++ control requires a C++17 compiler. Leave assertions enabled.
+Run from the directory containing the Python files. The only dependency beyond Python 3.10 or later is the pinned text file. The C++ control requires a C++17 compiler. Leave assertions enabled.
 
 ```sh
 source_file=M_1RB1RE_1LC1RB_1RA0LD_1RC0LB_0RFHHH_0LD1RA.lean
 curl -fsSLo "$source_file" "https://raw.githubusercontent.com/google-deepmind/cryptids/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB6/NonHalt/$source_file"
-python3 line577_replay.py "$source_file" --commands 1000000 --dump checkpoint.json
+python3 line577_replay.py "$source_file" --commands 3600000 --dump replayed.json
+python3 line577_suffix.py "$source_file"
 python3 line577_replay.py "$source_file" --state A --commands 300000
 python3 line577_replay.py "$source_file" --commands 12000 --literal-checkpoints controls.txt
 c++ -O3 -std=c++17 line577_literal.cpp -o line577_literal
@@ -59,3 +73,9 @@ c++ -O3 -std=c++17 line577_literal.cpp -o line577_literal
 ```
 
 The input file's SHA-256 is `68c78d084149e072cd1aecfb68cab24154554ed84ad1cffb26f77df1d5d4fd53`.
+
+[checkpoint.json](checkpoint.json) contains the full state, both half-tapes and both clocks at command 3,600,000. The first command above reconstructs it from blank. To continue from the saved tape, run the following with the same source file. The limit counts commands from the blank start.
+
+```sh
+python3 line577_replay.py "$source_file" --resume checkpoint.json --commands 3610000 --dump continued.json
+```
