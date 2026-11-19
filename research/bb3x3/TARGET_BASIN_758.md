@@ -1,37 +1,42 @@
-# Joining the halting basin below the 140-digit target
+# One contiguous halting interval below the 140-digit target
 
-Every reset $A(1,H-d)$ with
+Every one of **5,940,434,970,755,632,708 consecutive reset seeds** in the interval
 $$
-3,403,055\ le d\le\ 2,716,248,271,952,006
+ H-5,940,434,970,759,035,762 \;\le s\le\; H-3,403,055
 $$
-eventually halts. This is **2,716,248,268,548,952 consecutive seeds**, approximately 81 times the size of the previously joined inner interval. It includes all the gaps between the scale-7, 8, 9, 10 and 11 corridors. The bound applies separately to every integer in the interval. Entry by the blank orbit would resolve both #758 and #153.
+eventually halts, for $H=(3^{307}-8,282,708,212)/13,959,275$. This joins every gap through scale 18. The previous continuous interval adjoining the target region contained 33,533,925,880,304 seeds. A proof that the actual blank orbit enters the new interval would settle both #758 and #153. [Original contiguous interval](LOWER_SCALE_GATES_758.md)
 
-## How the gaps are closed
+## From a reset to a rational direction
 
-The [previous basin](LOWER_SCALE_GATES_758.md) ends at $d=33,533,929,283,358$. From there through $d=1,629,748,963,171,202$, every even reset follows its known 300-call first-return word. Every odd reset takes the common prefix $J^{292}L^8JL^6$ and then the maximal next group of $k$ jumps. The ordering of the left and right counters along the prefix makes $k$ nonincreasing as $d$ increases. Checking both endpoints gives $254\le k\le257$. Put $r=307-k$.
+Write $d=H-s$. The original interval reaches $d=33,533,929,283,358$. From there through the even distance $3,564,260,982,455,421,458$ just before the scale-18 corridor, every even seed follows its fixed 300-call first-return word. Each odd seed takes $J^{292}L^8JL^6$ and then a maximal run of $k$ jumps. The first word is legal at both endpoints. Throughout a common word the smaller $d$ gives a smaller or equal left counter and larger or equal right counter. These orders preserve the guards and make $k$ nonincreasing as $d$ grows.
 
-The [physical shadow theorem](TARGET_SHADOW_758.md) makes each subsequent grouped decision through depth 257 exact by iterating a rational number $x=D h_0/3^r$, where $D=13,959,275$ and $h_0$ is the positive even left coordinate before the second group of jumps. The three alternatives are a jump ($x\mapsto3x$), an ordinary first return (the middle interval), or a pair of bulks ($x\mapsto(9x-5)/4$). At entry the next jump is impossible by maximality. Thus a seed continuing beyond the first decision must begin with a pair.
+Put $D=13,959,275$ and $r=307-k$. The endpoints give $50\le r\le 60$. The [physical itinerary theorem](TARGET_SHADOW_758.md) says that each next ordinary decision agrees with iteration of the rational number $x=D h_0/3^r$, where the aligned left counter plus one is $2\cdot3^k h_0$. For $r\le53$ this holds through elementary depth 257, and for the remaining ranges it holds through depth 250. The three intervals $0<x<1/3$, $1/3<x<5/9$ and $5/9<x<1$ give, respectively, a jump with $x\mapsto3x$, an ordinary first return after a bulk and a reset, or two bulks with $x\mapsto(9x-5)/4$. The shadow theorem excludes ties, exceptional calls and hidden early resets during this comparison.
 
-Stop the rational iteration at the first grouped depth $m\ge r$, counting a pair as two calls. An earlier middle interval already supplies the return. Otherwise $m=r$ or $r+1$. After $p$ pairs the direction has the form $N/4^p$ with **$N$ odd and divisible by 5**. Indeed an inverse word has endpoints $A/3^m$ and $(A+4^p)/3^m$, so $N=3^{m-r}D h_0-A$. The first pair makes $A$ odd and divisible by five, and each later jump or pair retains that property.
+Stop at the first grouped depth $m\ge r$, counting a pair as two calls. Any earlier middle interval supplies the return. Otherwise $m=r$ or $r+1$. The first surviving branch must be a pair because the launch jumps were maximal. If the prefix has $p$ pairs, its inverse has endpoints $A/3^m$ and $(A+4^p)/3^m$. Its ending direction is $N/4^p$ with $N=3^{m-r}D h_0-A$. The integer $N$ is odd and divisible by five. The first pair makes $A$ odd and divisible by five, and later jumps and pairs preserve those properties.
 
-Two finite exhaustions cover these rational directions.
+## Two complementary exhaustions
 
-* For $p\le23$, every positive odd multiple of five below $4^p$ reaches the middle interval within at most 187 more elementary calls. Since $m\le54$, this occurs within the proved shadow. The calculation recursively restricts arithmetic progressions to the two surviving intervals and exactly replays the remaining individual rational points. [Dyadic survey and verifier](DYADIC_SURVIVAL_758.md)
-* For $p\ge24$, the fixed prefix gives $h_0(d+32768)=h_0(d)+2D$. Enumerating one period gives 8,192 possible residues modulo $2D$. Enumerate every initial word through this cut with sufficiently many pairs. In each interval enumerate the resulting arithmetic progressions of possible $N$, skipping only bins already proved to return early. The full survey for $r\le53$ found **zero** surviving headers through depth 257. Across the required high-pair cases and the smaller exponents archived alongside them, it checked 617,905 prefix intervals. [Method](HIGH_PAIR_HEADERS_758.md) · [Integer receipts](high_pair_headers_758.tsv)
+1. At small pair counts we exhaust every odd multiple of five below $4^p$. For $p\le23$ every such positive direction returns within 187 more elementary calls. At higher pair counts only a short explicit list lasts 189 calls. All other directions decide before the physical guarantee runs out since $m+188\le250$. For the listed directions, splitting the preceding word into two pieces gives every matching physical countdown. Those rare actual origins can be replayed with the original two-counter rules. [Dyadic exhaustion](DYADIC_SURVIVAL_758.md) · [Long directions](dyadic_long_tails_758.tsv) · [Recovery and literal replay](target_basin_758.py)
+2. At large pair counts we enumerate every initial word reaching the cut. The prefix gives $h_0(d+32768)=h_0(d)+2D$ and only 8,192 possible residues of $h_0$ modulo $2D$. These determine arithmetic progressions for $N$ within each prefix. Integer interval tests discard directions already known to return early. Arbitrary-precision arithmetic resolves ambiguous comparisons. Every required case returns by its specified angular depth. The two searches meet at a pair count chosen separately for each $r$. At fixed $(r,p)$ there are exactly $\binom{r-p-1}{p-1}+\binom{r-p-1}{p-2}$ high-pair prefixes, corresponding to $m=r$ and $m=r+1$. [High-pair proof and verifier](HIGH_PAIR_HEADERS_758.md) · [Receipts](high_pair_headers_758.tsv)
 
-This proves an ordinary reset within $307+257+257+2$ elementary calls for every odd seed in the gap, the final two calls allowing the return after the middle guard. Every continuing call adds at most nine to $W=a+2c$. At two resets the increase in $W$ is twice the increase in the reset seed. Thus the positive increase of the seed is less than 4,000. A reset in the gap returns to a strictly smaller countdown still above $3,403,055$. Strong induction attaches the **entire** gap to the old basin.
+For example, the two seeds at distances 835,854,016,615,180,604 and 835,854,016,615,180,606 both make a fresh reset on their 814th counter call. Their seed increments are 1,953 and 1,955. The other two matching origins, 3,521,634,644,642,563,784 and 3,521,634,644,642,563,786, return in 812 calls and gain 1,936 and 1,938. These are all four compatible origins among the 224 listed long directions across the surveyed exponents. [Ancestry checker](header_tail_ancestry_758.py)
 
-For $1,629,748,963,171,204\le d\le2,716,248,271,952,006$, the fixed odd word $J^{292}L^8JL^6 J^{253}LR$ and the same even word give a bounded positive return. Each word is legal at both endpoints of its parity, and the counter ordering preserves the guards between them. The intervening odd distance just before this corridor gives an even reset, also covered by the even word. The same induction attaches the outer corridor. The earlier sparse transfer receipts are unnecessary for the gaps above the old scale-7 endpoint in this proof.
+The shadowed paths have at most $307+257+257+2$ calls. Each continuing call adds at most nine to $W=a+2c$, and the increase in $W$ between resets is twice the seed increment. The resulting positive seed increments are below 4,000. For the rare physical replays the checker requires a halt or a first return in 2,000 calls with a seed increment at most 9,000. Both bounds are much smaller than the distance to the old interval's near edge. Thus each seed either halts or returns to a strictly smaller countdown still inside the induction range. Strong induction joins the entire gap to the original halting interval.
 
-## Consequence for blank
+The final corridor, $3,564,260,982,455,421,460\le d\le 5,940,434,970,759,035,762$, has fixed odd word $J^{292}L^8JL^6 J^{246}LR$ and the same fixed even word. At each parity both endpoints verify the word, so all its seeds make a short positive return. The odd distance immediately before that corridor has an even reset seed and follows the even word. The induction includes every endpoint.
 
-Write $B=H-2,716,248,271,952,006$ and $U=H-3,403,055$. A hypothetical infinite blank orbit must pass $W=2U+1$. Its last reset at or below that cut has parameter at most $B-1$. At the first state with $W>2U+1$, the required mass gain is at least $2(U-B)+3$. A reset in the preceding **603,610,726,344,211** elementary calls would therefore force a halt. We have not proved that the blank orbit has a reset this recent at that cut.
+## What would finish the proof from blank?
 
-The finite proof uses ordinary integer calculations with explicit bounds. It is independent of sampling and has not been formalized in a proof assistant. Reproduce it in this directory. The first command checks all physical endpoints. The final command also reruns the two exhaustive rational calculations.
+Set $B=H-5,940,434,970,759,035,762$ and $U=H-3,403,055$. An infinite blank orbit must cross $W=2U+1$. Its last reset at or below that cut would have parameter at most $B-1$, since all seeds from $B$ to $U$ halt. At the first state above the cut the mass gain from the last reset is at least $2(U-B)+3$. Consequently a reset in the preceding **1,320,096,660,167,918,379 elementary calls** would force a halt. The existence of such a reset on the actual blank trajectory remains open.
+
+## Reproduction
+
+The quick command checks the physical endpoints, the completeness of the archived high-pair rows, and the actual rare reset origins using the exhaustive results. The last command also regenerates the exhaustive arithmetic surveys. The proofs use integer arithmetic and have not been formalized in a proof assistant.
 
 ```sh
 python3 target_basin_758.py
 c++ -O3 -std=c++17 -fopenmp dyadic_survival_758.cpp -lgmpxx -lgmp -o /tmp/dyadic758
+c++ -O3 -std=c++17 -fopenmp dyadic_tail_join_758.cpp -lgmpxx -lgmp -o /tmp/join758
 c++ -O3 -std=c++17 high_pair_headers_758.cpp -lgmpxx -lgmp -o /tmp/headers758
-OMP_NUM_THREADS=4 python3 target_basin_758.py --dyadic /tmp/dyadic758 --headers /tmp/headers758
+OMP_NUM_THREADS=4 python3 target_basin_758.py --dyadic /tmp/dyadic758 --join /tmp/join758 --headers /tmp/headers758
 ```

@@ -1,5 +1,8 @@
 // Certify that every incoming reset in [start,start+5000] passes a cut alive.
-#include "return_prefix_758.hpp"
+#ifndef BB758_RETURN_PREFIX_HEADER
+#define BB758_RETURN_PREFIX_HEADER "return_prefix_758.hpp"
+#endif
+#include BB758_RETURN_PREFIX_HEADER
 #include <array>
 #include <set>
 #include <stdexcept>
