@@ -1,6 +1,10 @@
 # Scale 74 after its first change of return word
 
-A trajectory entering the [scale-74 corridor](SCALED_GATES_758.md) deeply enough to reach its single exit subsequently reaches one exact reset at **offset 1,000,009,062,455 beyond the first-change cut**. Write B = 1,865,347,548,659,819,442,523,519,543,121,952,886,355,592,304 for that cut. At offset z the reset is A(1,H−B+z). The new checkpoint is still about 8.516×10⁴⁴ seed units from the upper edge of the scale-73 corridor. No blank-tape entry or inter-corridor crossing has been established.
+Every reset in a contiguous interval of **1,243,565,032,439,879,628,349,013,028,747,969,590,903,728,199 seeds** reaches the same exact reset at offset **1,000,009,062,455 beyond the scale-74 first-change cut**. Write $B=1,865,347,548,659,819,442,523,519,543,121,952,886,355,592,304$ for that cut and $F=3,108,912,581,099,699,070,872,532,571,869,921,477,259,320,502$. The complete interval runs from $H-F$ through $H-B+10^{12}$. At offset $z$ the reset is $A(1,H-B+z)$. The checkpoint is still about $8.516\times10^{44}$ seed units from the upper edge of the scale-73 corridor. Blank entry and the inter-corridor crossing remain open. [Original scale corridors](SCALED_GATES_758.md)
+
+## Entry from the full ordinary interval
+
+Every odd reset with countdown $B\le H-s\le F$ follows $J^{292}L^8JL^6J^{190}LR$. Checking both endpoints certifies every intervening same-parity seed by counter order. The next odd seed on either side fails this word, so these are its maximal endpoints. The even seeds take the known 300-call return. The seed increases at most 1,184 per return throughout this interval. Any trajectory from it therefore reaches an offset $0\le z\le1184$ at the near edge. For the previously uncovered offsets $0\le z<812$, at most two literal first returns enter the existing covered band. Their first arrivals at $z\ge812$ consist of 321 distinct offsets from 814 through 2,781. Combining these checks with the full post-change cover below removes the deep-entry qualification.
 
 ## The first obstruction
 

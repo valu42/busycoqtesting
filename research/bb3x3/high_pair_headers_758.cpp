@@ -22,7 +22,7 @@ std::vector<int> residues;
 std::vector<unsigned> next_bin(bin_count+1);
 std::vector<unsigned> residue_index(period/128 + 2);
 struct Counts { UInt cells=0, probes=0, tests=0, exact=0, survivors=0; };
-std::array<Counts,32> counts;
+std::array<Counts,33> counts;
 unsigned cutoff, minimum_pairs;
 
 void make_residues() {
@@ -58,11 +58,17 @@ void mark_bins(Wide a, UInt four, unsigned m) {
     mark_bins(9*a+5*four,4*four,m+2);
 }
 
-bool escapes(UInt n,unsigned pairs,unsigned depth) {
+// All uint64_t inputs through p=31 follow the original arithmetic. At p=32
+// the numerator and the right endpoint 4^32 require an extra bit.
+template<class Number>
+bool escapes(Number n,unsigned pairs,unsigned depth) {
     // Lower and upper endpoints, in units of 2^-60, always enclose the orbit.
     constexpr UInt unit=UInt(1)<<60;
     UInt lo, hi;
-    if (pairs == 31) {
+    if (pairs == 32) {
+        lo = n/16;
+        hi = (n+15)/16;
+    } else if (pairs == 31) {
         // A numerator on the 2^-62 grid can lie between two working-grid points.
         lo = n/4;
         hi = (n+3)/4;
@@ -77,7 +83,8 @@ bool escapes(UInt n,unsigned pairs,unsigned depth) {
         else break;
     }
     ++counts[pairs].exact;
-    mpz_class a(n), b(UInt(1)<<(2*pairs));
+    mpz_class a, b=mpz_class(1)<<(2*pairs);
+    mpz_import(a.get_mpz_t(),1,1,sizeof(n),0,0,&n);
     for (unsigned m=depth; m<=limit;) {
         if (3*a<b) { a*=3; ++m; }
         else if (9*a>5*b) { a=9*a-5*b; b*=4; m+=2; }
@@ -87,16 +94,18 @@ bool escapes(UInt n,unsigned pairs,unsigned depth) {
     return false;
 }
 
-template<unsigned scale>
+template<unsigned scale, class Number>
 void check_cell(Wide a, unsigned pairs) {
     ++counts[pairs].cells;
     constexpr UInt step=divisor*scale, modulus=period*step;
-    const UInt residue=a%modulus, four=UInt(1)<<(2*pairs);
-    UInt n=0;
+    const UInt residue=a%modulus;
+    const Number four=Number(1)<<(2*pairs);
+    Number n=0;
     while (n<=four) {
         // N+A = scale*D*h0. Find the next supported header residue.
-        const UInt z=residue+n, h=(z%modulus+step-1)/step;
-        UInt block=z/modulus;
+        const Number z=residue+n;
+        const UInt h=(z%modulus+step-1)/step;
+        Number block=z/modulus;
         unsigned i=residue_index[h/128];
         while (i<residues.size() && UInt(residues[i])<h) ++i;
         if (i==residues.size()) { i=0; ++block; }
@@ -106,27 +115,33 @@ void check_cell(Wide a, unsigned pairs) {
         unsigned bin=n>>(2*pairs-bin_bits);
         if (next_bin[bin]!=bin) {
             if (next_bin[bin]>bin_count) break;
-            n=UInt(next_bin[bin])<<(2*pairs-bin_bits);
+            n=Number(next_bin[bin])<<(2*pairs-bin_bits);
             continue;
         }
         ++counts[pairs].tests;
         if (!escapes(n,pairs,cutoff+(scale==3))) {
             ++counts[pairs].survivors;
-            mpz_class origin;
+            mpz_class origin, numerator;
+            mpz_import(numerator.get_mpz_t(),1,1,sizeof(n),0,0,&n);
             mpz_import(origin.get_mpz_t(),1,1,sizeof(a),0,0,&a);
-            gmp_printf("surviving r=%u p=%u N=%lu scale=%u A=%Zd\n",
-                       cutoff,pairs,n,scale,origin.get_mpz_t());
+            gmp_printf("surviving r=%u p=%u N=%Zd scale=%u A=%Zd\n",
+                       cutoff,pairs,numerator.get_mpz_t(),scale,origin.get_mpz_t());
         }
         ++n;
     }
 }
 
-void prefixes(Wide a,unsigned m,unsigned p,UInt four) {
+void prefixes(Wide a,unsigned m,unsigned p,Wide four) {
     if (p+(cutoff+1-m)/2<minimum_pairs) return;
     if (m>=cutoff) {
         if (p>=minimum_pairs) {
-            if (m==cutoff) check_cell<1>(a,p);
-            else check_cell<3>(a,p);
+            if (p==32) {
+                if (m==cutoff) check_cell<1,Wide>(a,p);
+                else check_cell<3,Wide>(a,p);
+            } else {
+                if (m==cutoff) check_cell<1,UInt>(a,p);
+                else check_cell<3,UInt>(a,p);
+            }
         }
         return;
     }
@@ -141,7 +156,7 @@ int main(int argc,char **argv) {
         first=std::atoi(argv[1]); last=std::atoi(argv[2]); minimum_pairs=std::atoi(argv[3]);
         if (argc==5) limit=std::atoi(argv[4]);
     } else if (argc!=1) return 2;
-    if (first<2 || first>last || last>62 || limit<last+42 || limit>1000 || minimum_pairs<12 || minimum_pairs>31) return 2;
+    if (first<2 || first>last || last>63 || limit<last+42 || limit>1000 || minimum_pairs<12 || minimum_pairs>32) return 2;
     powers[0]=1;
     for (size_t i=1; i<powers.size(); ++i) powers[i]=3*powers[i-1];
     make_residues();

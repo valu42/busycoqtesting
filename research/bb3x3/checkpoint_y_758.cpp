@@ -21,6 +21,7 @@ const Big power = [] {
 }();
 const Big checkpoint = power * 19683 / 19171 + 4510976;
 
+Big base = checkpoint;
 struct State { Big a, c; };
 struct Block { Offset y; unsigned gain; };
 constexpr unsigned bits = 16;
@@ -43,8 +44,8 @@ void jump(State& s) {
     s.a = 3 * s.a + 2;
 }
 
-State odd_header(Offset x) {
-    State s{2 * power - 1, checkpoint + x - power + 585};
+State odd_header(const Big& x) {
+    State s{2 * power - 1, base + x - power + 585};
     if (s.c <= 0) throw std::runtime_error("illegal initial jumps");
     for (unsigned i = 0; i < 8; ++i) {
         bulk(s);
@@ -55,18 +56,20 @@ State odd_header(Offset x) {
 }
 
 unsigned even_gain(Offset x) {
-    State s{4 * (power / 3) - 1, checkpoint + x - 2 * (power / 3) + 587};
+    State s{4 * (power / 3) - 1, base + x - 2 * (power / 3) + 587};
     if (s.c <= 0) throw std::runtime_error("illegal even launch");
     for (char op : std::string("LLJLLJL")) {
         if (op == 'J') jump(s); else bulk(s);
         if (s.a <= 1) throw std::runtime_error("early even return");
     }
     if (s.a > s.c || s.a.get_ui() % 2) throw std::runtime_error("even return guard");
-    Big gain = s.a / 2 + s.c + 2 - checkpoint - x;
+    Big gain = s.a / 2 + s.c + 2 - base - x;
     return gain.get_ui();
 }
 
 void prepare() {
+    factor = 1;
+    initial_packs.fill(0);
     for (unsigned i = 0; i < bits; ++i) factor *= 3;
     for (unsigned r = 0; r <= mask; ++r) {
         Offset y = r;
@@ -94,13 +97,13 @@ void prepare() {
     }
 
     // Every c increases by at most (3c+13)/2 on a proposed bulk.
-    // Keep c+13 below checkpoint/4. The formal mass never decreases,
+    // Keep c+13 below a quarter of both bases. The formal mass never decreases,
     // so every formal intermediate state still satisfies a>c+4.
     for (unsigned j = 0; j < initial_packs.size(); ++j) {
         Big bound = max_c + 13 + 38342 * ((Big(1) << j) / 512);
         for (;;) {
             bound = (bound * factor + mask) >> bits;
-            if (4 * bound > checkpoint) break;
+            if (4 * bound > std::min(base, checkpoint)) break;
             ++initial_packs[j];
         }
     }
@@ -115,13 +118,25 @@ unsigned apply_block(Big& y) {
 }
 
 Offset checked_exit(const Big& c, Offset from) {
-    Big x = c - checkpoint;
+    Big x = c - base;
     if (!x.fits_ulong_p() || x <= from || x > limit)
         throw std::runtime_error("exit outside verifier range");
     return x.get_ui();
 }
 
-Offset next_reset(Offset x) {
+struct ReturnWord {
+    unsigned opening_bulks = 0, max_mass_gain = 4 * 293 + 9 * 8;
+    std::string suffix;
+    bool ordinary = true;
+
+    void bulks(unsigned count) {
+        if (suffix.empty()) opening_bulks += count;
+        else suffix.append(count, 'L');
+        max_mass_gain += 9 * count;
+    }
+};
+
+Offset next_reset(Offset x, ReturnWord* word = nullptr) {
     if (x & 1) return x + even_gains[x % 64];
 
     State s = lanes[(x % 512) / 2];
@@ -130,17 +145,32 @@ Offset next_reset(Offset x) {
     s.a -= Big(75660) * periods;
     Big y = (s.c + 7) / 2;
     unsigned gain = 0;
-    unsigned bucket = x == 0 ? 0 : std::numeric_limits<Offset>::digits - __builtin_clzl(x);
-    for (unsigned i = 0; i < initial_packs.at(bucket); ++i) gain += apply_block(y);
+    const unsigned bucket = x == 0 ? 0 : std::numeric_limits<Offset>::digits - __builtin_clzl(x);
+    const unsigned packets = initial_packs.at(bucket);
+    for (unsigned i = 0; i < packets; ++i) gain += apply_block(y);
+    if (word) word->bulks(packets * bits);
     Big nc = 2 * y - 7;
     s.a += 2 * (s.c - nc) + gain;
     s.c = nc;
 
     for (unsigned step = 0; step < 5000; ++step) {
-        if (s.a == 1) return checked_exit(s.c, x);
+        if (s.a == 1) {
+            if (word) word->suffix += 'Z';
+            return checked_exit(s.c, x);
+        }
         if (s.a <= s.c) {
-            if (s.a.get_ui() & 1) jump(s);
-            else return checked_exit(s.a / 2 + s.c + 2, x);
+            if (!(s.a.get_ui() & 1)) {
+                if (word) {
+                    word->suffix += 'R';
+                    word->max_mass_gain += 5;
+                }
+                return checked_exit(s.a / 2 + s.c + 2, x);
+            }
+            jump(s);
+            if (word) {
+                word->suffix += 'J';
+                word->max_mass_gain += 4;
+            }
             continue;
         }
         y = (s.c + 7) / 2;
@@ -149,23 +179,152 @@ Offset next_reset(Offset x) {
         Big na = s.a + 2 * (s.c - nc) + block_gain;
         if (na > 1) {
             s = {na, nc};
+            if (word) word->bulks(bits);
             continue;
         }
         const bool low = (s.c.get_ui() & 3) == 1;
         const Big difference = s.a - s.c;
-        if (difference >= (low ? 2 : 4)) bulk(s);
-        else if (difference == 2 && !low) s = {3 * s.c + 8, 1};
-        else throw std::runtime_error("direct halt at offset " + std::to_string(x));
+        if (difference >= (low ? 2 : 4)) {
+            bulk(s);
+            if (word) word->bulks(1);
+        } else if (difference == 2 && !low) {
+            s = {3 * s.c + 8, 1};
+            if (word) word->ordinary = false;
+        } else {
+            throw std::runtime_error("direct halt at offset " + std::to_string(x));
+        }
     }
     throw std::runtime_error("individual return exceeded budget");
 }
 
-int main() {
+struct Probe {
+    ReturnWord word;
+    Offset bound;
+    explicit Probe(Offset x) {
+        const Offset gain = next_reset(x, &word) - x;
+        bound = word.ordinary ? word.max_mass_gain / 2 : gain;
+        if (gain > bound) throw std::runtime_error("invalid word bound");
+    }
+};
+
+struct CoverCount { Offset nodes = 0, leaves = 0, bound = 615; };
+
+void cover_odds(Offset lo, Offset last, const Probe& left, const Probe& right,
+                CoverCount& result) {
+    ++result.nodes;
+    const auto& a = left.word;
+    const auto& b = right.word;
+    if (lo == last || (a.ordinary && b.ordinary && a.opening_bulks == b.opening_bulks &&
+                       a.suffix == b.suffix)) {
+        ++result.leaves;
+        result.bound = std::max(result.bound, left.bound);
+        return;
+    }
+    const Offset mid = lo + 2 * ((last - lo) / 4);
+    cover_odds(lo, mid, left, mid == lo ? left : Probe(mid), result);
+    cover_odds(mid + 2, last, mid + 2 == last ? right : Probe(mid + 2), right, result);
+}
+
+void cover_gaps() {
+    // Signed values are seed offsets relative to Y. The domain of the
+    // post-header table begins 4,500,000 below Y.
+    long lo, hi;
+    while (std::cin >> lo >> hi) {
+        if (lo < -4500000 || lo >= hi || (lo | hi) % 2 || hi > long(limit))
+            throw std::runtime_error("invalid gap");
+        const long shift = std::min(0L, lo);
+        base = checkpoint + shift;
+        prepare();
+        const Offset first = lo - shift, last = hi - shift - 2;
+        CoverCount result;
+        cover_odds(first, last, Probe(first), Probe(last), result);
+        std::cout << lo << ' ' << hi << ' ' << result.nodes << ' '
+                  << result.leaves << ' ' << result.bound << std::endl;
+    }
+}
+
+void check_gate(unsigned k, const Big& absolute_lo, const Big& absolute_hi) {
+    const Big odd_seeds[] = {absolute_lo, absolute_hi - 2};
+    for (const Big& seed : odd_seeds) {
+        State s = odd_header(seed - base);
+        for (unsigned i = 0; i < k; ++i) {
+            bulk(s);
+            if (s.a <= 1) throw std::runtime_error("early gate return");
+        }
+        if (s.a > s.c || s.a.get_ui() % 2) throw std::runtime_error("gate return guard");
+    }
+}
+
+struct Merger { std::size_t exits; Offset edges, seed; };
+Merger merge_last(Offset edge, unsigned cap, Offset budget) {
+    // Every first exit is the successor of a seed in the final cap slots.
+    std::set<Offset> pending;
+    for (Offset x = edge - cap; x < edge; ++x) {
+        Offset dest = next_reset(x);
+        if (dest >= edge) pending.insert(dest);
+    }
+    if (pending.empty()) throw std::runtime_error("empty exit set");
+    const auto exits = pending.size();
+    Offset edges = 0;
+    while (pending.size() > 1) {
+        if (++edges > budget) throw std::runtime_error("merger budget");
+        Offset x = *pending.begin();
+        pending.erase(pending.begin());
+        pending.insert(next_reset(x));
+    }
+    return {exits, edges, *pending.begin()};
+}
+
+Merger merge_edge(unsigned k, Offset edge, Offset budget) {
+    const unsigned cap = std::max(615U, (4 * 293 + 9 * (8 + k) + 5) / 2);
+    return merge_last(edge, cap, budget);
+}
+
+void follow_edge_bands() {
+    constexpr unsigned total_bulks = 733;
+    constexpr Offset low = 53'719'288, end = 80'126'736;
+    unsigned k, count = 0;
+    Offset previous;
+    Big edge;
+    while (std::cin >> k >> edge >> previous) {
+        if (k != 7 + 2 * count || k > total_bulks || edge < checkpoint ||
+            !(edge.get_ui() & 1) || previous >= low)
+            throw std::runtime_error("invalid edge-band input");
+        base = edge;
+        prepare();
+        unsigned cap = 615;
+        const auto suffix = "J" + std::string(total_bulks-k+1, 'L') + "R";
+        for (Offset x : {low, end-2}) {
+            const Probe test(x);
+            if (!test.word.ordinary || test.word.opening_bulks != k-1 ||
+                test.word.suffix != suffix)
+                throw std::runtime_error("incorrect edge-band endpoint word");
+            cap = std::max(cap, unsigned(test.bound));
+        }
+        if (cap != (4 * 294 + 9 * (8 + total_bulks) + 5) / 2)
+            throw std::runtime_error("incorrect edge-band gain bound");
+        auto seed = previous;
+        Offset calls = 0;
+        while (seed < low) {
+            seed = next_reset(seed);
+            ++calls;
+        }
+        if (seed >= end) throw std::runtime_error("missed edge band");
+        const auto result = merge_last(end, cap, 400000);
+        std::cout << k << ' ' << seed << ' ' << calls << ' ' << result.exits << ' '
+                  << result.edges << ' ' << result.seed << std::endl;
+        ++count;
+    }
+    if (count != 364) throw std::runtime_error("incomplete edge-band census");
+}
+
+void trace_chain() {
     prepare();
     Offset seed = 0, lo, hi;
     unsigned k;
     while (std::cin >> k >> lo >> hi) {
-        if (lo >= hi || hi > limit || (lo | hi) % 2 || !(k % 2) || k > 1000)
+        if (lo >= hi || hi > limit || (lo | hi) % 2 || !(k % 2) || k > 1000 ||
+            hi - lo < 8192)
             throw std::runtime_error("invalid gate");
         Offset calls = 0;
         while (seed < lo) {
@@ -174,35 +333,63 @@ int main() {
         }
         if (seed >= hi) throw std::runtime_error("trajectory missed gate");
         const Offset arrival = seed;
-        for (Offset x : {lo, hi - 2}) {
-            State s = odd_header(x);
-            for (unsigned i = 0; i < k; ++i) {
-                bulk(s);
-                if (s.a <= 1) throw std::runtime_error("early gate return");
-            }
-            if (s.a > s.c || s.a.get_ui() % 2) throw std::runtime_error("gate return guard");
-        }
-
-        // Every possible first exit is the successor of a seed in the final cap slots.
-        const unsigned cap = std::max(615U, (4 * 293 + 9 * (8 + k) + 5) / 2);
-        if (hi - lo <= cap) throw std::runtime_error("gate too narrow");
-        std::set<Offset> pending;
-        for (Offset x = hi - cap; x < hi; ++x) {
-            Offset dest = next_reset(x);
-            if (dest >= hi) pending.insert(dest);
-        }
-        if (pending.empty()) throw std::runtime_error("empty exit set");
-        const auto exits = pending.size();
-        Offset edges = 0;
-        while (pending.size() > 1) {
-            if (++edges > 3000000) throw std::runtime_error("merger budget");
-            Offset x = *pending.begin();
-            pending.erase(pending.begin());
-            pending.insert(next_reset(x));
-        }
-        seed = *pending.begin();
-        std::cout << k << ' ' << lo << ' ' << hi << ' ' << arrival << ' '
-                  << calls << ' ' << exits << ' ' << edges << ' ' << seed << std::endl;
+        check_gate(k, checkpoint + lo, checkpoint + hi);
+        auto result = merge_edge(k, hi, 3000000);
+        seed = result.seed;
+        std::cout << k << ' ' << lo << ' ' << hi << ' ' << arrival << ' ' << calls << ' '
+                  << result.exits << ' ' << result.edges << ' ' << seed << std::endl;
     }
-    return 0;
+}
+
+void census(bool follow = false) {
+    constexpr unsigned horizon = 16384;
+    unsigned k, count = 0;
+    Offset minimum = std::numeric_limits<Offset>::max(), maximum = 0;
+    Offset largest_gain = 0, total = 0;
+    Big lo, hi;
+    const Big target = (power * 14348907 - 8282708212L) / 13959275;
+    while (std::cin >> k >> lo >> hi) {
+        if (!(k % 2) || k > 1000 || lo < checkpoint || hi <= lo || !(lo.get_ui() & 1) ||
+            !(hi.get_ui() & 1) || hi - lo < 8192 || hi + limit > target)
+            throw std::runtime_error("invalid census input");
+        // The source seeds can have 140 digits; all merger displacements
+        // immediately around a single edge fit in a machine word.
+        base = hi - 8192;
+        prepare();
+        check_gate(k, lo, hi);
+        auto result = merge_edge(k, 8192, 250000);
+        if (!follow) {
+            std::cout << k << ' ' << result.exits << ' ' << result.edges << ' '
+                      << result.seed - 8192 << std::endl;
+            continue;
+        }
+        Offset current = result.seed;
+        for (unsigned n = 0; n < horizon; ++n) {
+            const Offset next = next_reset(current);
+            largest_gain = std::max(largest_gain, next-current);
+            current = next;
+        }
+        const Offset shift = current-result.seed;
+        minimum = std::min(minimum,shift);
+        maximum = std::max(maximum,shift);
+        total += shift;
+        ++count;
+    }
+    if (follow) {
+        std::cout << count << " mergers, " << Offset(count)*horizon
+                  << " returns, displacement " << minimum << ".." << maximum
+                  << ", largest gain " << largest_gain << ", total " << total << '\n';
+    }
+}
+
+int main(int argc, char** argv) {
+    if (argc == 1) trace_chain();
+    else if (argc == 2 && std::string(argv[1]) == "--census") census();
+    else if (argc == 2 && std::string(argv[1]) == "--follow-mergers") census(true);
+    else if (argc == 2 && std::string(argv[1]) == "--edge-bands") follow_edge_bands();
+    else if (argc == 2 && std::string(argv[1]) == "--cover") cover_gaps();
+    else {
+        std::cerr << "Usage: checkpoint_y [--census | --follow-mergers | --edge-bands | --cover]\n";
+        return 2;
+    }
 }

@@ -1,6 +1,6 @@
 # The bulk corridors between the last annular checkpoint and the target
 
-Let $Y$ be the [last annular checkpoint](ANNULAR_MERGERS_292_758.md), $H$ the halting reset, and $G=10^{10}3^{264}$. **The scale-264 corridor is the last of 368 disjoint corridors with the same form of first-return word. The gap between it and the preceding corridor measures $3.7236940920\times10^{135}$ reset units.** In a separate search, the only ordinary direct-terminal origins in $[Y,H]$ with at most two runs of jumps after the initial power launch were $H-2$ and $H$. This whole interval concerns conditional starts. Blank reachability of $Y$ remains open.
+Let $Y$ be the [last annular checkpoint](ANNULAR_MERGERS_292_758.md), $H$ the halting reset, and $G=10^{10}3^{264}$. **The scale-264 corridor is the last of 368 disjoint corridors with the same form of first-return word. The gap between it and the preceding corridor measures $3.7236940920\times10^{135}$ reset units.** In a separate search, the only ordinary direct-terminal origins in $[Y,H]$ with at most two runs of jumps after the initial power launch were $H-2$ and $H$. The [exit-merger calculation](CHECKPOINT_Y_758.md) reduces all possible entries into each corridor to one later reset, and joins the first corridors to the actual trajectory from $Y$. Blank reachability of $Y$ remains open.
 
 ## The common opening
 
