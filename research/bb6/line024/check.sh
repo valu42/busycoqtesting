@@ -34,7 +34,7 @@ generated() {
     (cd "$build" && "$lean" -j 1 "$2.lean" -o "$2.olean")
 }
 for m in CollisionRules SharpPhase CompletePass WordGrammar MarkerGaps MarkerPass MarkerTrain \
-         MixedWalls MergedMarker MarkerLanding StackClock LandingCoordinate MarkerCoordinate TerminalGap PassiveGapPairs CellPotential GuardedPhase \
+         MixedWalls MergedMarker MarkerLanding StackClock LandingCoordinate MarkerCoordinate MarkerArithmetic TerminalGap PassiveGapPairs CellPotential GuardedPhase \
          Absorption PhysBridge SecondEntry WindowBarrier AlignedWitness AlignedMarkers PackedTape PackedPhase \
          PackedWalls PackedRestart; do
     module "$m"
@@ -65,3 +65,7 @@ cmp EpochReturn.lean "$build/EpochReturn.lean"
 })
 
 module EpochDivergence
+python3 fourth_restart_certificate.py "$build"
+(cd "$build" && "$lean" -j 1 FourthPassage.lean -o FourthPassage.olean)
+module FourthWindow
+module FourthRestart
