@@ -96,6 +96,8 @@ In the sequence of individual counter updates, distinguish the two ordinary bulk
 
 In particular, no infinite continuation has an eventually automatic sequence of these rules in any integer base $b\ge2$. Indeed, suppose a finite automaton reading the base-$b$ representation of the call index outputs its rule. Permit leading zeros by adding one initial state if needed. Choose the least $r$ with $b^r\ge n$. Every aligned block of $b^r$ outputs is determined by the automaton state after the high digits of its indices. If the automaton has $S$ states, a length-$n$ factor is specified by an offset and at most two such states. There are at most $b^r S^2=O(n)$ such factors. An initial finite prefix changes the count by at most its length. This contradicts the positive entropy bound. This conclusion concerns one symbol per counter update; the raw transition clock has different sampling times.
 
+The [jump-indicator theorem](COARSE_ENTROPY_758.md) extends positive entropy to the binary sequence that records only whether each individual update is a jump. Its lower bound is 0.06316617567 per update.
+
 ## Reproduction
 
 The checker tests the rational cusp bounds, replays all $2^{10}$ ten-block words from both entry parities at $m=96$, checks the first and last eligible exceptional masses in odd-index annuli through index 189, and exhausts the modular fine labels for a seven-pair return template. The uniform statements for arbitrary lengths and infinitely many scales follow from the arguments above. [Exact checker](check_all_orbit_entropy_758.py)
