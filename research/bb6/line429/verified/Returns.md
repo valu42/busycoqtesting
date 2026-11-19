@@ -25,9 +25,15 @@ Use the reflected and renamed table from the existing accelerator. Original E is
 
 The rightward scan always turns on finite input. In particular, three consecutive zeros isolate everything farther to the right. The leftward scan can then be classified by the left tape alone. Each continuing case consumes a positive-length prefix. Its stopping cases take three moves from mode ML on `0001` or two moves from MJ on `001`. The return rules specify the new contents of both tapes. In particular, right prefixes `111` and `11010` at normalized A force another safe turn on every finite right tape and every left tape. [Rightward rules](Line429RightSweep.v) · [Leftward first return](Line429LeftLanguage.v) · [Output on both tapes](Line429LeftOutput.v) · [Composition](Line429Round.v) · [Landmark equivalence](Line429Criterion.v)
 
+## An executable recurrence on two finite words
+
+The pair starts at `(empty, 11)`. In one round, read `1w` with the rightward rules. If these produce left prefix p and right remainder q, apply the leftward rules to `p0u`. A stop ends the recurrence. A return gives an untouched suffix y and an output v. The next pair is `(y, vq)`, with trailing zeros removed. Both operations terminate for every finite input pair.
+
+Rocq proves that line 429 halts exactly if this word recurrence eventually returns `None`. To prove nonhalting, it suffices to exhibit a set containing `(empty, 11)` and prove that every member returns a successor in that same set. The first round gives `(1, 01)`. After five rounds the pair is `(01101101, 01)`. These represent the actual configurations at moves 16 and 107. [Finite-word recurrence and equivalence](Line429WordOrbit.v) · [Executable right sweep](Line429RightExec.v) · [Executable left sweep](Line429LeftExec.v)
+
 ## What a blank-tape invariant must preserve
 
-Take the left word of the real checkpoint at step 107 and the right word of the real checkpoint at step 39. Their combination halts after exactly 107 further moves. These words and clocks are in the normalized machine; reflection and renaming preserve the instruction count. At the start, even this hybrid passes safely through the next sweep. At move 39 its left test returns `Stop` while its right test stays closed. The two tests then coincide at move 93. [Reachable sources, two intermediate checkpoints and halt](Line429GateSplice.v)
+Take the left word of the real checkpoint at step 107 and the right word of the real checkpoint at step 39. Their combination halts after exactly 107 further moves. These words and clocks are in the normalized machine. Reflection and renaming preserve the instruction count. At the start, even this hybrid passes safely through the next sweep. At move 39 its left test returns `Stop` while its right test stays closed. The two tests then coincide at move 93. [Reachable sources, two intermediate checkpoints and halt](Line429GateSplice.v)
 
 | Configuration | Left word u | Right word w | Left stops | Right opens |
 |---|---|---|---|---|
@@ -35,7 +41,11 @@ Take the left word of the real checkpoint at step 107 and the right word of the 
 | After 39 moves | `001101101` | `011100101` | Yes | No |
 | After 93 moves | `1010001101101` | `0011001001` | Yes | Yes |
 
-Consequently, one cannot prove blank-tape safety by allowing an arbitrary combination of separately reachable left and right words. Keeping both test results also permits a counterexample. The checkpoints at 39 and 13,671 both have left outcome Turn and a closed right gate. Combining the latter left with the former right keeps both test results and still halts 107 moves later. [Matching-gate obstruction](Line429MatchingGates.v) Even a shared six-cell window in the original state C admits a concrete halting splice. The original E phase has a separate 17-step example. [Six-cell obstruction](Line429Splice.v) · [Original E obstruction](Line429SweepSplice.v)
+Consequently, one cannot prove blank-tape safety by allowing an arbitrary combination of separately reachable left and right words. Keeping both test results also permits a counterexample. The checkpoints at 39 and 13,671 both have left outcome Turn and a closed right gate. Combining the latter left with the former right keeps both test results and still halts 107 moves later. [Matching-gate obstruction](Line429MatchingGates.v)
+
+Even a shared six-cell window in the original state C admits a concrete halting splice. The original E phase has a separate 17-step example. [Six-cell obstruction](Line429Splice.v) · [Original E obstruction](Line429SweepSplice.v)
+
+Two further obstructions keep one side exactly as it was on the blank run while changing the other. At checkpoint 542, replacing the left word by `1000001` preserves the transition of the left automaton from every possible automaton state. The resulting tape halts in 140 moves. At checkpoint 13,814, replacing the right word by `001101` preserves the right test for every initial parser state, every pair of flags, and every suffix. The resulting tape halts in 202 moves. A proof using these automata must retain something in addition to their complete one-sided summaries, even when it keeps the opposite half-tape exactly. [Both counterexamples on the literal transition table](Line429HalfSummaries.v)
 
 The 92-move halt in the six-cell splice belongs to an infinite family. In the original orientation, put the eight bits `01001010` immediately left of C in left-to-right order and let C scan `00101(1010)^n01`, n ≥ 1. The machine halts in exactly 5n² + 9n + 54 moves, regardless of the tape outside that word. Separately, eight explicit configuration-word prefixes are pairwise distinguishable by attaching a common suffix that gives a real blank configuration for one prefix and a halting continuation for the other. This gives a lower bound of eight states for any whole-tape DFA separator using the specified left-to-right encoding. [Parametric halt](Line429SpliceFamily.v) · [28 distinguishing suffixes and replay](verify_regular.py)
 
@@ -56,7 +66,7 @@ A separate replay followed every full sweep round starting before move 1,000,000
 
 At the previously certified sibling-divergence checkpoint, 72,013 accelerator calls from blank, Rocq now reads the 22-cell word `0111011011010101010111` under original B. It proves that the head returns left in E after 95 moves, crosses a run of 1,227 ones and, after 1,334 moves in total, reaches C 1,230 cells left of the starting head with a zero immediately to its right. There is also a uniform theorem for all mixtures of the tokens `01` and `011` in this part of the tape. [Reachable recovery and parametric rules](Line429Recovery.v)
 
-The separate native accelerator passed 116,000,000 successful calls. At that checkpoint the tape had a 3,320-digit number of ones, whose SHA-256 in decimal ASCII without a trailing newline is `21ad6cd956c0537ec08270be5062221154ae03077f61cb2e90020c2da9db6a6e`. The native count is separate from the existing kernel-certified lower bound of 10^581 elementary steps. For the first 1,048,580 native input checkpoints Rocq proves that index 3 alone has normalized raw D facing left and reading zero. The progress-guaranteed watcher detects exactly the dangerous case in which the following symbol is one. [Native predecessor](Line429Escape.v) · [Complete watcher](Line429Watch.v) · [Checked finite audit](Line429Prefix20.v)
+The separate native accelerator completed 134,217,728 successful calls and ended in mode ML. At that checkpoint the tape had a 3,648-digit number of ones (12,118 bits), whose SHA-256 in decimal ASCII without a trailing newline is `625908779090da15f6980f8eb401d147c844edecb67f187a5e9d423c384abf8d`. The original F scanning `11`, the sibling stopping condition, was visible at 42 raw checkpoints. The native count is separate from the existing kernel-certified lower bound of 10^581 elementary steps. For the first 1,048,580 native input checkpoints Rocq proves that index 3 alone has normalized raw D facing left and reading zero. The progress-guaranteed watcher detects exactly the dangerous case in which the following symbol is one. [Native predecessor](Line429Escape.v) · [Complete watcher](Line429Watch.v) · [Checked finite audit](Line429Prefix20.v)
 
 ## A search for a nonhalting invariant
 
@@ -64,7 +74,7 @@ I tried retaining one half-tape as an exact stack and summarizing the other by a
 
 ## Reproduce
 
-Run the existing [verification script](verify.sh) with the two pinned BusyCoq checkouts described in the [build instructions](README.md#reproduce). In an already built checkout, compile the new units in the order given in the script. Its standalone C++ diagnostics use C++17.
+Run the existing [verification script](verify.sh) with the two pinned BusyCoq checkouts described in the [build instructions](README.md#reproduce). In an already built checkout, compile the new units in the order given in the script. The standalone C++ diagnostics use C++17. The existing extracted search can reproduce the large checkpoint with `native-build/search429 134217728 native-build/checkpoint`.
 
 ```sh
 c++ -O3 -std=c++17 sweep_gates.cpp -o sweep_gates

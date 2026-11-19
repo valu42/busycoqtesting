@@ -13,7 +13,8 @@ for unit in Line429Score Line429Sibling Line429Cut Line429Frontier Line429Progre
     Line429Reset Line429ResetPass Line429RightSweep Line429LeftLanguage Line429LeftDFA \
     Line429Returns Line429Criterion Line429LeftOutput Line429Round Line429Gate \
     Line429GateBlank Line429GateSplice Line429Splice Line429SpliceFamily Line429SweepSplice Line429Control \
-    Line429ShapePrefix Line429MatchingGates Line429Recovery Line429Escape Line429Watch Line429Prefix20 Bound20 Bound22; do
+    Line429RightExec Line429LeftExec Line429WordOrbit \
+    Line429ShapePrefix Line429MatchingGates Line429HalfSummaries Line429Recovery Line429Escape Line429Watch Line429Prefix20 Bound20 Bound22; do
   cp "$here/$unit.v" .
   coqc -Q . BusyCoq "$unit.v"
 done
