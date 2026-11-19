@@ -71,6 +71,8 @@ The C++ run starts at $P(306,\mathtt{010111})$, reached after nine completed ret
 | 1,342,177,280 | 557,053,907 | 958126556 | 011 |
 | 1,500,000,000 | 622,556,254 | 949589526 | empty |
 
-The final return alone takes more than $10^{373000000}$ elementary transitions. Let $B=622556254$ be the bit length of the final counter. If the preceding counter was $3t+r$, the final one is $4t+c$, with $c\le100000$ in the accepted table. Thus $t>2^{B-4}$. That return starts with $t+1$ regular sweeps. Their time alone includes $5t(t+1)>2^{2(B-4)}$, and $2^{10}>10^3$.
+The checkpoint after 1,500,000,000 returns has an empty suffix and a 622,556,254-bit counter. Applying the 35-return lower bound at that checkpoint proves **at least 1,500,000,035 completed returns from blank**.
+
+The final directly replayed return alone takes more than $10^{373000000}$ elementary transitions. Let $B=622556254$ be the bit length of the final counter. If the preceding counter was $3t+r$, the final one is $4t+c$, with $c\le100000$ in the accepted table. Thus $t>2^{B-4}$. That return starts with $t+1$ regular sweeps. Their time alone includes $5t(t+1)>2^{2(B-4)}$, and $2^{10}>10^3$.
 
 All 1,536 affine rows of the 512-state input table agree with Fractal Geometry Explorer's independently written Python zone evaluator after translating $n$ by one. Replaying a hundred million returns with individual rows also gives the same checkpoint. The extended replay and first failed comparison have executable certificates. They have no new Lean or Rocq kernel certificate.
