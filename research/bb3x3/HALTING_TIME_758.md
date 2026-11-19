@@ -17,7 +17,7 @@ The forecast samples short sequences of exact reset-to-reset clocks and weights 
 
 ## Time bounds for the joined interval
 
-Every reset in the [joined interval](TARGET_BASIN_758.md) through distance 5,940,434,970,759,035,762 also meets the headline conditional bounds. The proof re-evaluates the angular lower bound at its new earliest entry and bounds the cost of every subsequent call through the same terminal mass $2H+1258$. After entry, at most $1.822\times10^{297}$ raw steps remain. Run `python3 basin_clock_758.py --joined` to check the integers. The forecast of approximately $2\times10^{415}$ concerns a blank orbit halting at $H$.
+Every reset in the [joined interval](TARGET_BASIN_758.md) through distance 17,821,304,912,277,107,282 also meets the headline conditional bounds. The proof re-evaluates the angular lower bound at its new earliest entry and bounds the cost of every subsequent call through the same terminal mass $2H+1258$. After entry, at most $5.465\times10^{297}$ raw steps remain. Run `python3 basin_clock_758.py --joined` to check the integers. The forecast of approximately $2\times10^{415}$ concerns a blank orbit halting at $H$.
 
 ## Why the conditional bounds also cover a halt before the direct seed
 

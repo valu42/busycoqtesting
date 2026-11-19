@@ -131,7 +131,9 @@ if __name__ == "__main__":
         verify()
         print("r\tp\tnumerator\toffset\tcalls\treset_gain")
         for p, numerators in long_tails(args.tails).items():
-            for r in range(2*p-1, 61):
+            # At p=28 the direct high-pair sieve already covers r through 60.
+            first = 61 if p == 28 else 2*p-1
+            for r in range(first, 62):
                 found = compatible_offsets(r,p,numerators)
                 for n in numerators:
                     for d in sorted(found[n]):

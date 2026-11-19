@@ -33,6 +33,7 @@ For scale 74 let $G=10^{10}3^{74}$, $B=H-3G/2$ and $U_0=H-G-39{,}000{,}000$. A r
 | Deep-entry interval at scale 74 | 400 | $10^{44}$ | $10^{22}$ |
 | Original joined interval | 324 | $10^{12}$ | $10^{6}$ |
 | [Enlarged joined interval](LOWER_SCALE_GATES_758.md) | 321 | $1{,}900{,}000^2$ | 1,900,000 |
+| [Scale-19 joined basin](TARGET_BASIN_758.md) | 333 | $1{,}407{,}176{,}247^2$ | 1,407,176,247 |
 | [Scale-10 halting corridor](LOWER_SCALE_GATES_758.md) | 323 | $6{,}300{,}000^2$ | 6,300,000 |
 
 The verifier checks $3^n>9TH$ in every row, and that the mass gain across the trimmed interval supplies at least $T+n$ complete blocks. A sufficiently low upper bound on the number of words on the actual crossing would force entry into the relevant interval. Entry at scale 74 fixes one exact subsequent trajectory; its continuation to a halt remains open.
