@@ -19,7 +19,7 @@ python3 line411.py --steps 300000
 | 12,418 | 374 | `10^227` | `e76aeeb8d94d8168c4669c302d991c5d7caf4d280c515403f8b8e7d5d2143dfa` |
 | 300,000 | 3,338 | `10^2012` | `3e3bfc1d6742ae3b92cc8fe3aff1b3f608ec0f7092b7560f39706a0741bab9ab` |
 
-The long row reaches mode L, left counters of 2 and 3,342 bits, and a right word of 323,754 bits. The digest covers the orientation, both integer values, and every symbol of that word. A separate simulator that executed each individual rightward excursion directly on tape obtained the same two digests. The count includes the initial 301 elementary transitions and the exact cost of the left sweeps. Every omitted right excursion executes additional transitions.
+The long row reaches mode L, left counters of 2 and 3,342 bits, and a right word of 323,754 bits. The digest covers the orientation, both integer values, and every symbol of that word. A separate simulator that executed each individual rightward excursion directly on tape obtained the same two digests. A third replay using the complete boundary reduction reached the same long digest after 3,361 boundary tests. It can be reproduced with `--epochs 3338`. The count includes the initial 301 elementary transitions and the exact cost of the left sweeps. Every omitted right excursion executes additional transitions.
 
 ## Coordinates and left sweeps
 
@@ -82,6 +82,8 @@ The same pair rules give a standalone description of $F$. Strip the maximal $(10
 | $1000xv$ | $0^{4k}00011v$ |
 
 The only recursion on the right removes a finite prefix ending in 11. The infinite zero continuation uses the first row.
+
+One family of boundary returns has a further invariant. From $H(N,000v)$ the next boundary starts with either 000 or 111. In fact $F^2(00v)=F(10v)$ has one of these two prefixes by the table. Two further applications preserve this union. For the 111 case the initial 11 is fixed, and $F^2$ applied to a word starting with 1 again starts with 1. Since $N/2$ is positive and even, this proves the claim for an entire sweep. The example below shows how later boundary returns can still reach the halt on another starting tape.
 
 ### Why the terminal pattern is exact
 

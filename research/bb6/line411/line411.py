@@ -163,6 +163,16 @@ def digest(mode, a, b, r):
     return hashlib.sha256(f"{mode}/{a:x}/{b:x}/{r}".encode("ascii")).hexdigest()
 
 
+def power_below(value):
+    """Largest integer e for which 10**e < value, without decimal conversion."""
+    e = (value.bit_length()-1)*30103//100000
+    while 10**e >= value:
+        e -= 1
+    while 10**(e+1) < value:
+        e += 1
+    return e
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--steps", type=int, default=12418)
@@ -181,21 +191,30 @@ def main():
         print(f"Epochs {epochs}, outcome {tag}, boundary tests {visits}")
         if tag == "L":
             print(f"Left counter b has {b.bit_length()} bits. Right word has {len(r)} bits.")
-            print(f"State SHA-256 {digest(tag, 3, b, r)}")
+            result = digest(tag, 3, b, r)
+            print(f"State SHA-256 {result}")
+            if epochs in EPOCH_CHECKPOINTS:
+                assert (visits, result) == EPOCH_CHECKPOINTS[epochs]
         return
     mode, a, b, r, lower, overflows = replay(args.steps, rules)
     result = digest(mode, a, b, r)
     print(f"Macro steps {args.steps}, overflows {overflows}, mode {mode}")
     print(f"Bit lengths a={a.bit_length()}, b={b.bit_length()}, right word={len(r)}")
     print(f"State SHA-256 {result}")
-    print(f"Completed elementary transitions > 10^{len(str(lower))-1}")
+    exponent = power_below(lower)
+    print(f"Completed elementary transitions > 10^{exponent}")
     if args.steps in CHECKPOINTS:
-        assert (overflows, result, len(str(lower))-1) == CHECKPOINTS[args.steps]
+        assert (overflows, result, exponent) == CHECKPOINTS[args.steps]
 
 
 CHECKPOINTS = {
     12418: (374, "e76aeeb8d94d8168c4669c302d991c5d7caf4d280c515403f8b8e7d5d2143dfa", 227),
     300000: (3338, "3e3bfc1d6742ae3b92cc8fe3aff1b3f608ec0f7092b7560f39706a0741bab9ab", 2012),
+}
+
+EPOCH_CHECKPOINTS = {
+    100: (115, "477ddbb814edb72d77195810e8048470cf50432c8e547627787aa4f4fc0324dd"),
+    3338: (3361, CHECKPOINTS[300000][1]),
 }
 
 if __name__ == "__main__":
