@@ -147,6 +147,10 @@ private theorem clockBounds (x : Word) (m : Nat) (hm : x.mass ≤ m) :
       Int.neg_add,Int.add_mul,Int.one_mul,Int.neg_one_mul]
     omega
 
+/-- A clock ceiling independent of how many consecutive zero digits are allowed. -/
+theorem clockCeiling (x : Word) :
+    x.clock ≤ (x.digits : Int) * ((2:Int)^(x.mass+1)-1) := (clockBounds x x.mass (Nat.le_refl _)).2
+
 /-- Exactly k ordinary passes. -/
 inductive Passes : Nat → Word → Word → Prop
   | refl (x) : Passes 0 x x

@@ -59,6 +59,27 @@ public:
         }
     }
 
+    void beforeFreshMarker(int p) const {
+        if (high-origin >= p) throw std::runtime_error("visited the marker early");
+    }
+
+    void expectHead(int p, int q, int bit) const {
+        if (head-origin != p || state != q || cells.at(head) != bit)
+            throw std::runtime_error("marker head, state or symbol differs");
+    }
+
+    void checkAbsorption() const {
+        const std::vector<int> digits = {1,2,2,3,3,2,2,3,1,9};
+        int p = head;
+        auto expect = [&](int bit, int count) {
+            for (int i=0; i<count; ++i)
+                if (cells.at(p++) != bit) throw std::runtime_error("counter after absorption differs");
+        };
+        expect(1,1); expect(0,1);
+        for (int d : digits) { expect(1,3*d); expect(0,1); }
+        expect(1,10); expect(0,10);
+    }
+
     void checkEntry() const {
         Runs left = {{0,1},{1,82430},{0,1},{1,2},{0,1},{1,1322},{0,1},{1,5},{0,1},{1,2},{0,1},{1,3}};
         Runs right = {{1,1},{0,1},{1,12},{0,1},{1,6},{0,1},{1,3},{0,1},{1,3},{0,1},
@@ -128,7 +149,34 @@ void replayMarkerTest() {
     std::cout << "B0 on the actual tape and B1 on the six-cell variant at +1394298.\n";
 }
 
+void replayContacts() {
+    Machine m(1000,141562000);
+    const std::string outer = "111110110111";
+    for (int i=0; i<static_cast<int>(outer.size()); ++i)
+        if (outer[i]=='1') m.mark(-1-i);
+    for (int i=0; i<6; ++i) { m.mark(1324+i); m.mark(9958+i); }
+    const std::uint64_t first = 17588658509ULL, absorbed = 17588659361ULL;
+    const std::uint64_t fourth = 23364025905ULL;
+    // Install each distant block just before first contact. The running maximum
+    // checks that no earlier transition could have read or changed those cells.
+    m.move(first-1);
+    m.beforeFreshMarker(108006697);
+    for (int i=0; i<6; ++i) m.mark(108006697+i);
+    m.move(1);
+    m.expectHead(108006697,5,1);
+    m.move(absorbed-first);
+    m.expectHead(108006601,3,1);
+    m.checkAbsorption();
+    m.move(fourth-absorbed-1);
+    m.beforeFreshMarker(141561133);
+    for (int i=0; i<6; ++i) m.mark(141561133+i);
+    m.move(1);
+    m.expectHead(141561133,2,1);
+    std::cout << "Literal replay matched third-marker contact in F, absorption, and fourth-marker contact in C.\n";
+}
+
 int main(int argc, char** argv) {
+    if (argc == 2 && std::string(argv[1]) == "--contacts") { replayContacts(); return 0; }
     replayMarkerTest();
     if (argc == 2 && std::string(argv[1]) == "--marker-test") return 0;
     Machine blank(1000, 100000);
