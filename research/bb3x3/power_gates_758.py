@@ -130,6 +130,28 @@ def coalesce(seeds, budget):
     return heap[0], steps
 
 
+SHARP = {
+    (33, 1): (5_494_990_037_991_760, 3_335_436_339_933_247),
+    (33, 2): (6_670_872_679_866_556, 10_006_309_019_799_871),
+    (34, 1): (16_484_970_113_975_418, 10_006_309_019_799_871),
+}
+
+
+def sharp_entry(m, multiple):
+    """First all-parity entry in the two overlapping ordinary gate words."""
+    even, odd = SHARP[m, multiple]
+    for parity, first in enumerate((even, odd)):
+        assert first % 2 == parity
+        assert coarse_return(m, first, multiple) > first
+        try:
+            coarse_return(m, first-2, multiple)
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError("the preceding seed still has the requested word")
+    return max(even, odd)-1
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     group = parser.add_mutually_exclusive_group()
@@ -137,17 +159,8 @@ def main():
     group.add_argument('--m', type=int, choices=range(20, 293), metavar="20..292")
     args = parser.parse_args()
     selected = {32, 292} if args.m is None else {args.m}
-    # The first unlinked odd gate can be entered earlier than its uniform
-    # 9999/10000 cutoff. These are the first successful seeds of each parity.
-    for parity, first in ((0, 5_494_990_037_991_760), (1, 3_335_436_339_933_247)):
-        assert first % 2 == parity
-        assert coarse_return(33, first, 1) > first
-        try:
-            coarse_return(33, first-2, 1)
-        except AssertionError:
-            pass
-        else:
-            raise AssertionError("the preceding seed still has the requested word")
+    for m, multiple in SHARP:
+        sharp_entry(m, multiple)
     checked = 0
     with MANIFEST.open() as file:
         assert next(file).split() == ['m', 'multiple', 'exits', 'edges', 'offset']

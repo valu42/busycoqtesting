@@ -27,6 +27,12 @@ def verify_gateway():
         assert champion_step(a,c)[0]==1
     skipped_seeds = EVEN_HIGH-LOW+1
     assert (2*(skipped_seeds+1)+8)//9 == 2_141_998_672_280
+    second_low = 17_393_401_372_077_661
+    second_high = 17_408_159_912_737_553
+    second_word = 'J'*33+'LLJLLJJJLR'
+    assert itinerary(second_low+1) == itinerary(second_high-1) == (second_word,206)
+    assert second_high+103+128*102 < K
+    assert (2*(second_high-second_low+2)+8)//9 == 3_279_675_702_199
     assert EVEN_HIGH+101 < K
     # Fine-residue gains have period 256 on this ordinary odd word. Adding
     # 256 preserves c modulo four at each of seven Ls (one bit lost per L).
