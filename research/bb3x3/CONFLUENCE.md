@@ -1,6 +1,6 @@
 # An exact checkpoint for #758
 
-Every A(1,c) with **1,059,491,543,272,883 ≤ c ≤ 1,079,817,520,122,229** reaches **A(1,1,079,817,520,208,950)**. This covers 20,325,976,849,347 seeds. The lower endpoint is the [community's reported forward checkpoint](https://wiki.bbchallenge.org/wiki/1RB2LC1RC_2LC---2RB_2LA0LB0RA). The implication from that checkpoint is independently checked here. The blank-to-checkpoint prefix is taken from the cited source.
+Every A(1,c) with **1,059,491,543,272,883 ≤ c ≤ 1,079,817,520,122,229** reaches **A(1,1,079,817,520,208,950)**. This covers 20,325,976,849,347 seeds. The lower endpoint is the [community's reported forward checkpoint](https://wiki.bbchallenge.org/wiki/1RB2LC1RC_2LC---2RB_2LA0LB0RA). The implication from that checkpoint is independently checked here. The exact lower endpoint is the published checkpoint. The independent [blank crossing](BLANK_CROSSINGS.md) reaches some reset in its first 5,001 seeds, so the common endpoint now follows from blank as well.
 
 After the first move c is odd. Put q = floor((c+1)/4). When a ≥ 4q+3, the two bulk branches have the exact common update L(a,c) = (a−4q−3,6q+5). The other continuing interior branch J(a,c) = (3a+2,c−a+1) applies for odd a ≤ c. Even a ≤ c takes the return R to A(1,a/2+c+2).
 

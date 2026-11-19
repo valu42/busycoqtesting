@@ -2,6 +2,8 @@
 
 The remaining goal is halting from a blank tape. In the shared two-counter map, #758 reaches A(0,1) and then A(1,3). #153's blank orbit subsequently joins #758's. A halt anywhere on the #758 blank orbit decides both machines. The published reduction, the exact transition function and the earlier checks are available here. [Lean specifications](https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB33/README.md) · [check_bb33.py](check_bb33.py) · [ranking](RANKINGS.md)
 
+This proof supplies the inner 60,596,946 seeds of the larger verified interval. The later cover extends it to 11,177,973,024,732 consecutive seeds. [Combined proof](UNIVERSAL_758.md)
+
 ## Sufficient condition for a full decision
 
 Set H = (3³⁰⁷ − 8,282,708,212) / 13,959,275, L = H − 12,000,000 and U = H − 3,403,055. The earlier verifier checks that every A(1,c) with L ≤ c ≤ U reaches the halting target A(1,H). Below L, consider this obligation for a given c:
