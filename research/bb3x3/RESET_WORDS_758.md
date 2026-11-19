@@ -26,7 +26,7 @@ $$
  \left\lceil\frac{2(U-S)+5}{9}\right\rceil > 1.09\times 10^{136}
 $$
 
-calls. The analogous all-parity bound currently established is 13,465,989 calls for an escaping trajectory. The status of an odd last reset remains decisive much closer to the basin.
+calls. The [joined halting interval](UNIVERSAL_758.md) requires at least 2,483,994,005,497 calls since the last reset for an escaping trajectory of either parity at the same upper crossing. The status of an odd last reset remains decisive much closer to the basin.
 
 ## Four-candidate bound
 

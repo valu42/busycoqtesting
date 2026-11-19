@@ -26,7 +26,7 @@ At n=0 the single cycle has length 841 and winding 15; the offsets are 42, 138, 
 
 The eight singleton exits are (n,e) = (74,698), (80,478), (135,732), (194,246), (204,526), (225,144), (247,64) and (254,490). For instance the scale-74 exit is A(1,H−10¹⁰·3⁷⁴+698).
 
-An inter-gate proof can begin at just these seeds. For example, for n≥1 it suffices to show each listed seed halts or reaches a reset with distance in [Gₙ₋₁+39,000,000, 3Gₙ₋₁/2]. This would link that gate to the preceding one. The index n=0 still requires a connection to the already certified halting region; see the separate numerical gateway results. The scale construction alone does not connect successive gates or establish that the blank trajectory enters one deeply.
+An inter-gate proof can begin at just these seeds. For example, for n≥1 it suffices to show each listed seed halts or reaches a reset with distance in [Gₙ₋₁+39,000,000, 3Gₙ₋₁/2]. This would link that gate to the preceding one. The [combined halting interval](UNIVERSAL_758.md) already contains the full corridors at indices 0 through 6. For a descent from higher scales, reaching any of those seven finishes the proof for that trajectory. The scale construction alone does not connect successive gates or establish that the blank trajectory enters one deeply.
 
 ## A common cover between the large corridors
 
@@ -52,3 +52,14 @@ Choose the admissible z closest to the real root d_final=u_final/4. To verify th
 Rounding z perturbs h_final−u_final/2 by at most (3²³C/2+P)Q, which is less than H/100 even at Q=3²⁴³. The terminal d is consequently more than H/10 from each boundary 0 and u_final/2. The reverse J/B margin bound in [CUT_758.md](CUT_758.md) keeps all margins above H/(10·3¹²²)>100. All individual guards hold. Distinct words give distinct input seeds by determinism. This explains why the sparse entering orbits matter for an attempted full decision.
 
 Run `python3 scale_clauses_758.py` to verify all 265 corridors and count their exits, or append `--scale N` for one exact list. Run `python3 scale_transport_758.py` for the joint normalized cover, the integer inequalities and 1,156 witness checks. Both scripts use the existing counter map.
+
+## Following a single exit to the first change of word
+
+The same endpoint checks certify the simple word throughout $[0.92D_n,1.53D_n]$ for every one of the 265 scales, where $D_n=10^{10}3^n$. For a specified scale the verifier can go farther: it bisects the odd-seed interval to find its exact lowest even countdown $d$, verifies the word at $d$ and its failure at $d-2$, and evaluates the residue cycles at this new boundary. Every seed that has already joined a cycle exits at a reset of the form $H-d+e$ with the printed positive offset $e$. The number of possible exits is the same total winding as at the original cut.
+
+For the single-exit scales 74 and 254 the offsets at the first change are 812 and 52, respectively. This follows those two conditional trajectories through just over 16% of the original gap, measured from $D_n$ toward $D_n/2$. The connection across the remaining gap is open. The single-exit condition assumes entry in the corresponding corridor. No blank visit has been shown at either scale.
+
+```sh
+python3 scale_clauses_758.py --scale 74 --first-change
+python3 scale_clauses_758.py --scale 254 --first-change
+```

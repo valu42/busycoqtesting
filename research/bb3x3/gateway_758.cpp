@@ -158,6 +158,37 @@ public:
     }
 };
 
+// Certify halting or a smaller countdown for every reset in the band.
+class UniversalCover {
+    LocalMap map;
+    std::uint64_t nodes = 0, leaves = 0;
+
+    void cover(Distance low, Distance high, const Ending& left, const Ending& right) {
+        ++nodes;
+        if (left.jumps == right.jumps && left.word == right.word) {
+            // Every seed either halts or returns at a strictly smaller d.
+            // A returning seed stays at or outside the known inner endpoint.
+            require(left.bound <= low - 3'403'055, "reset crosses inner basin endpoint");
+            ++leaves;
+            return;
+        }
+        require(low < high, "singleton probe mismatch");
+        Distance mid = low + 2*((high-low)/4);
+        Ending mid_left = mid == low ? left : map.probe(mid);
+        Ending mid_right = mid+2 == high ? right : map.probe(mid+2);
+        cover(low, mid, left, mid_left);
+        cover(mid+2, high, mid_right, right);
+    }
+
+public:
+    UniversalCover(Distance far, Distance near) : map(near, far) {
+        require(near - 615 >= 3'403'055, "even reset crosses inner basin endpoint");
+        Distance low = near + near%2, high = far - far%2;
+        if (low <= high) cover(low, high, map.probe(low), map.probe(high));
+        std::cout << near << ' ' << far << ' ' << nodes << ' ' << leaves << '\n';
+    }
+};
+
 class Crossing {
     LocalMap map;
     std::set<Distance,std::greater<Distance>> possible;
@@ -214,13 +245,24 @@ public:
 };
 
 int main(int argc,char** argv) {
-    if (argc!=3) { std::cerr<<"Usage: gateway_758 FAR NEAR\n"; return 2; }
+    bool universal = argc == 4 && std::string(argv[1]) == "--universal";
+    if (!universal && argc != 3) {
+        std::cerr << "Usage: gateway_758 [--universal] FAR NEAR\n";
+        return 2;
+    }
     try {
-        Distance far=std::stoll(argv[1]),near=std::stoll(argv[2]);
-        require(near>=1000000 && near<=far && far<=11000000000000L && far-near>=5000,
+        Distance far = std::stoll(argv[universal ? 2 : 1]);
+        Distance near = std::stoll(argv[universal ? 3 : 2]);
+        require(near >= 1'000'000 && near <= far && far <= 11'000'000'000'000LL,
                 "invalid segment endpoints");
-        Crossing check(far,near);
+        if (universal) {
+            UniversalCover check(far, near);
+        } else {
+            require(far-near >= 5000, "gateway narrower than admission strip");
+            Crossing check(far, near);
+        }
     } catch (const std::exception& e) {
-        std::cerr<<e.what()<<'\n'; return 1;
+        std::cerr << e.what() << '\n';
+        return 1;
     }
 }

@@ -52,12 +52,14 @@ def odd_residues():
     return starts
 
 
-def cycle_exits(n):
+def cycle_exits(n, *, lower=None):
     """Return the odd-orbit cycle data and the overshoots below the lower gate."""
     if not 0 <= n <= 264:
         raise ValueError("the certified scale is 0 through 264")
     k = 264-n
-    low = BASE*3**n
+    low = BASE*3**n if lower is None else lower
+    if low % 2:
+        raise ValueError("cycle boundaries must have even countdown")
     # Work on D/2 modulo MOD/2 since consecutive odd-reset distances are even.
     size = MOD//2
     gains = [(626+2*k+2*(high+int((r-2*k) % 4 == 3)))//2
@@ -98,12 +100,38 @@ def check_corridor(n):
     high = 3*low//2
     k = 264-n
     odd_word = PREFIX + "J"*k + "LR"
-    for d in (low, high):
+    ends = (92*low//100, low, high, 153*low//100)
+    for d in ends:
         raw = check_word(H-d, odd_word)
         a, b = odd_residues()[(d % MOD)//2]
         assert raw == 626+2*k+2*(a+int((b-2*k) % 4 == 3))
-    for d in (low+1, high-1):
+    for d in (ends[0]+1, low+1, high-1, ends[-1]-1):
         assert check_word(H-d, EVEN_WORD) in range(605, 616, 2)
+
+
+def first_change(n):
+    """Smallest even countdown with the simple odd-seed word at this scale."""
+    check_corridor(n)
+    word = PREFIX + "J"*(264-n) + "LR"
+    lo, hi = 0, (92*BASE//100)*3**n//2
+    # The common-word set for one parity is an interval. H itself halts
+    # before this word finishes. The upper endpoint just passed check_corridor.
+    while hi - lo > 1:
+        mid = (lo+hi)//2
+        try:
+            check_word(H-2*mid, word)
+        except AssertionError:
+            lo = mid
+        else:
+            hi = mid
+    distance = 2*hi
+    check_word(H-distance, word)
+    check_word(H-(distance+1), EVEN_WORD)
+    try:
+        check_word(H-(distance-2), word)
+    except AssertionError:
+        return distance
+    raise AssertionError("boundary was not sharp")
 
 
 def verify():
@@ -132,10 +160,22 @@ if __name__ == "__main__":
         raise SystemExit("Run without -O to enable verification.")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--scale", type=int, help="print the exact positive exit offsets")
+    parser.add_argument("--extended", action="store_true",
+                        help="use the lower boundary at 92 percent of the nominal distance")
+    parser.add_argument("--first-change", action="store_true",
+                        help="continue to the first change of the odd-seed word")
     args = parser.parse_args()
     if args.scale is None:
         print("265 scale corridors verified. Total offsets, maximum per gate, single-exit gates:",
               verify())
     else:
         check_corridor(args.scale)
-        print("Cycle lengths and windings, then exit offsets:", cycle_exits(args.scale))
+        low = BASE*3**args.scale
+        if args.first_change:
+            low = first_change(args.scale)
+        elif args.extended:
+            low = 92*low//100
+        cycles, exits = cycle_exits(args.scale, lower=low)
+        print("Lower countdown boundary:", low)
+        print("Cycle lengths and windings, then exit offsets:", (cycles, exits))
+        print("Exit reset seeds:", [H-low+offset for offset in exits])

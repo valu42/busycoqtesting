@@ -9,6 +9,8 @@
 | 1,241,997,380,866 | 745,198,428,520 | 496,798,952,347 | 110,399,767,188 |
 | 11,177,976,427,786 | 6,706,785,856,672 | 4,471,190,571,115 | 993,597,904,692 |
 
+The four intervals are now joined by a check of every intermediate reset. The resulting contiguous interval gives a recent-reset bound of **2,483,994,005,496** at the upper mass crossing. [Joined interval and verification data](UNIVERSAL_758.md)
+
 ## How the reset intervals reach a halt
 
 In each row every even seed follows the word $I J^{291} L L J L L J L R$. Every odd seed follows $J^{292} L^8 J L^6 J^k L R$ with $k=264,262,260,258$ in row order. The checker replays the original counter rules at both endpoints of each parity. Along a common ordinary word, increasing the seed makes the first counter nonincreasing and the second nondecreasing. Each guard between the two endpoints therefore holds on the entire interval of that parity. This also certifies the absence of an earlier reset on these particular words. [Endpoint comparison](COVER_758.md)
@@ -45,3 +47,5 @@ After allowing one further return in other parts of the same even corridor, **ev
 ```sh
 python3 check_corridor_residues_758.py
 ```
+
+For a sparse continuation, the next two odd-word corridors found by endpoint search have distance ranges [20,120,357,570,016, 33,533,929,283,358] and [60,361,072,710,048, 100,601,787,850,074], with $k=257$ and $256$. Connecting their near edges to the far edge of the preceding proved interval would avoid tracing across the corridors themselves. These candidate bridges have not been run. The reference worker's checked input range would need extending before replaying them.
