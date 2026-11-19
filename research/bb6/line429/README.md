@@ -10,7 +10,7 @@
 
 The first and second `00` are separated by a run of ones, a single zero and a single one. For example, `001101001` in state A forces D1 exactly 18 moves later, for *every* choice of the other cells. The open question is whether the displayed family occurs on the blank run. A sufficient nonhalting invariant would put at least two intervening zero symbols between every two consecutive internal `00` gaps at the start of each right sweep.
 
-**Follow-up.** Rocq verifies a finite lower bound on the literal blank run and a reachable tape at which the known line-279 halter stops but line 429 keeps going. [Theorems, stopping conditions and reproduction](verified/README.md)
+**Follow-up.** Rocq proves at least **10^581 elementary moves** from blank and exhibits a reachable tape at which the known line-279 halter stops while line 429 continues. [Theorems, stopping conditions and reproduction](verified/README.md)
 
 ## An exact sweep of the original tape
 
