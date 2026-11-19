@@ -10,6 +10,8 @@
 
 The first and second `00` are separated by a run of ones, a single zero and a single one. For example, `001101001` in state A forces D1 exactly 18 moves later, for *every* choice of the other cells. The open question is whether the displayed family occurs on the blank run. A sufficient nonhalting invariant would put at least two intervening zero symbols between every two consecutive internal `00` gaps at the start of each right sweep.
 
+**Follow-up.** Rocq verifies a finite lower bound on the literal blank run and a reachable tape at which the known line-279 halter stops but line 429 keeps going. [Theorems, stopping conditions and reproduction](verified/README.md)
+
 ## An exact sweep of the original tape
 
 The following notation records actual configurations in state A. Words in each half-tape are read from the head outwards, with an infinite zero tail. A capital letter such as `U` denotes an unchanged suffix. Juxtaposition concatenates words. For example, `1^k` denotes k consecutive ones. Write `R(p,u,v)` when the cells strictly left of the head read `p u` outwards and the scanned cell and cells to its right read `v`. Write `L(u,v)` when the scanned cell and cells to its left read `u` outwards and the cells strictly to the right read `1 v`. Both descriptions use the machine's original orientation.
