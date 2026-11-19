@@ -1,12 +1,20 @@
 # From power 36 to the one-bulk halting pair
 
-Starting at $A(1,3^{36}+112{,}032)$, #758 and #153 both reach reset **150,104,635,297,137,581**. This first crossing spans $10^{13}$ units in the reset seed. At the far end of the proposed grid, every reset in its last 5,001-seed input strip reaches **270,170,343,534,399,442**. From there the trajectory visits consecutive seeds $q-48$ and $q+102$, passing the halting pair $q,q+2$ alive, then reaches **300,189,270,594,119,530** above $2\cdot3^{36}$. Here $q=270{,}170{,}343{,}534{,}598{,}339$. Connecting these two ends requires the remaining intermediate windows. [Verifier](double36_frontier_758.py) · [Window receipts](double36_frontier_758.tsv.gz)
+Both blank trajectories reach **$A(1,150{,}154{,}635{,}297{,}142{,}749)$**. The [completed power-36 bridge](POWER36_FOLLOWON_758.md) reaches $A(1,3^{36}+112{,}032)$, and the first six windows here advance the reset seed by more than $6\times10^{13}$. At the far end of the proposed grid, every reset in its last 5,001-seed input strip reaches **270,170,343,534,399,442**. From there the trajectory visits consecutive seeds $q-48$ and $q+102$, passing the halting pair $q,q+2$ alive, then reaches **300,189,270,594,119,530** above $2\cdot3^{36}$. Here $q=270{,}170{,}343{,}534{,}598{,}339$. Connecting these two ends requires the remaining intermediate windows. [Verifier](double36_frontier_758.py) · [Window receipts](double36_frontier_758.tsv.gz)
 
 | Segment | First returns | Raw transitions |
 |---|---:|---:|
 | Last grid exit to $q-48$ | 1,503 | 508,686,106,656,607,074,773,333,065,887,204,685,015 |
 | $q-48$ to $q+102$ | 1 | 280,792,859,414,564,088,211,790,599,247,683,383 |
 | Last grid exit through the doubled-power checkpoint | 375,236,588,244,450 | 54,355,875,010,564,556,531,051,350,392,993,602,744,906,412,070,046 |
+
+## First six consecutive windows
+
+The regular receipts at indices 1 through 4 connect the first crossing to the existing symbolic row 5. Starting at the power-36 checkpoint, the six-window chain reaches one of 159 consecutive reset seeds from 150,154,635,297,111,153 through 150,154,635,297,111,311. Literal first returns merge every one at **150,154,635,297,142,749** after 858 distinct edges. Run `python3 double36_frontier_758.py --checkpoint 5 --clock` to verify the connection and its raw clock increment. At the common reset the #758 clock lies in **[40,043,628,698,012,653,507,859,719,075,457,778,414,715,574,797,556, 50,698,722,796,009,830,424,148,244,736,658,574,776,398,582,497,004]** raw transitions from blank. Both endpoints for #153 are exactly 50,707 smaller. The following command checks the complete preceding grid, these six new windows, the merger and the two clocks. The one-bulk halting pair remains farther along the grid, with 1,988 windows still open.
+
+```sh
+python3 power36_bulk_corridor_758.py --clock
+```
 
 ## Why the pair is missed at the far end
 
@@ -18,7 +26,7 @@ The actual proof window ends slightly below these thresholds at $q-199{,}000$. T
 
 ## Checking or extending the grid
 
-The 12,008 regular windows run from $3^{36}+112{,}032$ to $q-199{,}000$ in strides of $10^{13}$, with a shorter last window. The endpoint words on both seed parities close 9,773 windows immediately. Allowing the published worker's interval subdivisions and parity closure certifies **10,010 windows without individual first-return evaluations**. The other **1,998** request an individual evaluation. The compressed table also contains six individually computed windows, leaving **1,992 open** in this handoff. The first regular window encloses the next reset in 177 consecutive seeds. All 177 meet at the stated starting-segment checkpoint after checking 715 first-return edges.
+The 12,008 regular windows run from $3^{36}+112{,}032$ to $q-199{,}000$ in strides of $10^{13}$, with a shorter last window. The endpoint words on both seed parities close 9,773 windows immediately. Allowing the published worker's interval subdivisions and parity closure certifies **10,010 windows without individual first-return evaluations**. The other **1,998** request an individual evaluation. The compressed table also contains ten individually computed windows, leaving **1,988 open**. The first regular window encloses the next reset in 177 consecutive seeds. All 177 meet at **150,104,635,297,137,581** after checking 715 first-return edges.
 
 Four sampled windows give a rough estimate for the original 1,998 difficult cases. Divide their sorted indices into four nearly equal groups and select one per group with Python's `Random(75837)`. Rows 306, 3537, 7883 and 10661 took 1.85, 26.99, 17.42 and 33.99 CPU seconds on the test host, using 41.4, 719.3, 458.5 and 927.4 million individual first-return evaluations. Weighting by group size estimates **11.1 CPU-hours** for the 1,998 cases, equivalent to roughly 84 minutes on eight dedicated cores at ideal scaling. The wide spread limits the precision of this estimate. Separate runs of the first and last windows took 40.78 and 17.74 CPU seconds, respectively.
 
@@ -27,8 +35,9 @@ The maximal initial jump count grows monotonically with the seed within each par
 From the research directory the following commands check the two gates, inspect the connected prefix, and replay the singleton exit.
 
 ```sh
-python3 double36_frontier_758.py --checkpoint 0
+python3 double36_frontier_758.py --checkpoint 5 --clock
 c++ -O3 -std=c++17 -DBB758_DOUBLE_POWER=36 cross_double35_758.cpp -o /tmp/cross-double36
+python3 double36_frontier_758.py --worker /tmp/cross-double36 --start 0 --stop 6
 python3 double36_frontier_758.py --worker /tmp/cross-double36 --start 12007 --stop 12008
 c++ -O2 -fsanitize=undefined -fno-sanitize-recover=all -std=c++17 -DBB758_DOUBLE_POWER=36 audit_double35_758.cpp -o /tmp/audit-double36
 /tmp/audit-double36

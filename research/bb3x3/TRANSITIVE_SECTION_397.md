@@ -28,6 +28,8 @@ For any such permutation g, let its activity at depth j be the parity of the num
 
 Starting from the root row, add the activities of the outgoing carries for input bits 0 and 1, modulo two. An early stop contributes zero. This produces the second row, then the third, then the second again. The multiplicities of the six carries in S are (1,10,10,1,2,9). Their scalar product with each row is odd. Consequently **S permutes all the length-k binary words in a single cycle of length 2ᵏ for every k**.
 
+This also excludes a possible application of the [pure A/D decision](PAIRED_PASS_397.md) to blank. Fix any occupied prefix of length k beyond the original 29 bits. Its first return under S takes 2ᵏ repetitions. At this return the next two bits run through all four possible pairs in one cycle, since S has a single cycle of length 2ᵏ⁺² on the longer prefix. In the pure A/D model, D = A² and A complements the first pair on every input. Every product of A and D therefore has period at most two on these same pairs. No fixed cut in the transitive tail has a full return equivalent to pure A/D traffic. Any conjugacy that only relabels the four pairs also preserves this period distinction.
+
 ## Consequences for the moving edge
 
 Once k bits beyond the 29-bit word exist, sampling them every 1,024 sweeps at the return phase visits every k-bit word once per 2ᵏ samples, for as long as the run continues. Hence a nonhalting blank trajectory cannot exclude any fixed finite pattern at this particular location.
