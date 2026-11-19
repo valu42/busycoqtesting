@@ -22,3 +22,7 @@ python3 check_frontier_exit.py
 ```
 
 The result certifies a finite segment of the orbit. It leaves the connection to a halting configuration open.
+
+## Combining the two intervals
+
+There are 86,720 intervening seeds strictly above 1,079,817,520,122,229 and strictly below 1,079,817,520,208,950. For each, the first return increases the seed and is at most 1,079,817,520,209,214. Descending induction therefore puts every intervening seed into the second interval. Together the two proofs cover all 20,508,456,727,118 consecutive seeds from the published checkpoint through 1,080,000,000,000,000. [Bridge calculation](check_confluence.py)

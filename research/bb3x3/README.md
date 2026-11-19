@@ -21,11 +21,15 @@ Let $H=(3^{307}-8\,282\,708\,212)/13\,959\,275$. The following statements use in
 
 A proof that the blank orbit reaches **any** state in the larger halting interval suffices. An earlier halt also settles both. One way to make the entry question precise uses the integer mass $W=a+2c$. It grows by at least 3 and at most 9 at each continuing map update. An infinite trajectory must therefore cross the middle of the halting interval in mass. The value of the first counter at that crossing matters.
 
+**A sufficient bound on the single excursion that crosses the upper edge is 13,465,988 map updates.** Set $B=H-64,000,000$ and $U=H-3,403,055$. On an infinite blank orbit, consider the first state with $W>2U+1$. A reset exists strictly before it because the orbit starts through A(1,3). If the most recent such reset was A(1,r), then $r\le U$. To have missed the halting interval it must satisfy $r\le B-1$. From that reset to the crossing the required gain in mass is at least $2(U-B)+3=121,193,893$. Even 13,465,988 updates gain at most 121,193,892. Thus a proof that this particular crossing has a reset in its preceding 13,465,988 updates rules out an infinite blank orbit. This bound on the actual trajectory remains unproved.
+
+* Within the trimmed halting interval, an infinite orbit must switch between the ordinary bulk move and the odd/odd jump at least **24,982 times** without resetting. Bounds from both directions exclude 99 consecutive copies of one particular three-move word at the central cut. There are actual integer examples with 98 copies, and congruence tests alone admit that word indefinitely. A bound that works across changing words would address the remaining case. [Switch count](CUT_758.md) · [Two-sided test and sharp example](cut_residues.md)
 * At the threshold $W=2(H-10\,000\,000)+1$, every crossing with a reset in the preceding 4,000 updates leads to a known halt. Exhausting the possible recent resets gives 745 distinct crossing states. A proof that the actual crossing has such a recent reset would close the problem. The same calculation identifies an exceptional branch that forces a return into the halting interval in 787 updates when it occurs with enough room before the upper edge. [Cut argument and checker](CUT_758.md)
 * A general bound that prevents a single excursion from skipping the entire interval would also suffice, provided it covers an excursion that never returns. Merely bounding jumps **between** returns leaves that case open. At one fixed mass near H all $2^{144}$ words of length 144 built from two specific nonreturn blocks occur from some starting state. A proof may be able to exploit the fact that only one trajectory is reachable from blank. [Construction and limits of a cut search](CUT_758.md)
 * Neighboring reset seeds can often be identified exactly. Every pair A(1,4q−1), A(1,4q+1) for q ≥ 1 merges. There is a corresponding rule for even seeds with explicit boundary cases. These rules can reduce a backward reachability search. [Identities and proof](reset_pairs.md) · [Checker](check_reset_pairs.py)
 * Exhausting all incoming paths to the exact terminal reached from H gives just two possible last resets, H−2 and H. Analogous searches for the three published smaller candidate pairs also terminate. The nearest pair can be skipped in one excursion. Its exact 93-update bypass is a test case for any proposed crossing theorem. [Complete reverse graphs and bypass](TERMINALS_758.md)
 * The fine terminal word for H recurs at all exponents $m=292+242660k$ for integers $k\ge0$. Allowing all bulk residues in its coarser terminal word gives exactly two halting seeds through H, namely H−2 and H. A search for a smaller halter must allow a different terminal itinerary, or a preceding return. [Proof and exhaustive search](LIFTS758.md)
+* Each exponent in that family has two or four explicit even reset seeds that lead to its halt. At sufficiently high exponents, every even seed in the translated twelve-million-wide strip overshoots its target on its first return. [Moving preimages and uniform return formula](MOVING_SEEDS758.md)
 
 ## Running the checks
 
@@ -39,7 +43,9 @@ python3 check_confluence.py
 python3 check_frontier_exit.py
 python3 check_reset_pairs.py
 python3 check_758_lifts.py
+python3 check_758_moving_seeds.py
 python3 verify_cut.py
+python3 check_cut_residues.py
 python3 terminal_forest_758.py
 ```
 

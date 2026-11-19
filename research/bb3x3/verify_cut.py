@@ -11,6 +11,7 @@ from check_bb33 import HALTING_TARGET, WALL_FAR, WALL_NEAR, champion_step
 
 LOW = HALTING_TARGET - WALL_FAR
 HIGH = HALTING_TARGET - WALL_NEAR
+BASIN_LOW = HALTING_TARGET - 64_000_000
 
 
 def exceptional_return():
@@ -20,6 +21,13 @@ def exceptional_return():
     first += (3 - first) % 4
     last = (2 * HIGH - 1) // 3
     last -= (last - 3) % 4
+
+    total, right = 0, 1
+    for _ in range(785):
+        q = (right + 1) // 4
+        total, right = total + 4 * q + 3, 6 * q + 5
+    assert total - 6 <= 2 * LOW + 1 <= 2 * HIGH + 1 <= total + right - 6
+    assert total - 6 <= 2 * BASIN_LOW + 1
 
     # For all intermediate parameters c, coordinate a stays between the two
     # endpoints and the right counter is identical until one endpoint exits.
@@ -38,6 +46,23 @@ def exceptional_return():
         assert checkpoint == (1, (3 * c + 5_459) // 2)
         assert 1 + 2 * checkpoint[1] == (3 * c + 2) + 5_458
     print("All eligible exceptional inputs take 787 updates to A(1,(3*c+5459)/2).")
+
+
+def crossing_length():
+    """Necessary itinerary length for an infinite orbit to escape the basin."""
+    width = HIGH - BASIN_LOW
+    # From the first mass >= 2B+1 (at most 2B+9) to the first mass
+    # > 2U+1-5458, all source states are inside the exceptional-return strip.
+    min_gain = 2 * width - 5_465
+    min_steps = (min_gain + 8) // 9
+    assert min_steps == 13_465_381
+    assert 9*13_465_988 < 2*width+3 <= 9*13_465_989
+    # A J run triples a+1. A bulk run scales c+7 by at least 3/2.
+    assert 3**292 <= HALTING_TARGET < 3**293
+    assert 8*3**786 <= (HALTING_TARGET+7)*2**786
+    assert 8*3**787 > (HALTING_TARGET+7)*2**787
+    assert 12_491*(292+786) < min_steps
+    print("An infinite blank orbit would need at least 24,982 switches in the halting interval.")
 
 
 def lift(u0, word):
@@ -101,6 +126,31 @@ def branching():
     print("Witness construction checked on 1,024 ten-block and 132 144-block words.")
 
 
+def survival_bound():
+    """Audit the paired bulk forms and the bound on arbitrary odd cut states."""
+    u = HALTING_TARGET - 10_000_000
+    residues = ((5, 20), (9, 35), (7, 26), (7, 29))
+    for d in range(64):
+        a, c = 2 * u - 4 * d - 1, 2 * d + 1
+        a, c = champion_step(*champion_step(a, c))
+        increase, offset = residues[d % 4]
+        assert (a + 2 * c - 1) // 2 == u + increase
+        assert 4 * ((c - 1) // 2) == 9 * d + offset
+
+    depth = 334
+    # Each word gives a frozen interval, padded by 14 integer units at both ends.
+    # A closed interval of length ell contains at most ell+1 integers.
+    bound = u * 7**depth // (2 * 9**depth) + 29 * 2**depth
+    count = (u + 1) // 2
+    assert bound * 10**39 < 446 * count
+    assert bound < 4_783 * 10**99
+    # The first crossing ranges from M to M+8. An even mass may take one
+    # compulsory bulk update to either W+5 or W+9, bounded above by M+16.
+    high_bound = (u + 8) * 7**depth // (2 * 9**depth) + 29 * 2**depth
+    assert 13 * high_bound < 6_218 * 10**100
+    print("Fewer than 6.218e103 states on the entire central crossing can bypass the test.")
+
+
 def recent_resets():
     """Exact image at the central cut for resets within 4,000 updates."""
     mass = 2 * (HALTING_TARGET - 10_000_000) + 1
@@ -146,3 +196,5 @@ if __name__ == "__main__":
     recent_resets()
     exceptional_return()
     branching()
+    survival_bound()
+    crossing_length()
