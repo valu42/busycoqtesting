@@ -20,3 +20,10 @@ done
 python3 certificate.py > "$build/Phase.lean"
 (cd "$build" && "$lean" Phase.lean -o Phase.olean)
 "$lean" Checkpoint.lean -o "$build/Checkpoint.olean"
+for module in Locality Box Guarded Landing StackReturn StackInvariant; do
+    "$lean" "$module.lean" -o "$build/$module.olean"
+done
+python3 return_certificate.py > "$build/ReturnPhases.lean"
+(cd "$build" && "$lean" ReturnPhases.lean -o ReturnPhases.olean)
+"$lean" Return.lean -o "$build/Return.olean"
+"$lean" MarkerTest.lean -o "$build/MarkerTest.olean"

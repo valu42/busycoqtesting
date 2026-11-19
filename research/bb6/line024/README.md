@@ -1,6 +1,6 @@
-# BB(6) line 24 survives the predicted overflow
+# Two marker-producing restarts of BB(6) line 24
 
-The blank run of ID **7846**, `1RB0LA_1RC---_0LD1RD_0RA0RE_0RF1RC_1LF0LA`, reaches a restart in state A after **4,679,860,003,204,851** defined elementary moves. Its eventual halting remains open. An October investigation singled out the event near 4.6 quadrillion moves as a possible halt or restart. The certificate below settles that particular event. [Earlier prediction and base-4 model](https://github.com/DennisKoshta/denniskoshta-portfolio/blob/b48bd32fab8b476135d47ffa4e5f9bfb9a80d8c7/public/busy-beaver/machines/1RB0LA_1RC---_0LD1RD_0RA0RE_0RF1RC_1LF0LA/decision.json)
+The blank run of ID **7846**, `1RB0LA_1RC---_0LD1RD_0RA0RE_0RF1RC_1LF0LA`, reaches a restart in state A after **4,679,860,003,204,851** defined elementary moves. It returns to A again after **4,679,882,754,726,131** moves. Its eventual halting remains open. An October investigation singled out the event near 4.6 quadrillion moves as a possible halt or restart. The certificate below settles that particular event. [Earlier prediction and base-4 model](https://github.com/DennisKoshta/denniskoshta-portfolio/blob/b48bd32fab8b476135d47ffa4e5f9bfb9a80d8c7/public/busy-beaver/machines/1RB0LA_1RC---_0LD1RD_0RA0RE_0RF1RC_1LF0LA/decision.json)
 
 | Defined moves from blank | Event |
 |---:|---|
@@ -8,8 +8,23 @@ The blank run of ID **7846**, `1RB0LA_1RC---_0LD1RD_0RA0RE_0RF1RC_1LF0LA`, reach
 | 4,661,463,201,335,715 | After 6,132,267,261,786 complete passes, an empty digit reaches a wall of 18,396,801,867,788 ones. |
 | 4,679,860,003,203,509 | The head finishes erasing that wall. |
 | 4,679,860,003,204,851 | It also erases an older wall of 1,322 ones. The theorem `blankRestart` gives the full configuration. |
+| 4,679,882,601,979,855 | After 13 more counter phases the head reaches the exterior in D and reads `000`. |
+| 4,679,882,754,726,131 | The machine returns to A, 48 cells left of the first restart, after erasing a stack with 16 recorded gaps. |
+| 4,679,882,756,120,429 | At a later B-state test the actual tape supplies zero. |
 
-At the restart, read the left half nearest cell first. It is `111110110111` followed by blank tape. The right half, starting under the head, is 1,324 zeros, six ones, 18,396,801,867,785 zeros, four ones, and the suffix called `debris` in the proof. A separate literal C++ replay completed another **1,000,000,000** moves. Relative to the restart, it finished in F at cell 6,572,676 and reached no cell to the right of 6,572,731. It therefore never read the distant suffix. [Exact tapes and theorems](Checkpoint.lean) · [Literal replay](replay.cpp)
+At the first restart, read the left half nearest cell first. It is `111110110111` followed by blank tape. The right half, starting under the head, is 1,324 zeros, six ones, 18,396,801,867,785 zeros, four ones, and the suffix called `debris` in the proof. A separate literal C++ replay executed the next **22,751,521,280** moves. It checked the D landing, the return head at cell −48, and every cell of the regenerated local tape. The visited interval relative to the first restart was [−60, 152,745,954], well short of the distant suffix. [Exact tapes and theorems](Checkpoint.lean) · [Literal replay](replay.cpp)
+
+## The second restart
+
+Starting at the first restart, 1,864,476 moves take the machine to a counter of mass 25. The first of 13 phases makes 35,998,204 passes. Each of the first 12 phases opens another digit at the wall. The thirteenth opens the tail. At that instant D reads `000`. Seven clear cells suffice for the machine to turn left and erase an arbitrary finite stack of older walls. [Landing and erasure](Landing.lean) · [Stack transitions](StackReturn.lean) · [Phase generator](return_certificate.py)
+
+The theorem `restoredCycle` applies to every right tape starting with 1,324 zeros, six ones and a further gap of $g$ zeros, with the specified left tape and starting state A, provided $1{,}330+g\ge22{,}751{,}521{,}280$. Whatever follows that gap survives at its original physical coordinate. The proof uses a distant left-hand mark to determine the head displacement exactly. After 22,751,521,280 moves the head has shifted 48 cells left, the state is A again, and the left half is again `111110110111` followed by blanks. The right half begins with 1,324 zeros, six ones, **8,628** zeros and six ones. The rest is specified by `returnedWidths` and the retained exterior. [Run with arbitrary right exterior](Return.lean) · [Preservation of both outside tapes](Box.lean)
+
+The phase argument also proves a restriction for any finite number of these wall openings. If the incoming wall has width 2 modulo 3 and its older gaps are divisible by 3, every output wall-gap parameter is divisible by 3. Each nonterminal opening records $1+3k+w$ after $k$ ordinary passes against a wall of width $w$, then starts a new wall of width 2. The terminal opening contributes the same parameter and a zero. The generated certificate instantiates this theorem with the actual 13 phases and all 16 output parameters. [General gap invariant](StackInvariant.lean)
+
+This identifies where the induction breaks. The original gap contains 18,396,801,867,785 zeros. The regenerated gap contains only 8,628. The next run encounters a second nearby marker before the same argument applies. A proof for all restarts must account for that interaction or find a different invariant.
+
+One later visit to state B gives a concrete constraint on such an invariant. Counting from the second restart head at offset zero, the actual third marker starts after a gap of 107,996,733 zeros. Change only offsets 18,590 through 18,595 from zero to one, and the gap to the newly inserted six-one marker is 8,626. Both runs reach B at offset 18,590 after another 1,394,298 defined moves. The real tape supplies zero. The altered tape supplies one and halts there. The altered gap is 1 modulo 3, so the gap invariant excludes its creation by this particular class of stack returns. Both the Lean proof and the literal interpreter check the B-state tests. [Actual and altered tapes](MarkerTest.lean) · [Literal replay](replay.cpp)
 
 ## Why the long calculation is checkable
 
@@ -25,7 +40,7 @@ The Python generator reuses an entire sequence of suffix passes under a positive
 
 ## Verification and remaining question
 
-The first 20,656,445 moves use Lean's compiled `decide +native` on the exact finite configuration. This part relies on Lean's native evaluator. The C++ interpreter checks the state, head coordinate and every cell of both half-tapes at that point. From that entry through the restart, the Lean kernel checks the timing and tapes with no native computation axiom. The checker prints the assumptions for the component theorems and their composition. [Blank-entry proof](Entry.lean)
+The initial 20,656,445 moves, the later 1,864,476-move entry and the two 1,394,298-move marker tests use Lean's compiled `decide +native` on the exact finite configuration. This part relies on Lean's native evaluator. The C++ interpreter independently checks the first counter entry and the second restart. From that entry through the restart, the Lean kernel checks the timing and tapes with no native computation axiom. The checker prints the assumptions for the component theorems and their composition. [Blank-entry proof](Entry.lean)
 
 A global decision still requires control of subsequent encounters with markers and older tape. The published criterion says that the run halts exactly when D scans `001`. The restart theorem gives a reachable tape for investigating that question. An unbounded nonhalting argument would have to show that every future restart avoids the critical word and continues making progress. [Existing halting criterion](https://github.com/fractal-geometry-explorer/busy-beaver-explorer/blob/89e8153595f1e90de26c9e963b24d98bb4f4547d/holdouts/1RB0LA_1RC---_0LD1RD_0RA0RE_0RF1RC_1LF0LA/lean/HaltIff.lean)
 
