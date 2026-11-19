@@ -31,9 +31,11 @@ python3 check_power_crossings_758.py --leg fourth --chunk 338 --engine general
 python3 exact_fourth_758.py
 ```
 
-## The open link after the fourth pair
+## The original survey after the fourth pair
 
-From the post-crossing reset at 18,378,934,934,402,308, a reset in the window beginning at 30,018,927,059,399,750 would suffice to reach $2\cdot3^{34}+32{,}211$. The simple even word of this doubled-power gate starts at 20,012,618,039,599,810, and the odd word starts at 30,018,927,059,399,751. On the two-trillion grid between the checkpoint and the window, **4,777 of 5,820 windows have an entirely symbolic crossing proof**. The other 1,043 stop at a request for a direct trace. These separated successes do not yet connect the two checkpoints. The [survey](survey_next_power_758.py) can print the unresolved zero-based indices. A success verifies both exit bounds with the ordinary crossing code. The build flag stops that code before its first direct call.
+All 5,820 windows of this link and the following 640 windows have now been verified, taking the blank orbit past the fifth candidate. [Complete receipts and fifth crossing](FIFTH_BLANK_CROSSING_758.md)
+
+From the post-crossing reset at 18,378,934,934,402,308, a reset in the window beginning at 30,018,927,059,399,750 would suffice to reach $2\cdot3^{34}+32{,}211$. The simple even word of this doubled-power gate starts at 20,012,618,039,599,810, and the odd word starts at 30,018,927,059,399,751. On the two-trillion grid between the checkpoint and the window, **4,777 of 5,820 windows have an entirely symbolic crossing proof**. The other 1,043 stop at a request for a direct trace. The later computation supplied the remaining 1,043 window proofs. The [survey](survey_next_power_758.py) can print the unresolved zero-based indices. A success verifies both exit bounds with the ordinary crossing code. The build flag stops that code before its first direct call.
 
 ```sh
 python3 survey_next_power_758.py --list-hard

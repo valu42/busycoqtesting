@@ -1,6 +1,7 @@
 """Build repeatable ordinary-return intervals and trace one reset chain exactly."""
 from dataclasses import dataclass
 from fractions import Fraction
+import heapq
 
 from check_bb33 import HALTING_TARGET, champion_step, first_return
 
@@ -56,11 +57,17 @@ def replay(launch, letters, seed):
     return a,c
 
 
-def part(low, high, parity, depth, weights):
+def part(low, high, parity, depth, weights, scale):
     """Classify seeds 2*i+parity for low<=i<=high; None marks difficult sites."""
     result = []
     def descend(lo, hi, launch, ops, complete, odd):
-        if odd and complete >= depth:
+        if depth is None:
+            # At an odd node, a pair has contributed exactly two L letters.
+            pairs,jumps = ops.count('L')//2,ops.count('J')
+            stop = scale*4**pairs <= 3**(jumps+2*pairs)
+        else:
+            stop = complete >= depth
+        if odd and stop:
             result.append((lo,hi,None))
             return
         def kind(i):
@@ -90,12 +97,12 @@ def part(low, high, parity, depth, weights):
     return result
 
 
-def partition(p, n, weights=(1,1)):
+def partition(p, n=None, weights=(1,1)):
     """Merge the two parity partitions into half-open cells covering [p,3p]."""
-    if p < 100 or n < 1 or min(weights) < 1:
+    if p < 100 or (n is not None and n < 1) or min(weights) < 1:
         raise ValueError('require X >= 100 and positive stopping weights and budget')
     low, high = p//2, 3*p//2
-    rows = [part(low,high,parity,n,weights) for parity in (0,1)]
+    rows = [part(low,high,parity,n,weights,p) for parity in (0,1)]
     cuts = sorted({low, high+1, *(x for row in rows for x,_,_ in row)})
     idx = [0,0]
     for x,y in zip(cuts,cuts[1:]):
@@ -160,6 +167,44 @@ def run(cells, seed):
     return seed,steps,calls
 
 
+def cover(cells, starts):
+    """Enclose all live exit resets and record whether the calculation saw any halt."""
+    pending = set(starts)
+    heap = list(pending)
+    heapq.heapify(heap)
+    calls = 0
+    halt = False
+
+    def push(seed):
+        if seed not in pending:
+            pending.add(seed)
+            heapq.heappush(heap,seed)
+
+    for lo,hi,*rules in cells:
+        if not heap or heap[0] >= hi:
+            continue
+        assert heap[0] >= lo
+        if None in rules:
+            while heap and heap[0] < hi:
+                seed = heapq.heappop(heap)
+                pending.remove(seed)
+                nxt = first_return(seed)
+                calls += 1
+                if nxt is None:
+                    halt = True
+                else:
+                    assert nxt > seed
+                    push(nxt)
+        else:
+            gain = max((8*launch.even + 4*launch.k + 4*ops.count('J')
+                        + 9*ops.count('L') + 5)//2 for launch,ops in rules)
+            while heap and heap[0] < hi:
+                pending.remove(heapq.heappop(heap))
+            for seed in range(hi,hi+gain):
+                push(seed)
+    return pending,halt,calls
+
+
 def audit():
     for p,n,weights in ((497,3,(1,1)),(3**7,4,(1,1)),(3**10,5,(1,1)),(3**7,13,(2,5))):
         cells = list(partition(p,n,weights))
@@ -197,6 +242,15 @@ if __name__ == '__main__':
         raise SystemExit('Run with assertions enabled.')
     audit()
     audit_exponent()
+    p = 3**9
+    starts = range(p,p+41)
+    exits,halt,calls = cover(list(partition(p)),starts)
+    for seed in starts:
+        while seed is not None and seed <= 3*p:
+            seed = first_return(seed)
+        assert halt if seed is None else seed in exits
+    print(f'Adaptive enclosure from 41 seeds at 3^9: {len(exits)} allowed exits; '
+          f'{calls} difficult queries; possible halt {halt}')
     p,n = 3**292,8
     cells = list(partition(p,n))
     difficult = sum(h-l for l,h,*r in cells if None in r)

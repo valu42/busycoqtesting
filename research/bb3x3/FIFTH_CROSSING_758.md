@@ -4,7 +4,7 @@ Let $K=40,486,323,621,582,648$. Every reset $A(1,s)$ in the interval
 $$
 39,752,584,607,270,532\ \le s\le\ 40,386,323,621,587,648
 $$
-reaches the same reset at **$K-198,990$**. Exactly 1,054 further first returns give consecutive resets **$K-98$ and $K+118$** at the crossing. Both $K$ and $K+2$ halt if used as starting resets. Entry into the interval from blank is open.
+reaches the same reset at **$K-198,990$**. Exactly 1,054 further first returns give consecutive resets **$K-98$ and $K+118$** at the crossing. Both $K$ and $K+2$ halt if used as starting resets. The [connected window proof](FIFTH_BLANK_CROSSING_758.md) now proves that the blank orbit enters this interval and takes the stated crossing.
 
 ## Synchronization
 
