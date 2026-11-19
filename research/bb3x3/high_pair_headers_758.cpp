@@ -42,7 +42,9 @@ void make_residues() {
     }
     std::sort(residues.begin(),residues.end());
     residues.erase(std::unique(residues.begin(),residues.end()),residues.end());
-    if (residues.size()!=8192) throw std::logic_error("wrong header count");
+    if (residues.size()!=8192 || std::any_of(residues.begin(),residues.end(),
+            [](int value) { return value%2!=0; }))
+        throw std::logic_error("wrong header residues");
     for (size_t i=0; i<residue_index.size(); ++i)
         residue_index[i]=std::lower_bound(residues.begin(),residues.end(),128*i)-residues.begin();
 }
@@ -142,7 +144,7 @@ int main(int argc,char **argv) {
         if (next_bin[i]) next=i;
         next_bin[i]=next;
     }
-    std::puts("r p cells probes angular_tests exact_fallbacks survivors");
+    std::puts("r\tp\tlast_guard\tcells\tprobes\tangular_tests\texact_fallbacks\tsurvivors");
     bool ok=true;
     for (cutoff=first; cutoff<=last; ++cutoff) {
         counts.fill({});
@@ -150,7 +152,7 @@ int main(int argc,char **argv) {
         for (unsigned p=minimum_pairs; p<counts.size(); ++p) {
             const Counts &c=counts[p];
             if (!c.cells) continue;
-            std::printf("%u %u %lu %lu %lu %lu %lu\n",cutoff,p,c.cells,c.probes,c.tests,c.exact,c.survivors);
+            std::printf("%u\t%u\t%u\t%lu\t%lu\t%lu\t%lu\t%lu\n",cutoff,p,limit,c.cells,c.probes,c.tests,c.exact,c.survivors);
             ok &= c.survivors==0;
         }
         std::fflush(stdout);

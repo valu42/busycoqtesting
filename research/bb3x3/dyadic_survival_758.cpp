@@ -158,6 +158,8 @@ int main(int argc, char** argv) {
         const auto start=std::chrono::steady_clock::now();
         Scan scan{p,limit};
         scan.run(brute);
+        if (!brute && scan.deepest_split >= 189)
+            throw std::logic_error("A pruned gap could be missing from the long-tail ledger");
         if (!brute && scan.longest_count && scan.high <= scan.deepest_split)
             throw std::logic_error("pruned gap could affect maximum");
         const auto elapsed=std::chrono::duration<double>(std::chrono::steady_clock::now()-start);

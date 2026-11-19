@@ -1,4 +1,5 @@
 """Bound the remaining raw clock after entry into a certified halting basin."""
+import argparse
 from decimal import Decimal
 
 from angular_clock_758 import upper_prefix
@@ -58,9 +59,33 @@ def audit():
     return outer_limit, connected_limit, lower_limit, total_limit
 
 
+def joined_clock(distance):
+    """Bounds after entry anywhere in the joined halting basin."""
+    a, c = terminal_input(H)
+    last = a+2*c
+    assert last == 2*H+1258
+    initial = 2*(H-distance)+1
+    call_cost = (last**2+30*last+195)//3
+    remaining = ((last-initial)//4+1)*call_cost
+    lower = lower_at_mass(initial,certify_potential(make_graph()))-50_707
+    upper = upper_prefix(last)+call_cost
+    assert lower > 210448*10**409 and upper < 8206*10**413
+    return remaining,lower,upper
+
+
 if __name__ == "__main__":
     if not __debug__:
         raise SystemExit("Enable assertions to run the checks.")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--joined', action='store_true', help='use the widest joined interval')
+    args = parser.parse_args()
+    if args.joined:
+        from target_basin_758 import GATES_NEW
+        distance = GATES_NEW[max(GATES_NEW)][1]
+        remaining, lower, upper = joined_clock(distance)
+        print(f"Mass-distance {distance:,}; raw remaining upper bound {remaining}.")
+        print(f"Conditional blank bounds {lower} through {upper}.")
+        raise SystemExit
     outer, connected, lower, total = audit()
     print(f"Time left from any of the covered basins: <= {Decimal(outer):.12E} (rounded)")
     print(f"Time left from the contiguous basin: <= {Decimal(connected):.12E} (rounded)")
