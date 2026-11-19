@@ -1,4 +1,4 @@
-"""Classify 36-return halts from an empty suffix and n >= 300."""
+"""Classify 36-return halts from an empty suffix and any nonnegative counter."""
 from collections import deque
 from return596 import next_boundary
 
@@ -49,6 +49,16 @@ def shortest():
                 p4 *= 4
             classes.append(a)
     assert len(classes) == len(set(classes))
+    # The affine rows use n >= 300. Check the remaining finite starts directly.
+    for n in range(300):
+        counter, tail = n, ''
+        for j in range(1, 37):
+            kind, counter, tail, _ = next_boundary(counter, tail, clock=False)
+            if kind == 'halt':
+                assert j == 36 and n in classes
+                break
+        else:
+            assert n not in classes
     return checked, len(distance), terminal, sorted(classes)
 
 
