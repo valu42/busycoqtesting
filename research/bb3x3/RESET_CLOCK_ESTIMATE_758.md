@@ -41,3 +41,5 @@ python3 reset_clock_estimate_758.py --replay
 python3 reset_clock_estimate_758.py --strata 16384
 python3 reset_clock_estimate_758.py --burn 32 --keep 64
 ~~~
+
+There is also a [conditional asymptotic clock integral](CONTINUUM_PARITY_758.md) when the maximum reset increment on a powered annulus meets the stated sublinear bound. Its proof uses a [deterministic return-count estimate](RESET_COUNT_TRANSPORT_758.md). The finite exponent-292 forecast above remains numerical.

@@ -6,7 +6,7 @@
 #define POWER_EXPONENT 33
 #endif
 
-static_assert(POWER_EXPONENT >= 32 && POWER_EXPONENT <= 34, "verified word-size range");
+static_assert(POWER_EXPONENT >= 32 && POWER_EXPONENT <= 35, "verified word-size range");
 constexpr int exponent = POWER_EXPONENT;
 constexpr Num power_of_three(int n) {
     Num result = 1;

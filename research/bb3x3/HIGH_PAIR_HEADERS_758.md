@@ -21,7 +21,7 @@ Two exact filters speed up this walk.
 
 For r≤53 and p≥24 the [ledger](high_pair_headers_758.tsv) contains 617,905 prefix cylinders and 57,087,748 angular tests. All remaining candidates enter the return interval by the guard at depth 257. The first possible cylinder in these rows occurs at r=47. The separate unrestricted dyadic calculation handles p≤23. Rows through exponent 61 use depth 250 after the original range. At exponent 62 the depth is 249. Their minimum p can be higher because the unrestricted survey and the ancestry test below cover lower p. Each ledger row concerns its particular r and p.
 
-The checker reports a failure if any surviving candidate remains. Its zero-survivor lines refer to the header/dyadic combinations counted, independently of the blank trajectory. The extra 42 calls required between r and the requested budget cover the terminal crossing overshoot and the entire grid construction. Arithmetic limits and loop bounds in the C++ source support 2≤r≤62 and p≤31.
+The checker reports a failure if any surviving candidate remains. Its zero-survivor lines refer to the header/dyadic combinations counted, independently of the blank trajectory. The extra 42 calls required between r and the requested budget cover the terminal crossing overshoot and the entire grid construction. Arithmetic limits and loop bounds in the C++ source support 2≤r≤63 and p≤32. At $p=32$ the numerator range includes the endpoint $2^{64}$, so the checker uses 128-bit integers for the candidate cursor and rounds its initial $2^{-60}$ interval outwards on the $2^{-64}$ grid.
 
 ```sh
 c++ -O3 -std=c++17 high_pair_headers_758.cpp -lgmpxx -lgmp -o high_pair_headers
@@ -47,3 +47,5 @@ For p=26 there are 37 exceptional directions, of which two have an origin at r�
 At r=61, none of the 972 long directions through p=28 has a compatible header. For p=29, 30 and 31 the high-pair verifier tests 35,960, 465 and one prefix respectively. Every candidate leaves by the depth-250 guard. The [scale-19 induction](TARGET_BASIN_758.md) attaches the resulting gap and its following fixed-word corridor to the contiguous halting interval.
 
 At exponent 62 the checker covers 242,327 high-pair prefixes. Across the three pair counts it tests 20,309,999,775 candidate directions. Every retained case decides by depth 249. The lower pair counts use the [direct physical clearance](DYADIC_GUARD_SHADOW_758.md).
+
+At exponent 63 a separate angular check of $p=31,32$ covers 497 prefixes and 547,863,228 angular tests. Every candidate decides by depth 248. These two rows alone leave the rest of the scale-21 gap open. Reproduce them with `./high_pair_headers 63 63 31 248`.

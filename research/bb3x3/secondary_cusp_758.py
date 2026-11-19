@@ -17,7 +17,7 @@ def literal_header(seed):
     return (a+2*c-1)//2,(c-1)//2
 
 
-def verify():
+def build_lanes():
     assert H%2 == Y%2 == 1
     for s in (Y,H):
         assert openings(s).k == 292
@@ -31,39 +31,52 @@ def verify():
     for i,(u,d) in enumerate(lanes):
         assert literal_header(Y+2*i+512) == (u+512,d+19_171)
 
-    def edges(k):
-        @lru_cache(None)
-        def bulk(i):
-            lane_u,lane_d = lanes[i%256]
-            u,d = lane_u+512*(i//256),lane_d+19_171*(i//256)
-            a,c = 2*u-4*d-1,2*d+1
-            y,gain = (c+7)//2,0
-            for _ in range(k//BITS):
-                high,low = divmod(y,1<<BITS)
-                small,g = TABLE[low]
-                y,gain = high*FACTOR+small,gain+g
-            for _ in range(k%BITS):
-                gain += 5+4*(y%2)
-                y = 3*((y+1)//2)
-            nc = 2*y-7
-            return a+2*(c-nc)+gain,nc
+    return lanes
 
-        def first(predicate):
-            lo,hi = -1,(H-Y)//2+1
-            while lo+1 < hi:
-                mid = (lo+hi)//2
-                if predicate(*bulk(mid)):
-                    hi = mid
-                else:
-                    lo = mid
-            return Y+2*hi
 
-        return first(lambda a,c: a<=c),first(lambda a,c: a<0)
+def corridor(k, lanes):
+    @lru_cache(None)
+    def bulk(i):
+        lane_u,lane_d = lanes[i%256]
+        u,d = lane_u+512*(i//256),lane_d+19_171*(i//256)
+        a,c = 2*u-4*d-1,2*d+1
+        y,gain = (c+7)//2,0
+        for _ in range(k//BITS):
+            high,low = divmod(y,1<<BITS)
+            small,g = TABLE[low]
+            y,gain = high*FACTOR+small,gain+g
+        for _ in range(k%BITS):
+            gain += 5+4*(y%2)
+            y = 3*((y+1)//2)
+        nc = 2*y-7
+        return a+2*(c-nc)+gain,nc
 
-    rows = [(k,*edges(k)) for k in range(7,742,2)]
+    def first(predicate):
+        lo,hi = -1,(H-Y)//2+1
+        while lo+1 < hi:
+            mid = (lo+hi)//2
+            if predicate(*bulk(mid)):
+                hi = mid
+            else:
+                lo = mid
+        return Y+2*hi
+
+    return first(lambda a,c: a<=c),first(lambda a,c: a<0)
+
+
+@lru_cache(None)
+def gate_rows():
+    """Return (bulk length, first included odd seed, first excluded odd seed)."""
+    lanes = build_lanes()
+    return tuple((k,*corridor(k,lanes)) for k in range(7,742,2))
+
+
+def verify():
+    lanes = build_lanes()
+    rows = gate_rows()
     assert all(Y<lo<hi<H for _,lo,hi in rows)
     assert all(rows[i+1][2]<rows[i][1] for i in range(len(rows)-1))
-    assert edges(5) == (H+2,H+2) and edges(743) == (Y,Y)
+    assert corridor(5,lanes) == (H+2,H+2) and corridor(743,lanes) == (Y,Y)
     for k,lo,hi in rows:
         pattern = 'J'*292+HEADER+'L'*k+'R'
         for s,valid in ((lo-2,False),(lo,True),(hi-2,True),(hi,False)):

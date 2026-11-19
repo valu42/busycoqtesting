@@ -44,6 +44,38 @@ def formal_gain(seed, word):
     raise ValueError('word lacks a terminal return')
 
 
+def check_full_entry_interval():
+    # The smallest valid countdown is ORIGIN (checked by check_start).
+    # At the other edge the next odd seed, two units farther out, fails.
+    far = 3_108_912_581_099_699_070_872_532_571_869_921_477_259_320_502
+    word = PREFIX + 'J'*190 + 'LR'
+    for distance in (ORIGIN, far):
+        assert 0 < check_word(H-distance, word) <= 1184
+    try:
+        check_word(H-far-2, word)
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError('upper countdown was not sharp')
+    for distance in (ORIGIN+1, far-1):
+        assert 0 < check_word(H-distance, EVEN_WORD) <= 615
+    base = H-ORIGIN
+    arrivals = []
+    for z in range(812):
+        s = base + z
+        for count in (1, 2):
+            s = first_return(s)
+            assert s is not None
+            if s >= base+812:
+                break
+        assert base+812 <= s <= base+LIMIT
+        arrivals.append((count, s-base))
+    assert max(count for count, _ in arrivals) == 2
+    offsets = {z for _, z in arrivals}
+    assert (len(offsets), min(offsets), max(offsets)) == (321, 814, 2781)
+    assert far-ORIGIN+LIMIT+1 == 1_243_565_032_439_879_628_349_013_028_747_969_590_903_728_199
+
+
 def check_start():
     assert first_change(74) == ORIGIN
     assert cycle_exits(74, lower=ORIGIN) == ([(64, 1)], [812])
@@ -116,6 +148,7 @@ def main():
     if args.jobs < 1 or (args.row is not None and not 1<=args.row<=len(rows)):
         parser.error('invalid job count or row number')
     check_start()
+    check_full_entry_interval()
     print(f'Exact post-change join at offset {CHECKPOINT:,} via {join():,} first returns.',
           flush=True)
     chosen = rows if args.full else rows[args.row-1:args.row] if args.row else []
