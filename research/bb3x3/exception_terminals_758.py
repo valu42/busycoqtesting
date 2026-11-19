@@ -137,7 +137,7 @@ def after_exception(limit, depth=DEPTH, pattern=()):
     return hits, compatible, further
 
 
-def before_exception(limit, depth=DEPTH, pattern=()):
+def before_exception(limit, depth=DEPTH, pattern=(), *, matching_ranges=None):
     """All reset seeds <= H reaching E within DEPTH calls after the leading J run."""
     families = seeds = halts = largest_post = largest_gain = 0
     first_future = None
@@ -160,6 +160,8 @@ def before_exception(limit, depth=DEPTH, pattern=()):
                         continue  # A direct halt without E is outside this search.
                     assert state == other and state[0] == state[1]+2 and state[1]%4 == 3
                     left, right = parity-2*j, parity-2*i
+                    if matching_ranges is not None:
+                        matching_ranges.append((left, right))
                     families += 1
                     seeds += (right-left)//2+1
                     for seed in range(left, right+1, 2):

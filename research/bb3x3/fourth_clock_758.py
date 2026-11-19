@@ -3,6 +3,7 @@ from math import comb
 
 from after_fourth_758 import CHECKPOINT, EVEN_END, K, ODD_END, increments
 from check_bb33 import champion_step
+from exact_fourth_758 import LOW, MERGER
 from mass_clock_758 import raw_lower_bound
 from timing_758 import branch_cost
 
@@ -77,7 +78,19 @@ def verify():
         count += 1
     assert seed == CHECKPOINT and count == 10_747_030_481_905
     assert clock == 12_009_315_348_729_165_034_617_066_232_977_846_431_994_862_719
-    lower = raw_lower_bound(1+2*start)+clock
+    seed = MERGER
+    pre_clock = 0
+    for _ in range(425):
+        seed,dt = timed_return(seed)
+        pre_clock += dt
+    assert seed == LOW+208
+    odd_prefix = increments(seed,ODD_END,'J'*33+'L'*7+'R')
+    seed,n,dt = band(seed,K+1,*odd_prefix)
+    assert seed == start and n == 791_921_888_157
+    pre_clock += dt
+    assert pre_clock == 868_964_390_669_458_400_613_660_337_140_973_728_114_577_608
+    lower = raw_lower_bound(1+2*MERGER)+pre_clock+clock
+    assert lower == 14_834_450_150_617_068_606_370_263_277_192_707_547_238_915_715
     print(f'{count:,} first returns, {clock:,} raw transitions. '
           f'Blank clock at the endpoint at least {lower:,} for #758.')
     return clock,lower

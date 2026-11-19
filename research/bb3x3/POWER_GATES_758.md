@@ -1,6 +1,6 @@
 # A single reset checkpoint at each power of three and its double
 
-For every exponent **20 ≤ m ≤ 292**, deep reset entry just below either $3^m$ or $2\cdot3^m$ forces one exact later reset. For the **546** intervals, the [table](power_gates_758.tsv) gives the checkpoint as $A(1,b3^m+t)$, where $b$ is the multiple (1 or 2) and $t$ is the offset. The known blank orbit visits the first 26 checkpoints, at both multiples through $m=32$. In particular all possible entries at $2\cdot3^{32}$ synchronize at $A(1,2\cdot3^{32}+41,023)$.
+For every exponent **20 ≤ m ≤ 292**, deep reset entry just below either $3^m$ or $2\cdot3^m$ forces one exact later reset. For the **546** intervals, the [table](power_gates_758.tsv) gives the checkpoint as $A(1,b3^m+t)$, where $b$ is the multiple (1 or 2) and $t$ is the offset. The blank orbit visits the first 29 checkpoints, through $3^{34}$. The next unjoined power checkpoint is at $2\cdot3^{34}$. [Proof of the three latest links](POWER_CROSSINGS_758.md) In particular all possible entries at $2\cdot3^{32}$ synchronize at $A(1,2\cdot3^{32}+41,023)$.
 
 Put $P=3^m$ and $D=34(4m+40)$. The two deep entry intervals are inclusive.
 
@@ -9,7 +9,7 @@ Put $P=3^m$ and $D=34(4m+40)$. The two deep entry intervals are inclusive.
 | 1 | $\lceil9999P/10000\rceil$ | $P-2m-4-D$ |
 | 2 | $\lceil19P/10\rceil$ | $2P-2m-6-D$ |
 
-At the frontier nearest the known large halting seed $H$, any deep entry at $P=3^{292}$ reaches **$A(1,3^{292}+1,934,340)$**. The 224 candidate exits of that interval merge along 5,561 distinct first-return edges. This checkpoint lies about 2.7154% below $H$. The first link beyond the known blank visits runs from $2\cdot3^{32}+41,023$ to the deep interval at $3^{33}$. For this specific gate the odd word remains valid down to 3,335,436,339,933,247 and the even word down to 5,494,990,037,991,760. The preceding seed of each parity fails its word. A 5,001-seed incoming window beginning at **5,494,990,037,991,759** therefore suffices, using the endpoint argument below. The corresponding sharp lower bounds for an all-parity window are **10,006,309,019,799,870** at $2\cdot 3^{33}$ and **16,484,970,113,975,417** at $3^{34}$. A proof connecting the later checkpoints to blank and to a halting interval remains open.
+At the frontier nearest the known large halting seed $H$, any deep entry at $P=3^{292}$ reaches **$A(1,3^{292}+1,934,340)$**. The 224 candidate exits of that interval merge along 5,561 distinct first-return edges. This checkpoint lies about 2.7154% below $H$. The first link beyond the initial 26 checkpoints runs from $2\cdot3^{32}+41,023$ to the deep interval at $3^{33}$. For this specific gate the odd word remains valid down to 3,335,436,339,933,247 and the even word down to 5,494,990,037,991,760. The preceding seed of each parity fails its word. A 5,001-seed incoming window beginning at **5,494,990,037,991,759** therefore suffices, using the endpoint argument below. The corresponding sharp lower bounds for an all-parity window are **10,006,309,019,799,870** at $2\cdot 3^{33}$ and **16,484,970,113,975,417** at $3^{34}$. A proof connecting the later checkpoints to blank and to a halting interval remains open.
 
 ## Computing the possible exits
 

@@ -87,7 +87,7 @@ def main():
     ):
         length, count, blocks = verify_passage(width, 5458, horizon, n)
         print(f"{name}: at least {blocks:,} complete ordinary blocks. "
-              f"An affine ray or at least {count:,} distinct length-{length} fine words.")
+              f"At least {count:,} distinct length-{length} fine words.")
 
 
 if __name__ == "__main__":

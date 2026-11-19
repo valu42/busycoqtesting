@@ -1,6 +1,6 @@
 # Word entropy on every infinite #758 orbit
 
-**Every infinite blank-compatible counter orbit either eventually repeats an affine ordinary rule or has fine word entropy at least $(\log 3)/4$.** This includes orbits with infinitely many resets or exceptional restarts. If ordinary stretches become negligible compared with their starting mass, the stronger conclusion holds that **every finite word in the five-letter fine alphabet occurs on that one orbit, infinitely often**. This is a necessary condition for infinite continuation. The blank machine still requires a halting or nonhalting proof.
+**Every infinite blank-compatible counter orbit has fine word entropy at least $(\log 3)/4$.** This includes orbits with infinitely many resets or exceptional restarts. If ordinary stretches become negligible compared with their starting mass, the stronger conclusion holds that **every finite word in the five-letter fine alphabet occurs on that one orbit, infinitely often**. This is a necessary condition for infinite continuation. The blank machine still requires a halting or nonhalting proof.
 
 Use the grouped ordinary blocks from the [factor-complexity proof](FACTOR_COMPLEXITY_758.md). $J$ is one odd/odd jump and $P$ is a pair of ordinary bulk moves. The fine alphabet distinguishes the four input residues of $P$. Count factors within ordinary stretches, cutting at resets and exceptional moves. Incomplete pairs at the ends can be discarded. Write $p_f(n)$ and $p_c(n)$ for the numbers of distinct length-$n$ fine and coarse factors in the entire trajectory. Entropies use natural logarithms and divide by the number of grouped blocks. When there are arbitrarily long ordinary stretches, $p(n+m)\le p(n)p(m)$ gives the existence of $\lim_n\log p(n)/n$. The proof below supplies such stretches in both cases.
 
@@ -8,7 +8,7 @@ Use the grouped ordinary blocks from the [factor-complexity proof](FACTOR_COMPLE
 
 In odd/odd coordinates put $u=(a+2c-1)/2$. Suppose there are ordinary intervals at arbitrarily high starting $u$ containing at least $\varepsilon u$ complete blocks for one fixed $\varepsilon>0$. This includes an infinite final ordinary excursion. Select $T=\lfloor\varepsilon u/2\rfloor$ starting positions. Take $n=\lceil\log_3(10T U)\rceil$, where $U=u+9\lceil\varepsilon u\rceil$. For all sufficiently large $u$, the first $T+n$ blocks fit in the interval and their mass coordinates do not exceed $U$.
 
-The determinant and repeated-edge theorem gives either a finite affine nonhalting certificate on this orbit or $p_f(n+1)\ge\sqrt{T+1}-1$. Since $U=O(T)$ and $n=2\log_3 T+O(1)$, taking logarithms proves the fine entropy lower bound. It suffices to apply this along the selected unbounded sequence because the entropy limit exists. [Determinant theorem and certificate](FACTOR_COMPLEXITY_758.md)
+The determinant and repeated-edge theorem gives $p_f(n+1)\ge\sqrt{T+1}-1$. A smaller count would force a periodic ordinary tail, which the global denominator bound and finite sweep exclude at every mass. Since $U=O(T)$ and $n=2\log_3 T+O(1)$, taking logarithms proves the fine entropy lower bound. It suffices to apply this along the selected unbounded sequence because the entropy limit exists. [Determinant theorem](FACTOR_COMPLEXITY_758.md) · [Exclusion of periodic tails](FINITE_AFFINE_PERIODS_758.md)
 
 ## Exceptional moves cannot hide all resets
 
@@ -83,6 +83,12 @@ $$p_f(n)\ \ge\ \frac{1}{2n+18}\sum_{p=0}^{n}\binom np4^p
 =\frac{5^n}{2n+18}.$$
 
 Hence the fine entropy in this case is $\log5$. In fact every fine word occurs in every infinite tail. If one length-$\ell$ word were absent, disjoint aligned blocks of length $\ell$ could take at most $5^\ell-1$ values each, giving an entropy at most $\log(5^\ell-1)/\ell<\log5$. This contradicts the same lower bound on that tail.
+
+## Where long ordinary stretches must recur if a word is missing
+
+Suppose a fixed length-$\ell$ fine word is absent from an infinite tail. Choose $n$ large enough that $5^{\ell-1}(5^\ell-1)^{\lfloor n/\ell\rfloor}<5^n/(2n+18)$. The preceding count implies there is a particular coarse word $w$ with fewer than $4^p/(2k+2)$ fine labelings on this tail. For this $w$, take its inner reset interval and the arithmetic progression of exponents prescribed above. At any sufficiently large favorable exponent in that progression, even one reset in the inner interval would produce at least $4^p/(2k+2)$ fine labelings of $w$ on the same tail. There is therefore no reset anywhere in that interval at those exponents. The odd exceptional annulus forces its middle half to consist entirely of ordinary moves. Hence there is a fixed $c>0$ and an ordinary stretch of at least $c u$ blocks there, with starting $u$ of order $3^m$.
+
+These favorable exponents have bounded gaps. An irrational rotation returns to any open arc with bounded gaps, since finitely many inverse translates of the arc cover the circle by compactness. Apply this to a smaller arc inside the strict annulus window, on the prescribed arithmetic progression. The $O(i)$ annulus error preserves the result at all sufficiently large exponents. Thus the missing word forces long ordinary stretches to recur with bounded ratios between their successive mass scales.
 
 ## Reproduction
 

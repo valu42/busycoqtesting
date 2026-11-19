@@ -94,6 +94,9 @@ class Crossing {
                         }
                         break;
                     }
+#ifdef BB758_SYMBOLIC_ONLY
+                    throw std::runtime_error("direct trace requested");
+#endif
                     ++direct_calls;
                     Num next = prefix.first_return(seed, proof);
                     if (next == -1)

@@ -37,6 +37,35 @@ def check_fifth():
     print("The fifth candidate's terminal has exactly two last resets.")
 
 
+def check_fifth_shape():
+    word = 'PPJJPPPPJPPPPPJPPP'
+    a, den, low, high = 2, 9, -17, -10
+    for op in reversed(word):
+        if op == 'J':
+            a, den, low, high = a+den, 3*den, low+2*a-den, high+2*a-den
+        else:
+            a, den, low, high = 4*a, 9*den, 4*low+36*a-35*den, 4*high+20*a-20*den
+    launch_den = den-2*a
+    assert (den,launch_den,low,high) == (16_677_181_699_666_569, 13_739_374_908_094_985,
+                                         -70_279_322_567_176_159, -40_889_613_571_793_860)
+    # itinerary omits the first update, J for an odd seed and I for an even one.
+    tail = word.replace('P', 'LL')+'LH'
+    hits = []
+    for m in range(293):
+        for even in (0, 1):
+            h = (1+even)*3**m
+            first = max(h,-((-h*den-2*low)//launch_den))
+            last = min(3*h-3,(h*den+2*high)//launch_den)
+            for t in range(first+(h-first)%2,last+1,2):
+                seed = t-2*m-4*even
+                if seed < 3:
+                    continue
+                if itinerary(seed)[0] == 'J'*(m-1+even)+tail and first_return(seed) is None:
+                    hits.append(seed)
+    assert hits == [K, K+2]
+    assert 3**293-2*293 > HALTING_TARGET
+
+
 def incoming_window(k):
     """Number halting, number of distinct edges, distinct overshoots among 5001 seeds."""
     cache = {}
@@ -135,6 +164,7 @@ if __name__ == "__main__":
     parser.add_argument("--exceptions", type=Path, help="replay the rows from a --exception search")
     args = parser.parse_args()
     check_fifth()
+    check_fifth_shape()
     check_earlier_walls()
     assert incoming_window(K) == (0, 6_704, (118,))
     if args.exceptions:

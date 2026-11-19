@@ -55,7 +55,9 @@ The last two rows give exactly the following ordered lower seeds, each accompani
 | 17,430,344,744,167,562 | 33 | 2 |
 | 40,486,323,621,582,648 | 34 | 18 |
 
-The fifth path is $I J^{34} L^4 J^2 L^8 J L^{10} J L^7$ followed by the terminal call. The exceptional variant finds 14 input seeds at $m=30,\ldots,35$ through depth 23 and 84 at $m=33,\ldots,70$ through depth 21. The original counter map returns at all of them before any halt.
+The fifth path is $I J^{34} L^4 J^2 L^8 J L^{10} J L^7$ followed by the terminal call. Allowing **every** bulk residue and both seed parities, the only resets up to the known $H$ with this particular mixed tail are $K$ and $K+2$. The inverse strip for the tail has $D=16{,}677{,}181{,}699{,}666{,}569$, $D-2A=13{,}739{,}374{,}908{,}094{,}985$, $\ell=-70{,}279{,}322{,}567{,}176{,}159$ and $r=-40{,}889{,}613{,}571{,}793{,}860$. The independent verifier extracts all candidate seeds at exponents 0 through 292 and replays their actual itineraries. Already $3^{293}-586>H$, and the minimum launch increases for later exponents.
+
+The exceptional variant finds 14 input seeds at $m=30,\ldots,35$ through depth 23 and 84 at $m=33,\ldots,70$ through depth 21. The original counter map returns at all of them before any halt.
 
 ## Which inputs these candidates capture
 
