@@ -28,8 +28,11 @@ The first three rows compare predictions with literal first-return clock sums at
 | 1,000,007 to 10,000,048 | $2.3616775\times10^{19}$ | −0.03% to +0.13% |
 | 10,000,048 to 100,000,009 | $2.1360134\times10^{22}$ | −0.27% to −0.05% |
 | 17,354,320,242,846,420 to 18,378,934,934,402,308 | $1.2878280\times10^{46}$ | +0.003% to +0.006% |
+| $H+906$ to the post-target merger | $5.2067023\times10^{412}$ | −0.007% to −0.004% |
 
 The fourth crossing spends almost its entire length in two corridors with fixed instruction words. Checks over the three smaller intervals exercise a different range of behavior. The post-target check uses 140-digit seeds, but covers only 0.059% of the target seed and lies in a corridor of fixed words. Its initial reset has no known connection to blank. On the whole interval from 100,008 to the fourth checkpoint, the model gives $8.70$ to $8.73$ times $10^{46}$, inside the proved bracket for the blank clock. The exact elapsed time across that interval remains open. [Fourth-crossing structure](BLANK_RETURN_PROFILE_758.md) · [Exact post-target clock](TARGET_CLOCK_758.md) · [Blank clock](CROSSING_CLOCK_758.md)
+
+A second scale-matched check covers 1.15% of $3^{292}$ before the target. The exact clock from $B=(1458\cdot3^{292}-876528)/1475-1$ to $3^{292}+1{,}934{,}340$ is $5.22622259\ldots\times10^{413}$. Applying the same estimator with bounds $B$ and $3^{292}+1{,}934{,}340$ gives $5.22615598$, $5.22617777$, and $5.22617707$ times $10^{413}$, all within 0.0013% of that clock. This orbit also traverses a corridor of fixed words. [Power-gate clock](power_approach_758.py)
 
 The three 4,096-stratum candidate runs return $2.1281$, $2.1526$ and $2.1455$, each times $10^{415}$. At 16,384 strata the corresponding values are $2.1448$, $2.1377$ and $2.1456$. Keeping 4,096 strata and increasing the local window to 32 initial returns and 64 measured returns changes each original result by less than 0.002%. All three configurations completed without a halting sample on the candidate interval. Only one significant figure seems warranted for the extrapolation.
 

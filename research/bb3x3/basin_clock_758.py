@@ -45,6 +45,12 @@ def audit():
     total_limit = (upper_prefix(terminal_mass)
                    + (terminal_mass**2 + 30*terminal_mass + 195)//3)
     assert total_limit < 8206*10**413
+    # Even an orbit that misses the target must halt or exceed its terminal
+    # mass by this horizon. A first crossing can overshoot by at most nine.
+    crossing_limit = upper_prefix(terminal_mass + 9)
+    assert crossing_limit < 8206*10**413
+    max_calls = (terminal_mass - 2)//4 + 1
+    assert max_calls < 10724*10**135
     first_mass = 2*(H - GATES[10][1]) + 1
     lower_limit = lower_at_mass(first_mass, certify_potential(make_graph())) - 50_707
     assert lower_limit > 210448*10**409

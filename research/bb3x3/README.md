@@ -4,6 +4,8 @@
 
 If the blank tape reaches the leading halting target, the estimated runtime is about **$2\times10^{415}$ original machine transitions**. The proved bounds under this condition are $2.10448\times10^{414}$ and $8.206\times10^{416}$. [Halting-time estimate, checks and alternatives](HALTING_TIME_758.md)
 
+There are now exact simulation skips near every power of three and its double for exponents $m\ge20$. One skip below $3^{292}$ recovers about $4.03\times10^{134}$ first returns in 25 return-word evaluations. The difficult step is transporting the actual blank orbit across changes of word into the halting basin. [Exact skipping rules and the proof strategy](EXPONENTIAL_SKIPS_758.md)
+
 The reduction uses A(a,c) for a tape configuration carrying two nonnegative integer counters. One map update represents a variable number of raw machine transitions. A reset here means any visit to a = 1. The map and the equivalence of the encodings have published formalizations. This directory contains integer verification programs and their mathematical arguments. [Formal machine specifications](https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB33/README.md) · [Counter transitions, timings and published checkpoint](https://wiki.bbchallenge.org/wiki/1RB2LC1RC_2LC---2RB_2LA0LB0RA)
 
 ## How strong is the evidence for halting?
