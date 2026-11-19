@@ -86,6 +86,7 @@ def main():
         ("original joined interval", 11_177_973_024_732, 10**12, 324),
         ("enlarged joined interval", 33_533_925_880_304, 1_900_000**2, 321),
         ("scale-10 halting corridor", 362_166_436_260_267, 6_300_000**2, 323),
+        ("scale-20 joined interval", 53_463_914_736_827_918_796, 2_437_300_755**2, 334),
         ("scale-19 joined interval", 17_821_304_912_273_704_228, 1_407_176_247**2, 333),
     ):
         length, count, blocks = verify_passage(width, 5458, horizon, n)

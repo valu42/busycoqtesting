@@ -4,6 +4,8 @@ There is an algorithm that can move a #758 reset chain across $[X,3X]$ using $O(
 
 At $X=3^{292}$, eight levels of subdivision give **518 intervals**. Positions where both parities have a certified skip word comprise **83.675454536%** of the integer seeds from $X$ through $3X$. This measures how much of the seed interval has such a certificate. In the still-open subinterval from $3^{292}$ through $H-1$, eleven of the cells cover **43.981366100%** of positions. Starting at the lower endpoint of the widest such cell, the generic algorithm skips $9.4963168\times10^{133}$ first returns with 204 evaluations. That interval is approximately $1.01764757X$ through $1.02045260X$. Entry to any chosen interval from blank is a further question. [Verifier and skip algorithm](annular_skip_758.py)
 
+Using elementary depth and a local count of the other parity’s partition boundaries improves the exact-exit query exponent to 0.856184. [Proof and reference checks](ELEMENTARY_SKIP_758.md)
+
 ## Producing the cells
 
 Let an even reset take its first opening move, and let $k$ be the maximal number of following jumps (for odd starts count all initial jumps). At the end of this run, the odd/odd state has $h=(a+1)/2=b3^k$, $t=(a+2c-1)/2=s+4(b-1)+2k$ with $b=1$ or 2 according to parity. It satisfies $h\le t\le3h-3$. The initial jump count is a nondecreasing function of the seed. The interval $[X,3X]$ meets $O(1)$ launch groups: $h\ge X/3$ and, for $k\ge3$, $2k\le h/2$ implies $h\le6X+8$. Extending the annulus to include the neighbors in the same seed-pairs $(2j,2j+1)$ changes the bounds by an absolute constant.

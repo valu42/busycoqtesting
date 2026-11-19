@@ -1,0 +1,43 @@
+# Quick returns in every seed window of machine 758
+
+Let $I$ contain $L$ consecutive integer reset seeds $s$ for $A(1,s)$. There are absolute constants $C,A$ such that at most $C L^\delta$ seeds in $I$ fail to reach a positive-time reset in $A\log(s+2)$ counter calls. Here $3^{-\delta}+(4/9)^\delta=1$ and $\delta=0.73177394\ldots$. The bound depends on the length of the search window, even if it starts much higher. It counts both direct halts and arbitrarily long first excursions among the possible failures. The [earlier bound](QUICK_RETURNS_758.md) counted all seeds from 1 up to a cutoff.
+
+A constructive companion gives a long interval of guaranteed returns. In **every** real seed interval of span $L\ge10^9$ with positive integer endpoints there is a subinterval of real span at least $L/10^7$ on which all odd seeds share one ordinary first-return word, and all even seeds share one ordinary first-return word. Each word specifies the individual jumps, bulks, opening when present, and final reset. The permitted fine bulk residues can vary. The construction uses $O(\log(X+2))$ exact rational comparisons and arithmetic operations for upper seed $X$.
+
+For example, consider the interval of countdowns $0\le H-s\le10^{42}$ below the known halting target. The construction certifies all **3,119,982,669,609,306,591,823,646,848,845,481,350,777** seeds from countdown 251548602737250343965781527188166933906391 through 254668585406859650557605174037012415257167. Odd inputs return in 512 calls by $J^{292}L^8JL^6J^{199}L^5R$ and even inputs in 300 calls by $IJ^{291}L^2JL^2JLR$. The first returns from this window do not establish its later fate or blank entry.
+
+## The physical bands around the ideal intervals
+
+After its maximal opening jump run a reset of a fixed parity has $h=b3^k$, $t=s+4(b-1)+2k$, $h\le t<3h$, with $b=1$ for odd seeds and $b=2$ for even ones. Write $x=h/t$. Inverse ordinary blocks are $f_J(x)=x/3$ and $f_P(x)=(4x+5)/9$, where $P$ denotes two bulks. Write $I_w=f_w([0,1])$ and $R_w=|I_w|$ for any word $w$. The open gap of $I_w$ is $f_w((1/3,5/9))$.
+
+The [exact inverse identity](TARGET_SHADOW_758.md) gives $h-f_w(\mu)t=R_w(h'-\mu u')+B$, with $0\le B\le14$ for any physically completed prefix $w$ and $0\le\mu\le1$. Since $0\le h'\le u'$, pulling back both endpoint guards gives
+$$
+f_w(0)\le x\le f_w(1)+14/t.
+$$
+An exceptional branch at the next odd phase, or a direct halt following its first individual bulk, lies within four units of the corresponding guard $h'=u'/3$ or $h'=5u'/9$. Hence $x$ lies within $18/t$ of the corresponding endpoint of this word's gap. Conversely, if $x$ belongs to the gap of $I_w$ and is more than $18/t$ from both edges, the physical itinerary follows $w$ and then a bulk and ordinary reset. Indeed every guard $0,1/3,5/9,1$ pulled back through a prefix of $w$ is outside the open final gap. Induction through the realized prefixes gives more than four units of physical clearance at every guard, including the test for an earlier $h'=1$ reset.
+
+Restrict temporarily to $[X,2X]$ with $X\ge64$. In a fixed launch group $X\le t\le3X$. For instance $k>X/2-2$ is impossible by $b3^k\le2X+4+2k$ at these $X$. The real extension uses the increasing launch thresholds $b3^k-4(b-1)-2k$ for $k\ge1$. The function $x=h/t$ satisfies
+$$
+1/(9X)\le |dx/ds|=x/t\le1/X.
+$$
+Each parity has at most three relevant powers $h$ since $X/3<h\le3X$.
+
+## Counting difficult origins locally
+
+Take a seed interval of span $1\le L\le X$ in this octave and fix a launch group. Its direction interval $J$ has length at most $L/X$. Use the full binary interval tree and stop first at $R\le L/X$, then at $R\le1/X$. The coarse leaves have disjoint interiors and lengths greater than $L/(3X)$, apart from harmless equality at the root. A realized coarse leaf intersects $J$ enlarged by $18/X$ at each end. Therefore only an absolute constant number can be reached, independently of $X,L$ and the chosen window. This follows by adding the lengths of the disjoint intervals contained in the enlarged $J$ and allowing two more at its endpoints.
+
+Before the coarse stopping level, each middle gap has length greater than $2L/(9X)$. These open gaps are disjoint. Only an absolute constant number can have an endpoint within $18/X$ of $J$, by the same disjoint-interval argument. At each such word at most a constant number of starts in the group can take an exceptional branch or direct halt. This is the [strict-order argument](QUICK_RETURNS_758.md): a first bulk merges at most two same-parity starts, and distinct images keep opposite strict orders in their counters at each further ordinary word. Each of the three exceptional or terminal equalities can hold on at most one such image. A positive-time reset is already a successful return.
+
+Each relevant coarse leaf has at most $(3L)^\delta$ fine descendants at the second stopping level. Indeed subdivision preserves $\sum R^\delta$, a coarse leaf has length at most $L/X$, and each fine leaf has length greater than $1/(3X)$. These subtrees have at most as many internal nodes as leaves, so earlier exceptional branches or direct halts cost at most $O(L^\delta)$ seeds. Every realized fine leaf confines $x$ to an interval of width at most $15/X$ by the endpoint pullback. Since $|dx/ds|\ge1/(9X)$, this accounts for at most 136 integer seeds per leaf. All other seeds return. Their second stopping depth is at most $1+\log_{9/4}X$, and their initial launch takes $O(\log(s+2))$ calls. There are only a bounded number of groups. Intervals starting below their own length follow either from the global bound through $2L+1$ or by summing the octave bounds geometrically. Small lengths and heights can be absorbed in the absolute constants.
+
+In particular, the [annular exit enclosure](ANNULAR_SKIP_758.md) needs only $O(L^\delta)$ difficult first-return queries when restricted to a window of length $L$, uniformly in its position. One can generate the relevant coarse tree by pruning every interval disjoint from $J$ enlarged by $18/X$, then expand the retained fine subtrees. Early exceptional or terminal equality locations can be found by the same endpoint bisections as in the annular algorithm. Exit enclosures may include unattained seeds, and an individual difficult query may itself be long.
+
+## Constructing an interval of common words
+
+The middle gap of a cylinder with length $r$ has length $2r/9$. In any real direction interval of width $d>0$ contained in $[0,1]$, follow its midpoint down the cylinder tree. Stop on the first middle gap containing the midpoint, or when the containing cylinder first has length $r\le d/4$. In the second case $r>d/12$ and the cylinder fits in the original interval, so its own gap has width greater than $d/54$. In the first case the gap had width greater than $d/18$. Its intersection with the original interval has width at least $d/36$, since the midpoint belongs to both. Choose the middle half of this intersection in either case. The chosen subinterval has width at least $d/108$ and clearance at least $d/216$ from the two full gap edges. The search takes $O(1+\log(1/d))$ steps.
+
+For a fixed launch group and a seed subinterval of span $W$, we have $d\ge W/(9X)$. Pulling the result back therefore gives seed span at least $W/972$. When $W>34,992$, its clearance in initial counter units exceeds $W/1944>18$, certifying the complete first-return word on the entire subinterval.
+
+For an arbitrary starting window of span $L$, take its upper half, which fits in an octave with $X\ge64$. Across the two parities at most four interior launch boundaries split this half into at most five parts. Choose a part of span at least $L/10$, fixing the launch separately for each parity in its interior. Narrow once for odd seeds and again for even seeds. At $L\ge10^9$ both applications have input span greater than 34,992. The final span is at least $L/(10\cdot972^2)>L/10^7$; integer endpoints can be obtained by inward rounding. The already verified odd word remains legal on the interval obtained for even seeds.
+
+Run [local_return_windows_758.py](local_return_windows_758.py) in this directory. It constructs the example as well as microscopic windows at widely separated heights, checks all widths and guard margins with rational arithmetic, and replays both predicted words against the original two-counter transition at six sample locations per interval.

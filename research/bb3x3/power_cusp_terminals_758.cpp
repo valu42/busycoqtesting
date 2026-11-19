@@ -54,11 +54,77 @@ void apply_pairs(Big& u,Big& d,unsigned count) {
 
 const Big power=[] { Big p; mpz_ui_pow_ui(p.get_mpz_t(),3,292); return p; }();
 const Big target=(power*14348907-8282708212L)/13959275;
-struct Group { Big h,xlow,xhigh; unsigned maximum_pairs,opening_gain; };
+const Big last_checkpoint("21421649218912165665535344121134262578863444101821100068564006584690782511736332469949435004280779519313100689676802573076028282212569704429");
+
+struct Group {
+    Big h, xlow, xhigh;
+    unsigned maximum_pairs=0, opening_gain=0;
+    bool secondary=false;
+    // On secondary input x=seed-last_checkpoint, u=last_checkpoint+x+g
+    // and 512*d=19171*x+beta. The representative stores d at the lane's origin.
+    struct Lane { Big d; unsigned gain; };
+    std::array<Lane,256> lanes;
+    Big beta_low,beta_high;
+    unsigned gain_low=0,gain_high=0;
+
+    void prepare_secondary() {
+        secondary=true;
+        h=last_checkpoint;
+        xlow=0;
+        xhigh=target-h;
+        for (unsigned i=0;i<256;++i) {
+            Big x=2*i;
+            Big u=h+x+584,d=(u-power)/2;
+            apply_pairs(u,d,4);
+            if (2*d+1>=u) throw std::runtime_error("secondary initial pairs");
+            d=3*d-u+1; u+=2;
+            if (d<0 || 2*d+1>=u) throw std::runtime_error("secondary initial jump");
+            const Big gain=u-h-x, beta=512*d-19171*x;
+            lanes[i]={d,static_cast<unsigned>(gain.get_ui())};
+            if (i==0 || beta<beta_low) beta_low=beta;
+            if (i==0 || beta>beta_high) beta_high=beta;
+            if (i==0 || lanes[i].gain<gain_low) gain_low=lanes[i].gain;
+            if (i==0 || lanes[i].gain>gain_high) gain_high=lanes[i].gain;
+        }
+        // The extremal odd origins certify the guarded prefix by counter order.
+        for (const Big& seed : {last_checkpoint,target}) {
+            Big u=seed+584, d=(u-power)/2;
+            apply_pairs(u,d,4);
+            if (2*d+1>=u) throw std::runtime_error("upper initial pairs");
+            d=3*d-u+1; u+=2;
+            if (d<0 || 2*d+1>=u) throw std::runtime_error("upper initial jump");
+            const auto coordinates=state(seed-last_checkpoint);
+            if (coordinates.first!=u || coordinates.second!=d) throw std::runtime_error("secondary lane");
+            apply_pairs(u,d,2);
+            if (2*d+1>=u) throw std::runtime_error("secondary compulsory pairs");
+        }
+    }
+
+    std::pair<Big,Big> state(const Big& x) const {
+        if (!secondary) return {h+x,x/2};
+        const Lane& lane=lanes[(x.get_ui()%512)/2];
+        return {h+x+lane.gain,lane.d+19171*(x/512)};
+    }
+
+    void bounds(const Strip& s, Big& den, Big& lo, Big& hi) const {
+        if (secondary) {
+            den=19171*s.den-512*s.slope;
+            const Big center=512*s.slope*h;
+            lo=center+512*(s.low+s.slope*gain_low)-s.den*beta_high;
+            hi=center+512*(s.high+s.slope*gain_high)-s.den*beta_low;
+        } else {
+            den=s.den-2*s.slope;
+            const Big center=2*s.slope*h;
+            lo=center+2*s.low;
+            hi=center+2*s.high;
+        }
+    }
+};
+
 struct Tail { unsigned bits,length,jumps,pairs; };
 
 class Search {
-    std::array<Group,2> groups;
+    std::vector<Group> groups;
     std::vector<Big> powers{1};
     std::uint64_t classes=0,candidates=0,filtered=0,hits=0;
 
@@ -88,15 +154,14 @@ class Search {
         strips.push_back(tail_strip);
         for (unsigned b=0;b<=groups[0].maximum_pairs;++b) {
             const auto& st=strips[b];
-            Big denominator=st.den-2*st.slope;
-            if (denominator<=0) throw std::runtime_error("invalid launch denominator");
             for (const auto& group:groups) {
                 // A word starting with J cannot meet the reset launch cone at b=0:
                 // in that case its denominator can be positive but very small.
                 if (b>group.maximum_pairs) continue;
                 ++classes;
-                const Big center=2*st.slope*group.h;
-                const Big low_num=center+2*st.low,high_num=center+2*st.high;
+                Big denominator, low_num, high_num;
+                group.bounds(st,denominator,low_num,high_num);
+                if (denominator<=0) throw std::runtime_error("invalid launch denominator");
                 if (high_num<group.xlow*denominator || low_num>group.xhigh*denominator) continue;
                 Big l,r;
                 mpz_cdiv_q(l.get_mpz_t(),low_num.get_mpz_t(),denominator.get_mpz_t());
@@ -106,7 +171,7 @@ class Search {
                 if (mpz_odd_p(l.get_mpz_t())) ++l;
                 for (Big x=l;x<=r;x+=2) {
                     ++candidates;
-                    Big u=group.h+x,d=x/2;
+                    auto [u,d]=group.state(x);
                     const unsigned front=std::min(pack,b);
                     apply_pairs(u,d,front);
                     if (2*d+1>=u) continue;
@@ -134,29 +199,31 @@ class Search {
     }
 
 public:
-    Search() {
-        for (unsigned even=0;even<2;++even) {
+    explicit Search(bool secondary) : groups(secondary?1:2) {
+        for (unsigned even=0;even<groups.size();++even) {
             auto& g=groups[even];
-            g.h=even?2*(power/3):power;
-            g.opening_gain=even?586:584;
-            g.xlow=power+even+g.opening_gain-g.h;
-            g.xhigh=target+g.opening_gain-g.h;
-            Big u=g.h+g.xlow,d=g.xlow/2;
-            g.maximum_pairs=0;
+            if (secondary) g.prepare_secondary();
+            else {
+                g.h=even?2*(power/3):power;
+                g.opening_gain=even?586:584;
+                g.xlow=power+even+g.opening_gain-g.h;
+                g.xhigh=target+g.opening_gain-g.h;
+            }
+            auto [u,d]=g.state(g.xlow);
             while (true) {
                 apply_pairs(u,d,1);
                 if (2*d+1>=u) break;
                 ++g.maximum_pairs;
             }
+            if (groups[0].maximum_pairs<g.maximum_pairs) throw std::runtime_error("group bound");
         }
-        if (groups[0].maximum_pairs<groups[1].maximum_pairs) throw std::runtime_error("group bound");
         for (unsigned j=1;j<=293;++j) powers.push_back(3*powers.back());
     }
 
     void words(unsigned depth) { traverse({2,9,-17,-10},0,0,depth); }
 
     void runs() {
-        const Big mass=target+586+9*groups[0].maximum_pairs+2*293;
+        const Big mass=target+std::max(586u,groups[0].gain_high)+9*groups[0].maximum_pairs+2*293;
         if (powers[293]<=mass) throw std::runtime_error("jump bound");
         Big d=0,u=mass;
         unsigned max_pairs=0;
@@ -179,18 +246,19 @@ public:
     }
 
     void report() const {
-        std::cerr<<"max_initial_pairs "<<groups[0].maximum_pairs<<' '<<groups[1].maximum_pairs
+        std::cerr<<"max_initial_pairs "<<groups[0].maximum_pairs<<' '<<(groups.size()==2?groups[1].maximum_pairs:0)
                  <<" classes "<<classes<<" candidates "<<candidates<<" after_filter "<<filtered
                  <<" hits "<<hits<<'\n';
     }
 };
 
 int main(int argc,char** argv) {
-    if (argc!=2) { std::cerr<<"usage: cusp_terminals DEPTH | --runs\n"; return 2; }
+    if (argc!=2) { std::cerr<<"usage: cusp_terminals DEPTH | --runs | --secondary-runs\n"; return 2; }
     try {
         prepare();
-        Search search;
-        if (std::string(argv[1])=="--runs") search.runs();
+        const bool secondary=std::string(argv[1])=="--secondary-runs";
+        Search search(secondary);
+        if (secondary || std::string(argv[1])=="--runs") search.runs();
         else {
             const unsigned depth=std::stoul(argv[1]);
             if (depth>25) throw std::runtime_error("depth must be 0 through 25");

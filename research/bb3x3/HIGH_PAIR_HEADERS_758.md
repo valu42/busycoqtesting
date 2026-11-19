@@ -19,9 +19,9 @@ Two exact filters speed up this walk.
 1. A 2²²-cell grid covers [0,1]. Recursively generate the inverse-cylinder intervals [A,A+4ᵖ]/3ᵐ from both branches until their endpoints occupy the same or neighboring grid cells. Mark both endpoint cells, thereby covering the entire surviving interval. The inverse contraction is at most 2/3 per elementary letter, so at most 40 elementary letters suffice to complete this construction along any path. A tail surviving longer must be in a marked cell. An unmarked cell and every adjoining unmarked cell can be skipped by jumping to the next marked cell and then to the next permitted lattice residue.
 2. For each remaining N use outward rounding in units of 2⁻⁶⁰. The initial dyadic direction is represented exactly for p≤30. At p=31 the endpoints in working-grid units are floor(N/4) and ceil(N/4), which enclose its value on the finer grid. Multiply both endpoints by three at J, and round (9x−5)/4 down at the low end and up at the high end at P. An interval strictly inside (1/3,5/9) certifies a reset decision. Any ambiguous comparison, or survival to the budget, triggers a fresh exact rational replay using GMP. The loop tests each guard at depths up to and including the budget.
 
-For r≤53 and p≥24 the [ledger](high_pair_headers_758.tsv) contains 617,905 prefix cylinders and 57,087,748 angular tests. All remaining candidates enter the return interval by the guard at depth 257. The first possible cylinder in these rows occurs at r=47. The separate unrestricted dyadic calculation handles p≤23. Later rows use budget 250. Their minimum p can be higher because the unrestricted survey and the ancestry test below cover lower p. Each ledger row concerns its particular r and p.
+For r≤53 and p≥24 the [ledger](high_pair_headers_758.tsv) contains 617,905 prefix cylinders and 57,087,748 angular tests. All remaining candidates enter the return interval by the guard at depth 257. The first possible cylinder in these rows occurs at r=47. The separate unrestricted dyadic calculation handles p≤23. Rows through exponent 61 use depth 250 after the original range. At exponent 62 the depth is 249. Their minimum p can be higher because the unrestricted survey and the ancestry test below cover lower p. Each ledger row concerns its particular r and p.
 
-The checker reports a failure if any surviving candidate remains. Its zero-survivor lines refer to the header/dyadic combinations counted, independently of the blank trajectory. The extra 42 calls required between r and the requested budget cover the terminal crossing overshoot and the entire grid construction. Arithmetic limits and loop bounds in the C++ source support 2≤r≤60 and p≤30.
+The checker reports a failure if any surviving candidate remains. Its zero-survivor lines refer to the header/dyadic combinations counted, independently of the blank trajectory. The extra 42 calls required between r and the requested budget cover the terminal crossing overshoot and the entire grid construction. Arithmetic limits and loop bounds in the C++ source support 2≤r≤62 and p≤31.
 
 ```sh
 c++ -O3 -std=c++17 high_pair_headers_758.cpp -lgmpxx -lgmp -o high_pair_headers
@@ -30,6 +30,8 @@ c++ -O3 -std=c++17 high_pair_headers_758.cpp -lgmpxx -lgmp -o high_pair_headers
 ./high_pair_headers 55 57 26 250
 ./high_pair_headers 58 58 27 250
 ./high_pair_headers 59 60 28 250
+./high_pair_headers 61 61 29 250
+./high_pair_headers 62 62 29 249
 ```
 
 ## Checking exceptional unrestricted dyadic tails
@@ -43,3 +45,5 @@ The [ancestry checker](header_tail_ancestry_758.py) reads the [exhaustive tail l
 For p=26 there are 37 exceptional directions, of which two have an origin at r≤60. The two offsets at r=59 take 814 counter calls to return, with gains 1,953 and 1,955. The two at r=60 take 812 calls, with gains 1,936 and 1,938. At these four offsets the actual return decisions occur at aligned depths 257 and 256, respectively, past the uniform guard guarantees of 252 and 251 at their particular offsets. These are exact physical replays. For p=27, all 176 exceptional directions have no header through r=60.
 
 At r=61, none of the 972 long directions through p=28 has a compatible header. For p=29, 30 and 31 the high-pair verifier tests 35,960, 465 and one prefix respectively. Every candidate leaves by the depth-250 guard. The [scale-19 induction](TARGET_BASIN_758.md) attaches the resulting gap and its following fixed-word corridor to the contiguous halting interval.
+
+At exponent 62 the checker covers 242,327 high-pair prefixes. Across the three pair counts it tests 20,309,999,775 candidate directions. Every retained case decides by depth 249. The lower pair counts use the [direct physical clearance](DYADIC_GUARD_SHADOW_758.md).
