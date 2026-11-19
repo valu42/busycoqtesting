@@ -1,5 +1,7 @@
 # Eleven entry intervals with exact checkpoints below the 140-digit target
 
+The last common reset has a [connected onward chain](CHECKPOINT_Y_758.md). The [secondary cusp](SECONDARY_CUSP_758.md) gives its 368 pure-bulk corridors and classifies all terminal seeds in the remaining gap with at most two further runs of jumps, using the convention in that analysis.
+
 Let $P=3^{292}$ and let $H=(3^{307}-8{,}282{,}708{,}212)/13{,}959{,}275$ be the known halting reset. All eleven depth-eight ordinary intervals between $P$ and $H$ each force a single later reset from **every** starting seed in that interval. Their combined width is 43.98136610% of $H-P$. The closest one to $H$ starts at approximately $1.0255568581P$ and ends at $1.0267070054P$. Its 280 possible exits reach exactly the reset 4,511,571 above its upper endpoint. Which of these intervals the blank orbit visits is open. Percentages below describe distances and interval widths. [Checker](annular_mergers_292_758.py) · [Definition of the annular cells](ANNULAR_SKIP_758.md)
 
 | Depth-eight cell | Start / $P$, rounded | Exclusive end / $P$, rounded | Possible first exits | Distinct edges in the final merger | Reset above last word’s exclusive end |

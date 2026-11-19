@@ -1,5 +1,7 @@
 # How often a reset starts a long excursion
 
+For an interval of $L$ consecutive reset origins at arbitrary height, the number of difficult origins is $O(L^{0.731774})$. [Local proof and common-word construction](LOCAL_RETURN_WINDOWS_758.md)
+
 Let $H=(3^{307}-8\,282\,708\,212)/13\,959\,275$. Among all $H$ reset configurations $A(1,s)$ for $1\le s\le H$, **fewer than two in $10^{36}$ can avoid both a halt and another reset for 1,086 counter calls**. This is a finite count over the entire interval. Each seed is counted once. Including direct halts among the exceptions, **fewer than three in $10^{36}$ fail to reach a positive-time reset within the same budget**. The blank orbit selects its own successive reset seeds, and paths from different starting seeds can merge.
 
 An infinite blank orbit must cross the known [scale-10 halting corridor](LOWER_SCALE_GATES_758.md). Its last reset before the upper mass crossing would have to go at least 80,481,430,280,060 calls without a reset or a halt. This forces that particular reset into the exceptional set bounded here. A proof excluding this set from the relevant part of the blank orbit would decide the machine.

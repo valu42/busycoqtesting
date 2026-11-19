@@ -141,7 +141,7 @@ int main(int argc,char **argv) {
         first=std::atoi(argv[1]); last=std::atoi(argv[2]); minimum_pairs=std::atoi(argv[3]);
         if (argc==5) limit=std::atoi(argv[4]);
     } else if (argc!=1) return 2;
-    if (first<2 || first>last || last>61 || limit<last+42 || limit>1000 || minimum_pairs<12 || minimum_pairs>31) return 2;
+    if (first<2 || first>last || last>62 || limit<last+42 || limit>1000 || minimum_pairs<12 || minimum_pairs>31) return 2;
     powers[0]=1;
     for (size_t i=1; i<powers.size(); ++i) powers[i]=3*powers[i-1];
     make_residues();

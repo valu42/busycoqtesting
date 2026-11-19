@@ -7,11 +7,12 @@ from math import comb
 import re
 import subprocess
 
-from header_tail_ancestry_758 import compatible_offsets
-from check_bb33 import champion_step
+from dyadic_guard_shadow_758 import guard_counts
+from fractions import Fraction
 from lower_scale_gates_758 import GATES
 from scale_clauses_758 import H, PREFIX, EVEN_WORD, check_word
-from target_shadow_758 import aligned, horizon
+from target_shadow_758 import D, POWER, aligned, horizon
+from scale_transport_758 import BETA_LOW, PERIOD, SLOPE
 
 NEAR = 3_403_055
 OLD_FAR = GATES[7][1]
@@ -26,6 +27,7 @@ GATES_NEW = {
     17: (1_188_086_994_151_807_156, 1_980_144_990_253_011_922),
     18: (3_564_260_982_455_421_460, 5_940_434_970_759_035_762),
     19: (10_692_782_947_366_264_372, 17_821_304_912_277_107_282),
+    20: (32_078_348_842_098_793_108, 53_463_914_736_831_321_850),
 }
 HERE = Path(__file__).resolve().parent
 
@@ -42,22 +44,10 @@ def physical(n):
     assert (r_lo,r_hi) == (50,n+42)
     for d in (near,far):
         check_word(H-d,PREFIX+'J'*(264-n)+'LR')
-    assert horizon(near-2) >= (257 if n==11 else 250)
-    assert 9*(307+k_hi+257+2)//2 < 4000 < 9000 < OLD_FAR-NEAR
+    assert horizon(near-2) >= (257 if n==11 else 249 if n==20 else 250)
+    # The longest listed tail takes 243 calls after a cut at depth at most 63.
+    assert 9*(len(PREFIX)+k_hi+r_hi+1+243+2) < 2*4000 < 2*(OLD_FAR-NEAR)
     return r_lo,r_hi,far
-
-
-def check_exception(distance):
-    """Follow the full counters for a rare compatible numerator if necessary."""
-    state = 1,H-distance
-    for _ in range(2_000):
-        state = champion_step(*state)
-        if state is None:
-            return
-        if state[0] == 1:
-            assert 0 < state[1]-(H-distance) <= 9_000
-            return
-    raise AssertionError(f"Unresolved physical header at distance {distance}")
 
 
 def run(*args):
@@ -73,17 +63,36 @@ def read_tails(max_pairs):
         if p > max_pairs:
             continue
         assert p >= 24 and 0 < n < 4**p and n%10 == 5 and n not in rows[p]
-        a,b,depth = n,4**p,0
-        while depth < length:
-            if 3*a < b:
-                a,depth = 3*a,depth+1
-            else:
-                assert 9*a > 5*b
-                a,b,depth = 9*a-5*b,4*b,depth+2
-        assert length >= 189 and depth == length and 3*a > b and 9*a < 5*b
+        assert 189 <= length <= 243
         rows[p][n] = length
-    assert all(rows[p] for p in range(24,max_pairs+1))
+    expected_counts = {24:3, 25:8, 26:37, 27:176, 28:748}
+    assert all(len(rows[p])==expected_counts[p] for p in range(24,max_pairs+1))
     return rows
+
+
+def least_tail_margin(tails):
+    """Minimum aligned clearance, in units of U/3^m, on every listed tail."""
+    minimum = None
+    for p, group in tails.items():
+        for numerator, length in group.items():
+            final_triple = 3**length
+            a, b, triple = numerator, 4**p, 1
+            while True:
+                # Nine times the distance to the closest of 0, 1/3, 5/9, 1
+                # after clearing the current power-of-four denominator.
+                gap = min(9*a, 3*abs(3*a-b), abs(9*a-5*b), 9*(b-a))
+                assert gap > 0
+                if minimum is None or gap*minimum.denominator < 9*triple*minimum.numerator:
+                    minimum = Fraction(gap, 9*triple)
+                if 3*a < b:
+                    a, triple = 3*a, 3*triple
+                elif 9*a > 5*b:
+                    a, b, triple = 9*a-5*b, 4*b, 9*triple
+                else:
+                    break
+                assert triple <= final_triple
+            assert triple == final_triple
+    return minimum
 
 
 def check_dyadics(worker, join, max_pairs, expected):
@@ -141,28 +150,36 @@ def main():
     minimum = {r:min(p for rr,p in receipts if rr==r) for r in range(lo,hi+1)}
     max_pairs = max(minimum.values())-1
     if args.dyadic and max_pairs > 27 and not args.join:
-        parser.error("scale 19 needs --join to verify the p=28 directions")
+        parser.error("scales 19 and 20 need --join to verify the p=28 directions")
     tails = read_tails(max_pairs)
     if args.dyadic:
         check_dyadics(args.dyadic.resolve(),args.join.resolve() if args.join else None,max_pairs,tails)
 
-    rare = set()
+    margin = least_tail_margin(tails)
+    if margin is not None:
+        clearance = POWER*margin/(D*3**(hi+1))
+        assert clearance > GATES_NEW[args.scale][0]+2000
+        print(f'Listed tails clear every physical guard by at least {int(clearance):,} aligned units.')
+        # The existing affine header bound gives 2*PERIOD*h0 >= SLOPE*d+BETA_LOW.
+        # A pre-aligned h0 subsequently grows to h<U in the physical shadow range.
+        r = 106
+        max_distance = (2*PERIOD*3**r-D*BETA_LOW)//(D*SLOPE)
+        assert POWER*margin > D*3**(r+1)*(max_distance+2000)
+
     for r in range(lo,hi+1):
-        limit = 257 if r<=53 else 250
-        assert r+1+188 <= limit
-        near = GATES_NEW[11 if r<=53 else args.scale][0]
-        if r<=53:
-            assert aligned(near)[2] == 253
-        assert horizon(near-2) >= limit
-        for p in range(24,minimum[r]):
-            # Every direction that could outlast the angular proof is on this list.
-            # Checking the entire list also makes the exceptional replays reproducible.
-            origins = compatible_offsets(r,p,tails[p])
-            for offsets in origins.values():
-                for distance in offsets:
-                    if OLD_FAR <= distance <= GATES_NEW[args.scale][0]-2 and aligned(distance)[2]==307-r:
-                        check_exception(distance)
-                        rare.add(distance)
+        high_guard = 257 if r<=53 else 249 if r==62 else 250
+        # k is nonincreasing in d. At upper+2 the exponent has increased,
+        # so upper bounds every even distance with the exponent under test.
+        upper = GATES_NEW[max(11,r-42)][0]-2
+        assert 307-aligned(upper)[2] == max(53,r)
+        assert 307-aligned(upper+2)[2] == max(53,r)+1
+        uniform = horizon(upper)
+        assert uniform >= high_guard
+        last_short = r+1+188
+        if last_short > uniform:
+            extra = list(guard_counts(r,upper,last_short))
+            assert extra and all(ancestors==0 for _,_,ancestors in extra)
+        limit = high_guard
         expected = []
         for p in range(minimum[r],(r+1)//2+1):
             guard,*fields = receipts[r,p]
@@ -172,7 +189,7 @@ def main():
             lines = run(args.headers.resolve(),r,r,minimum[r],limit).splitlines()
             actual = [tuple(map(int,l.split())) for l in lines if l[:1].isdigit()]
             assert actual == expected
-    print(f'Checked {lo}..{hi} denominator exponents and {len(rare)} rare physical offsets.')
+    print(f'Checked denominator exponents {lo} through {hi}.')
     if not args.dyadic:
         print('Using archived exhaustive results; supply the compiled workers for a full replay.')
     print(f'All {far-NEAR+1:,} reset starts with {NEAR:,} <= H-s <= {far:,} halt.')
