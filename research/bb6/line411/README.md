@@ -4,6 +4,8 @@ The machine starts in A on a two-way tape of zeros. Its table is `1RB0LF_1RC1RB_
 
 At a boundary defined below, the machine halts exactly when its unread word starts with zero or more copies of `1001` followed by `1000`. A four-interface transducer handles arbitrary finite tape words and always returns. The only part left to decide is whether the blank orbit ever produces a word that satisfies the terminal test below. The executable proof uses Python integer arithmetic and checks the local rules against the transition table. The new results have been checked by their standalone verifier. A Rocq or Lean formalization of this reduction remains open.
 
+A later [sweep calculation and symbolic prefix proof](sweeps.md) carries the blank orbit through 180 million regular sweeps and gives an additional family of tapes that halt in six boundary checks.
+
 ## Reproduce
 
 Run these commands in this directory using Python 3 with assertions enabled. The default checkpoint goes one macro step beyond the related machine's halt.
