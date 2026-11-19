@@ -131,12 +131,14 @@ The finite sign conclusion follows without iterating $F$ trillions of times. Fro
 
 At the last checkpoint the trimmed width is 767 and the high bits are 00, so $B(n)=2^{767}$: the strict inequality $|n|>2^{765}$ excludes the previous bucket. By the order on negative excursions, **any first positive escape after this checkpoint must start at an input $e$ with $|e|>2^{765}$**. The exceptional $-2$ cannot interrupt this argument, since its unique predecessor is 5.
 
-At $2^{224}$ sweeps the Python stream verifier found 671 total suffix bits and 301 late extensions. At $2^{256}$ sweeps the packed [C++ verifier](wily_blank_sign.cpp) found 769 total suffix bits, including the two fixed low bits. It checks the carry and next-arrival condition on every late extension. The SHA-256 of the 769 ASCII digits before the output newline is `f0ac9e6cda66dec901cf94a99712f66b3b839bee692ab8ff7e9265455556e903`. The chronological raw-step bound for each encoding is $2^{255}(2^{256}+1)>6.7039\times 10^{153}$. This lower bound concerns both actual blank trajectories.
+At $2^{224}$ sweeps the Python stream verifier found 671 total suffix bits and 301 late extensions. At $2^{256}$ sweeps the packed [C++ verifier](wily_blank_sign.cpp) found 769 total suffix bits, including the two fixed low bits. It checks the carry and next-arrival condition on every late extension. The SHA-256 of the 769 ASCII digits before the output newline is `f0ac9e6cda66dec901cf94a99712f66b3b839bee692ab8ff7e9265455556e903`. A second replay starts at the scalar checkpoint, feeds only mode 0 to the 69-bit trimmed word, and performs exactly $2^{255}-1{,}721{,}189$ more updates. Its 767 output bits agree with the full blank replay after removing the first two zeros. The packed representation is needed for this scale in the tested environment; the ordinary Python replay completed at $2^{224}$ and exhausted available memory at $2^{256}$. The chronological raw-step bound for each encoding is $2^{255}(2^{256}+1)>6.7039\times 10^{153}$. This lower bound concerns both actual blank trajectories.
 
 Run the scalar, stream and packed checks with:
 ```sh
 python3 wily_integer_map.py --power 192
 g++ -std=c++17 -O3 wily_blank_sign.cpp -lgmpxx -lgmp -o wily_blank_sign
 ./wily_blank_sign 256 > suffix.txt
+./wily_blank_sign --scalar 256 > trimmed.txt
+python3 -c 'from pathlib import Path; assert Path("suffix.txt").read_bytes() == b"00" + Path("trimmed.txt").read_bytes()'
 python3 -c 'import hashlib; print(hashlib.sha256(open("suffix.txt","rb").read().strip()).hexdigest())'
 ```

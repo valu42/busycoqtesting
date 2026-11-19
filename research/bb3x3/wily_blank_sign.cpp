@@ -1,6 +1,7 @@
 // Certify the Wily blank sign interval using packed run lengths.
 // g++ -std=c++17 -O3 wily_blank_sign.cpp -lgmpxx -lgmp -o wily_blank_sign
 // ./wily_blank_sign 256 > suffix.txt
+// ./wily_blank_sign --scalar 256 > trimmed.txt
 #include <cstdint>
 #include <deque>
 #include <iostream>
@@ -122,10 +123,24 @@ void through_period(const Runs& input, bool& bit, mpz_class& remaining,
     bit = final_bit;
 }
 
-void verify(unsigned power) {
+void verify(unsigned power, bool scalar) {
     mpz_class remaining = mpz_class(1) << power;
     Runs runs{pack(0, 1), pack(1, 1)};
     std::deque<bool> pending{false, false};
+    if (scalar) {
+        // This checkpoint is reached after 3,442,378 original sweeps. Each
+        // subsequent scalar update represents two sweeps on the full word.
+        const mpz_class start("-227089934777573210432");
+        const mpz_class numerator = start + (mpz_class(1) << 69);
+        if (numerator % 3 != 0) throw std::logic_error("bad scalar seed");
+        const mpz_class value = numerator / 3;
+        pending.clear();
+        for (unsigned bit = 0; bit < 69; ++bit) {
+            pending.push_back(mpz_tstbit(value.get_mpz_t(), bit));
+        }
+        remaining = (remaining >> 1) - 1721189;
+        runs = {pack(0, 1)};
+    }
     std::string suffix;
     std::size_t extensions = 0;
     bool periodic = true;
@@ -181,12 +196,13 @@ void verify(unsigned power) {
 
 int main(int argc, char** argv) {
     try {
-        if (argc != 2) throw std::invalid_argument("supply a single sweep exponent, at least 22");
+        const bool scalar = argc == 3 && std::string(argv[1]) == "--scalar";
+        if (argc != 2 && !scalar) throw std::invalid_argument("usage: wily_blank_sign [--scalar] EXPONENT");
         std::size_t used;
-        const std::string argument(argv[1]);
+        const std::string argument(argv[scalar ? 2 : 1]);
         const int power = std::stoi(argument, &used);
         if (used != argument.size() || power < 22) throw std::invalid_argument("invalid sweep exponent");
-        verify(static_cast<unsigned>(power));
+        verify(static_cast<unsigned>(power), scalar);
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n';
         return 1;
