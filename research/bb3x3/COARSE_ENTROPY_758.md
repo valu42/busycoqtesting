@@ -73,3 +73,5 @@ Here $q\le9T$, $S\le T$, $m'=\log_3 S+O(1)$ and $r\le\log_3 T+O(1)$. Combining w
 If ordinary stretches of length at least $\epsilon u$ occur at arbitrarily large starting $u$ for some fixed $\epsilon>0$, take $T$ to be a fixed positive fraction of the stretch's first $\epsilon u$ positions. This gives $U=O(T)$ and all needed logarithmic margins. This case includes an infinite final ordinary stretch. In the remaining case the [reset-density argument](ALL_ORBIT_ENTROPY_758.md) proves that every finite word in J and P occurs. The binary encodings J $\mapsto1$ and P $\mapsto00$ give distinct factors at each fixed elementary length; their number satisfies the Fibonacci recurrence. This gives the stronger $h\ge\log((1+\sqrt5)/2)$ in that case.
 
 The [checker](coarse_entropy_758.py) verifies the modular transport, inverse-strip bounds and binary context encoding on finite examples, and uses rational logarithm bounds to certify that the displayed entropy exceeds $1/16$.
+
+The [finite crossing bounds](BINARY_PASSAGES_758.md) apply the binary argument to the scale-10 halting interval and the post-target checkpoint corridor.
