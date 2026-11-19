@@ -4,7 +4,9 @@
 
 At the blank orbit's first crossing of mass $W>2(H-3{,}403{,}055)+1$, a reset in the preceding **2,483,994,005,496** ordinary counter updates would suffice for halting. If the orbit avoids the basin, its last preceding reset must have second counter below the lower endpoint. Crossing the upper mass would then take a gain of at least $2w+1$, where $w=11{,}177{,}973{,}024{,}732$. Each continuing update gains at most nine, giving the stated bound $\lfloor2w/9\rfloor$. Whether the blank orbit satisfies this condition is open.
 
-## Certificate
+A subsequent check covers every remaining distance through 33,533,929,283,358 and proves that **33,533,925,880,304 consecutive reset seeds halt**. The same upper crossing now has a sufficient recent-reset bound of 7,451,983,528,956 calls. [Additional bands and proof](LOWER_SCALE_GATES_758.md)
+
+## Original certificate
 
 | First offset | Last offset | Bands | Bisection nodes | Accepted leaves |
 |---:|---:|---:|---:|---:|

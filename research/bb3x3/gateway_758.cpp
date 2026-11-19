@@ -84,8 +84,8 @@ class LocalMap {
 
 public:
     LocalMap(Distance near, Distance far): low(near), high(far) {
-        require(sizeof(long)>=8 && low>=1000000 && high<=11000000000000L,
-                "supported distance range is 10^6 to 11*10^12 on LP64");
+        require(sizeof(long)>=8 && low>=1000000 && high<=1000000000000000L,
+                "supported distance range is 10^6 to 10^15 on LP64");
         while (powers.size()<310) powers.push_back(3*powers.back());
         require((powers[307]-8282708212L)%13959275==0, "halting seed");
         H = (powers[307]-8282708212L)/13959275;
@@ -253,7 +253,7 @@ int main(int argc,char** argv) {
     try {
         Distance far = std::stoll(argv[universal ? 2 : 1]);
         Distance near = std::stoll(argv[universal ? 3 : 2]);
-        require(near >= 1'000'000 && near <= far && far <= 11'000'000'000'000LL,
+        require(near >= 1'000'000 && near <= far && far <= 1'000'000'000'000'000LL,
                 "invalid segment endpoints");
         if (universal) {
             UniversalCover check(far, near);

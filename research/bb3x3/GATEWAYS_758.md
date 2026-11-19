@@ -11,6 +11,8 @@
 
 The four intervals are now joined by a check of every intermediate reset. The resulting contiguous interval gives a recent-reset bound of **2,483,994,005,496** at the upper mass crossing. [Joined interval and verification data](UNIVERSAL_758.md)
 
+The [scale-7 extension and separate scale-8 through scale-10 intervals](LOWER_SCALE_GATES_758.md) give a recent-reset bound of 7,451,983,528,956 at the same upper mass crossing, and 80,481,430,280,059 at the crossing corresponding to the scale-10 row.
+
 ## How the reset intervals reach a halt
 
 In each row every even seed follows the word $I J^{291} L L J L L J L R$. Every odd seed follows $J^{292} L^8 J L^6 J^k L R$ with $k=264,262,260,258$ in row order. The checker replays the original counter rules at both endpoints of each parity. Along a common ordinary word, increasing the seed makes the first counter nonincreasing and the second nondecreasing. Each guard between the two endpoints therefore holds on the entire interval of that parity. This also certifies the absence of an earlier reset on these particular words. [Endpoint comparison](COVER_758.md)

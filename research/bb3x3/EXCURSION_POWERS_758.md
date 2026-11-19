@@ -10,6 +10,8 @@ then those repetitions **prove that the machine continues forever**. In particul
 
 There is also a one-period certificate. For an observed mixed word, compute the invariant line below. If its initial point lies on that line, one complete legal occurrence suffices to prove infinite continuation. Moreover, an infinite excursion whose **coarse** J/P itinerary is eventually periodic will eventually supply a finite affine certificate even if its bulk residues were never specified.
 
+A [global denominator bound and exhaustive check](FINITE_AFFINE_PERIODS_758.md) now rule out every such ordinary periodic trajectory, including periods of arbitrary length and at arbitrary starting mass. In particular, at $u\le H$ no fine word of $m$ elementary calls can repeat $t$ times with $(t-2)m\ge292$.
+
 ## The integer defect and all future guards
 
 Use the [odd/odd coordinates](CUT_758.md) u=(a+2c−1)/2 and d=(c−1)/2, so a=2u−4d−1 and 0≤d≤u/2. J gives (u+2,3d−u+1). P gives (u+v,(9d+b)/4) with (v,b)=(5,20),(9,35),(7,26),(7,29) in residue order. For a nonempty fine word with j jumps and p pairs, put m=j+2p, Q=3ᵐ, M=4ᵖ. Its composite is

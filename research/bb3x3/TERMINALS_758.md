@@ -1,6 +1,6 @@
 # Which resets can reach a specific #758 terminal?
 
-For the specific terminal state reached from A(1,H), the **only possible last resets** on a blank-compatible orbit are A(1,H−2) and A(1,H). The exhaustive reverse search contains 2,723 states. The same test identifies the exact last-reset pairs for three smaller terminals. Blank-tape reachability of these reset seeds remains open. H and the two-counter conventions are given in the [ranking](RANKINGS.md). [Published candidate pairs and transition rules](https://wiki.bbchallenge.org/wiki/1RB2LC1RC_2LC---2RB_2LA0LB0RA)
+For the specific terminal state reached from A(1,H), the **only possible last resets** on a blank-compatible orbit are A(1,H−2) and A(1,H). The exhaustive reverse search contains 2,723 states. The same test identifies the exact last-reset pairs for three smaller terminals. The [blank crossings](BLANK_CROSSINGS.md) now exclude the three smaller pairs. Reachability of the pair at $H$ remains open. H and the two-counter conventions are given in the [ranking](RANKINGS.md). [Published candidate pairs and transition rules](https://wiki.bbchallenge.org/wiki/1RB2LC1RC_2LC---2RB_2LA0LB0RA)
 
 | Exact last reset parameters | Map calls from either reset, including the halting call | States in reverse search | Maximum reverse depth |
 |---|---:|---:|---:|
