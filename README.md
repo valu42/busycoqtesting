@@ -39,6 +39,10 @@ considered hard to decide automatically. At the moment, these include:
  - the five "cubic-finned" machines analyzed by Justin Blanchard
    (bbchallenge indices 7763480, 8120967, 10756090, 11017998, and 11018487).
 
+## BB(3,3) research
+
+The [four holdout classes and the #758/#153 proof campaign](research/bb3x3/README.md) have reproducible counter verifiers, blank checkpoints and the remaining halting question.
+
 ## Running the deciders
 
 Place the [seed database][seed] at `seed.dat` in the root of the repository.
