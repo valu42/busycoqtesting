@@ -21,3 +21,16 @@ python3 lower_scale_gates_758.py --endpoints
 python3 lower_scale_gates_758.py --row 1
 python3 lower_scale_gates_758.py --jobs 4
 ```
+
+## Every reset in the gap at scale 7
+
+The 36 adjacent bands from distance 11,177,976,427,786 through 20,120,357,570,016 were also checked for **every** starting reset. They required 7,768,635,728 bisection nodes and 3,884,317,882 accepted leaves. The even-seed return and the same-parity endpoint tests bound each continuing return so that it decreases the distance and stays at or above 3,403,055. Induction on distance joins the old contiguous basin to the full scale-7 corridor. The [36-row manifest](universal_gap7_758.tsv) records inclusive band limits and exact counts. [Universal proof method and base interval](UNIVERSAL_758.md)
+
+**All 33,533,925,880,304 consecutive reset seeds from $H-33{,}533{,}929{,}283{,}358$ through $H-3{,}403{,}055$ halt.** At the first mass crossing above $2(H-3{,}403{,}055)+1$, a reset within the preceding 7,451,983,528,956 counter updates would suffice. The wider scale-10 interval in the table has its own mass crossing. No blank entry has been proved at either.
+
+The full run used a bounded-integer matcher with exact fallback at ambiguous endpoints. An arbitrary-precision reference rebuilds the same manifest. Row 6 illustrates a single-word band. Omitting the row selection replays all 36 bands.
+
+```sh
+python3 lower_scale_gates_758.py --universal --row 6
+python3 lower_scale_gates_758.py --universal --jobs 4
+```

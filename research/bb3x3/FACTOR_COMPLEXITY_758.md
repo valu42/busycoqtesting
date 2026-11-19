@@ -24,16 +24,18 @@ T\le F+(F+1)F=(F+1)^2-1 .
 $$
 In particular, $T=k^2$ forces at least $k$ different words.
 
-## Two finite tests for the blank trajectory
+## Finite tests for the blank trajectory
 
 For scale 74 let $G=10^{10}3^{74}$, $B=H-3G/2$ and $U_0=H-G-39{,}000{,}000$. A reset in $[B,U_0]$ enters the gate. For the joined halting interval use its two verified endpoints as $B,U_0$. If a trajectory passes either interval without a reset in it, consider the part between mass $2B+1$ and $2U_0+1-5458$. An exceptional step there produces a reset after exactly 787 updates with mass gain 5,458. The bulk-decrement bounds for this identity cover both trimmed intervals. Thus only J and ordinary bulk moves occur in the passage. Discard at most one elementary move at each end to align its complete blocks. [Exceptional-return annulus](CUT_758.md)
 
 | Interval passed without entry | Length-$n$ factors used to determine lines | Consecutive starting positions $T$ | Minimum number of distinct length-$(n+1)$ factors |
 |---|---:|---:|---:|
 | Deep-entry interval at scale 74 | 400 | $10^{44}$ | $10^{22}$ |
-| Joined halting interval | 324 | $10^{12}$ | $10^{6}$ |
+| Original joined interval | 324 | $10^{12}$ | $10^{6}$ |
+| [Enlarged joined interval](LOWER_SCALE_GATES_758.md) | 321 | $1{,}900{,}000^2$ | 1,900,000 |
+| [Scale-10 halting corridor](LOWER_SCALE_GATES_758.md) | 323 | $6{,}300{,}000^2$ | 6,300,000 |
 
-The verifier checks $3^n>9TH$ in both rows, and that the mass gain across the trimmed interval supplies at least $T+n$ complete blocks. A sufficiently low upper bound on the number of words on the actual crossing would force entry into the relevant interval. Entry at scale 74 fixes one exact subsequent trajectory; its continuation to a halt remains open.
+The verifier checks $3^n>9TH$ in every row, and that the mass gain across the trimmed interval supplies at least $T+n$ complete blocks. A sufficiently low upper bound on the number of words on the actual crossing would force entry into the relevant interval. Entry at scale 74 fixes one exact subsequent trajectory; its continuation to a halt remains open.
 
 The same argument can single out the actual midpoint state. Set $T_0=H-5G/4$. A reset between $B$ and $T_0-39{,}004{,}000$ forces the first mass crossing of $2T_0+1$ to be exactly $A(2\cdot3^{36}-1,T_0-3^{36}+1)$. If the blank reaches the midpoint in a different state, apply the proof to this shorter interval with $(7\cdot10^{21})^2$ starting positions and $n=400$. There must then be at least **$7\cdot10^{21}$ distinct length-401 words** within the passage. [Exact midpoint and inverse proof](SCALE74_ANCESTRY.md)
 

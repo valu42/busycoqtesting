@@ -54,6 +54,11 @@ def verify():
     a,c = affine_tail(BASE_I)
     assert 2*BASE_P+a == c+1
     assert Fraction(1) < 1+Fraction(2*Q,D) < Fraction(251,250)
+    ratio = Fraction(3,2)**15
+    center = 1+Fraction(2*Q,D)
+    slope = (3*ratio-2)/(2*center)
+    assert Fraction(1,3) < slope*Fraction(54,100)/729
+    assert slope*Fraction(58,100)*Fraction(101,100)/729 < Fraction(5,9)
     for m in (597,1797):
         s = candidate(m)
         assert first_return(s, batch=False) is None

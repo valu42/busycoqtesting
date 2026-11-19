@@ -26,7 +26,7 @@ At n=0 the single cycle has length 841 and winding 15; the offsets are 42, 138, 
 
 The eight singleton exits are (n,e) = (74,698), (80,478), (135,732), (194,246), (204,526), (225,144), (247,64) and (254,490). For instance the scale-74 exit is A(1,H−10¹⁰·3⁷⁴+698).
 
-An inter-gate proof can begin at just these seeds. For example, for n≥1 it suffices to show each listed seed halts or reaches a reset with distance in [Gₙ₋₁+39,000,000, 3Gₙ₋₁/2]. This would link that gate to the preceding one. The [combined halting interval](UNIVERSAL_758.md) already contains the full corridors at indices 0 through 6. For a descent from higher scales, reaching any of those seven finishes the proof for that trajectory. Four further transfer chains prove halting in the full corridors at indices 7 through 10. Blank entry at these scales remains open. [Intervals, joins and replay](LOWER_SCALE_GATES_758.md)
+An inter-gate proof can begin at just these seeds. For example, for n≥1 it suffices to show each listed seed halts or reaches a reset with distance in [Gₙ₋₁+39,000,000, 3Gₙ₋₁/2]. This would link that gate to the preceding one. The [combined halting interval](UNIVERSAL_758.md) together with the [scale-7 extension](LOWER_SCALE_GATES_758.md) contains the full corridors at indices 0 through 7. Reaching any of these corridors finishes the proof for that trajectory. Four further transfer chains prove halting in the full corridors at indices 7 through 10. Blank entry at these scales remains open. [Intervals, joins and replay](LOWER_SCALE_GATES_758.md)
 
 ## A common cover between the large corridors
 

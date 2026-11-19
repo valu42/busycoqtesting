@@ -72,7 +72,7 @@ def main():
     gate = 10**10*3**74
     band_width = gate//2-39_000_000+1
     # The exceptional branch returns after 785 bulk decrements and one
-    # even-left return following E. Both tested strips lie in its annulus.
+    # even-left return following E. All tested strips lie in its annulus.
     total, right = 0, 1
     for _ in range(785):
         q = (right+1)//4
@@ -83,7 +83,9 @@ def main():
     for name, width, horizon, n in (
         ("scale 74", band_width, 10**44, 400),
         ("scale-74 midpoint", gate//4-39_004_000+1, (7*10**21)**2, 400),
-        ("joined halting interval", 11_177_973_024_732, 10**12, 324),
+        ("original joined interval", 11_177_973_024_732, 10**12, 324),
+        ("enlarged joined interval", 33_533_925_880_304, 1_900_000**2, 321),
+        ("scale-10 halting corridor", 362_166_436_260_267, 6_300_000**2, 323),
     ):
         length, count, blocks = verify_passage(width, 5458, horizon, n)
         print(f"{name}: at least {blocks:,} complete ordinary blocks. "
