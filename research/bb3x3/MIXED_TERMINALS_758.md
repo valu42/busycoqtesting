@@ -45,6 +45,8 @@ Rows overlap. The number of words includes the empty word. A bulk pair counts as
 | 30–35 | 23 | 8,388,608 | 205,706,204 | 10 |
 | 31–34 | 25 | 33,554,432 | 548,553,467 | 10 |
 | 35–36 | 27 | 134,217,728 | 1,097,115,451 | 4 |
+| 37–40 | 27 | 134,217,728 | 2,194,233,854 | 10 |
+| 37–48 | 24 | 16,777,216 | 822,839,223 | 32 |
 
 The depth-23 and depth-25 rows give exactly the following ordered lower seeds, each accompanied by its sibling two units larger.
 
@@ -106,3 +108,5 @@ c++ -std=c++17 -O3 cross_758_fast.cpp -o /tmp/cross758
 ~~~
 
 At launch exponents 35 and 36 the depth-27 search found only the already known pairs beginning at 270,170,343,534,598,339 and 347,319,919,231,011,824. Both have exponent 36. Their postlaunch words have zero and fourteen ordinary blocks respectively. Run `./mixed_terminals_758 35 36 27` to reproduce the full enumeration.
+
+The two rows beginning at exponent 37 recover only previously listed halting seeds. The ordinary first-return routine independently confirms all 10 and 32 endpoints, respectively. Reproduce with `./mixed758 37 40 27` and `./mixed758 37 48 24`.

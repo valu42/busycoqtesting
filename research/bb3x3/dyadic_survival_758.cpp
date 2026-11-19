@@ -32,6 +32,7 @@ struct Scan {
     Count witness = 0, examined = 0, longest_count = 0, censored = 0;
     std::vector<Count> survivors;
     std::vector<std::pair<Count, unsigned>> long_tails;
+    Count original_step = 10;  // spacing of the root numerators
 
     // p/q is in (0,1), with p odd and q a positive power of 2.
     // The large-integer fallback covers even a long tail without rounding.
@@ -83,7 +84,7 @@ struct Scan {
 
     // Surviving candidates form an arithmetic progression from a/q with
     // initial numerator n and spacing step/q. The original numerators
-    // increase by ten, so all are odd multiples of five.
+    // increase by original_step and remain odd multiples of five.
     void visit(U a, U q, U step, Count n, unsigned e,
                std::vector<Subtree>* frontier=nullptr, unsigned depth=0) {
         if (a > q) return;
@@ -97,7 +98,7 @@ struct Scan {
         // bound before its cardinality drops to eight. Enumerate it directly.
         if (q > (U(1) << 120) || step > (U(1) << 120) ||
             q-a < 8*step || e >= limit) {
-            for (; a <= q; a += step, n += 10) record(n, finish(a, q, e));
+            for (; a <= q; a += step, n += original_step) record(n, finish(a, q, e));
             return;
         }
         deepest_split = std::max(deepest_split, e);
@@ -109,7 +110,7 @@ struct Scan {
         // the exact number of forward grid spacings, to stay unsigned.
         const U i = base >= cutoff ? 0 : (cutoff-base+advance-1)/advance;
         const U new_a = base + i*advance - cutoff;
-        visit(new_a, 4*q, advance, n + 10*static_cast<Count>(i), e+2, frontier, depth+1);
+        visit(new_a, 4*q, advance, n + original_step*static_cast<Count>(i), e+2, frontier, depth+1);
     }
 
     void run(bool brute) {
@@ -146,6 +147,26 @@ struct Scan {
 };
 
 int main(int argc, char** argv) {
+    if (argc == 2 && (std::string(argv[1]) == "--progressions" || std::string(argv[1]) == "--bit-progressions")) {
+        const bool bits_mode = std::string(argv[1]) == "--bit-progressions";
+        unsigned r, m, p;
+        Count residue, modulus;
+        while (std::cin >> r >> m >> p >> residue >> modulus) {
+            if ((bits_mode ? p>62 : p>31) || !modulus || residue >= modulus || residue%10 != 5 || modulus%10)
+                throw std::invalid_argument("invalid dyadic numerator progression");
+            Scan scan{p,400};
+            scan.original_step = modulus;
+            scan.visit(residue,U(1)<<(bits_mode ? p : 2*p),modulus,residue,0);
+            if (scan.censored || !scan.longest_count || scan.deepest_split >= 189 ||
+                    scan.deepest_split >= scan.high)
+                throw std::logic_error("inconclusive progression search");
+            for (const auto& hit : scan.long_tails)
+                std::cout << "late " << hit.first << ' ' << hit.second << '\n';
+            std::cout << r << ' ' << m << ' ' << p << ' ' << residue << ' ' << modulus
+                      << ' ' << scan.witness << ' ' << scan.high << '\n';
+        }
+        return 0;
+    }
     if (argc < 3 || argc > 5) {
         std::cerr << "usage: dyadic_scan min_p max_p [limit=220] [--brute]\n";
         return 2;

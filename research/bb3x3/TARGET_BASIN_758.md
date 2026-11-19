@@ -6,6 +6,8 @@ $$
 $$
 eventually halts, for $H=(3^{307}-8,282,708,212)/13,959,275$. This joins every gap through scale 20. The scale-19 interval contained 17,821,304,912,273,704,228 seeds. A proof that the actual blank orbit enters the new interval would settle both #758 and #153. [Original contiguous interval](LOWER_SCALE_GATES_758.md)
 
+A [further contiguous extension](HALTING_COLLAR_758.md) reaches 61,410,570,681,242,627,565 halting reset seeds.
+
 ## From a reset to a rational direction
 
 Write $d=H-s$. The original interval reaches $d=33,533,929,283,358$. From there through the even distance $32,078,348,842,098,793,106$ just before the scale-20 corridor, every even seed follows its fixed 300-call first-return word. Each odd seed takes $J^{292}L^8JL^6$ and then a maximal run of $k$ jumps. The first word is legal at both endpoints. Throughout a common word the smaller $d$ gives a smaller or equal left counter and larger or equal right counter. These orders preserve the guards and make $k$ nonincreasing as $d$ grows.

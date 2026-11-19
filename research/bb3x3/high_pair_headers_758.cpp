@@ -1,6 +1,6 @@
 // Complete high-pair part of the dyadic header survey. Uses C++17 and GMP.
 // c++ -O3 -std=c++17 high_pair_headers_758.cpp -lgmpxx -lgmp -o high_pair_headers
-// ./high_pair_headers [first-r last-r minimum-p [last-guard]] (defaults: 45 53 23 257)
+// ./high_pair_headers [first-r last-r minimum-p [last-guard [jumps-after-P]]] (defaults: 45 53 23 257)
 #include <algorithm>
 #include <array>
 #include <cstdint>
@@ -158,7 +158,7 @@ int main(int argc,char **argv) {
         if (argc>=5) limit=std::atoi(argv[4]);
         if (argc==6) forced_jumps=std::atoi(argv[5]);
     } else if (argc!=1) return 2;
-    if (forced_jumps+2>first || first<2 || first>last || last>63 || limit<last+42 || limit>1000 || minimum_pairs<12 || minimum_pairs>32) return 2;
+    if (first<2 || forced_jumps>first-2 || first>last || last>63 || limit<last+42 || limit>1000 || minimum_pairs<12 || minimum_pairs>32) return 2;
     powers[0]=1;
     for (size_t i=1; i<powers.size(); ++i) powers[i]=3*powers[i-1];
     make_residues();

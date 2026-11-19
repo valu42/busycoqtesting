@@ -80,8 +80,8 @@ if __name__ == "__main__":
     parser.add_argument('--joined', action='store_true', help='use the widest joined interval')
     args = parser.parse_args()
     if args.joined:
-        from target_basin_758 import GATES_NEW
-        distance = GATES_NEW[max(GATES_NEW)][1]
+        from halting_collar_758 import FAR
+        distance = FAR
         remaining, lower, upper = joined_clock(distance)
         print(f"Mass-distance {distance:,}; raw remaining upper bound {remaining}.")
         print(f"Conditional blank bounds {lower} through {upper}.")

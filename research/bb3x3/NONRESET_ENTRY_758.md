@@ -3,29 +3,29 @@
 An actual #758 or #153 trajectory halts if it visits any odd/odd counter state $A(a,c)$ satisfying
 
 $$
- h=(a+1)/2\text{ even},\qquad 2\le h\le37,491,032,523,348,135,000,
+ h=(a+1)/2\text{ even},\qquad 2\le h\le1,012,257,878,130,399,645,022,
 $$
 $$
- H-53,463,914,736,831,321,850\le u=(a+2c-1)/2\le H-3,403,055-2,488.
+ H-61,410,570,681,246,030,619\le u=(a+2c-1)/2\le H-3,403,055-2,488.
 $$
 
-Each such state reaches a reset **inside the scale-20 halting basin within 553 counter calls**. The rectangle contains exactly **501,104,341,555,981,764,028,613,917,931,971,395,000** distinct nonreset states. This gives a sufficient condition directly on a blank-orbit state; whether the blank trajectory reaches this rectangle is open. [Contiguous halting basin](TARGET_BASIN_758.md)
+Each such state reaches a reset **inside the scale-20 halting basin within 553 counter calls**. The rectangle contains exactly **15,540,833,493,142,897,670,509,585,877,006,658,765,429** distinct nonreset states. This gives a sufficient condition directly on a blank-orbit state; whether the blank trajectory reaches this rectangle is open. [Extended contiguous halting basin](HALTING_COLLAR_758.md)
 
 ## Return from the rectangle
 
-Put $F=53,463,914,736,831,321,850$ and $L=3,403,055$. For an odd/odd jump the guard is $3h\le u+2$ and the update is $(h,u)\mapsto(3h,u+2)$. The upper bound on $h$ is the largest even integer at most $(H-F)/3^{251}$. Therefore the first 251 jumps are legal. The initial $h$ is at least two and strictly increases throughout the run, so these jumps cannot reach $a=1$. The maximal initial run has length $k\le292$ because $h\ge2$ and $2\cdot3^{293}>H-L-2488+2\cdot293$. The aligned coordinates are $h_*=3^kh$ and $u_*=u+2k$. In particular $h_*$ is even and $0<U-u_*\le F+594$, with $U=3^{307}/D$ and $D=13,959,275$.
+Put $F=61,410,570,681,246,030,619$ and $L=3,403,055$. For an odd/odd jump the guard is $3h\le u+2$ and the update is $(h,u)\mapsto(3h,u+2)$. The upper bound on $h$ is the largest even integer at most $(H-F)/3^{248}$. Therefore the first 248 jumps are legal. The initial $h$ is at least two and strictly increases throughout the run, so these jumps cannot reach $a=1$. The maximal initial run has length $k\le292$ because $h\ge2$ and $2\cdot3^{293}>H-L-2488+2\cdot293$. The aligned coordinates are $h_*=3^kh$ and $u_*=u+2k$. In particular $h_*$ is even and $0<U-u_*\le F+594$, with $U=3^{307}/D$ and $D=13,959,275$.
 
-At alignment the initial ideal direction is $h_*/U=Dh/3^r$, where $r=307-k\le56$. The proof of the [physical shadow](TARGET_SHADOW_758.md) uses the signed pullback for an ordinary word, $h_*-\lambda u_*=R(h_l-\mu u_l)+B$ with $0<R\le1$, $0\le B\le14$. All four guard comparisons agree if the distance $|h_*-\lambda U|$ is greater than $F+2600$. For the uniform comparison, a pulled-back positive guard at depth $l$ has odd numerator over a power $3^t$ with $t\le l+2$. Since $h_*$ is even, its difference from $\lambda U$ is nonzero. The zero inverse guard also has nonzero difference. Divisibility therefore gives
+At alignment the initial ideal direction is $h_*/U=Dh/3^r$, where $r=307-k\le59$. The proof of the [physical shadow](TARGET_SHADOW_758.md) uses the signed pullback for an ordinary word, $h_*-\lambda u_*=R(h_l-\mu u_l)+B$ with $0<R\le1$, $0\le B\le14$. All four guard comparisons agree if the distance $|h_*-\lambda U|$ is greater than $F+2600$. For the uniform comparison, a pulled-back positive guard at depth $l$ has odd numerator over a power $3^t$ with $t\le l+2$. Since $h_*$ is even, its difference from $\lambda U$ is nonzero. The zero inverse guard also has nonzero difference. Divisibility therefore gives
 
 $$
- D|h_*-\lambda U|\ge3^{\min(k,307-l-2)} > D(F+2600) \qquad (l\le245).
+ D|h_*-\lambda U|\ge3^{\min(k,307-l-2)} > D(F+2600) \qquad (l\le248).
 $$
 
-The four inequalities exclude the exceptional and terminal guards, including the decision after a first bulk inside a group. They cover every exponent in the range, including the first decision at alignment. The last legal jump gave $h_*\le u_*<U$, and the next physical jump is illegal, so the aligned direction lies in the return interval or begins with a pair. At the first group boundary $m\ge r$, a surviving direction is thus an odd multiple of five over $4^p$ with $m\in\{r,r+1\}$ and $1\le p\le\lfloor m/2\rfloor\le28$. This cut uses only the even integer $h$ and the initial alignment. [Dyadic cut proof](HIGH_PAIR_HEADERS_758.md)
+The four inequalities exclude the exceptional and terminal guards, including the decision after a first bulk inside a group. They cover every exponent in the range, including the first decision at alignment. The last legal jump gave $h_*\le u_*<U$, and the next physical jump is illegal, so the aligned direction lies in the return interval or begins with a pair. At the first group boundary $m\ge r$, a surviving direction is thus an odd multiple of five over $4^p$ with $m\in\{r,r+1\}$ and $1\le p\le\lfloor m/2\rfloor\le30$. This cut uses only the even integer $h$ and the initial alignment. [Dyadic cut proof](HIGH_PAIR_HEADERS_758.md)
 
-Every unlisted dyadic tail returns at a guard within 188 more elementary calls, so its last guard has depth at most $57+188=245$. For every listed tail, the [exact guard clearance](TARGET_BASIN_758.md) at $m\le57$ exceeds $F+2600$ all the way through the return. The longest such tail has 243 calls before the final guard. A bulk and ordinary reset finish either kind of tail. Counting from the original state gives at most $k+m+243+2\le553$ calls. The mass $W=a+2c$ strictly increases and gains at most nine per call. At return $W=2s+1$, so the reset seed satisfies $u<s\le u+\lfloor9\cdot553/2\rfloor=u+2488$. Both bounds place it in $[H-F,H-L]$, where it halts. [Dyadic tail exhaustion](DYADIC_SURVIVAL_758.md)
+For $p\le28$ the [dyadic search](DYADIC_SURVIVAL_758.md) identifies every tail longer than 188 elementary calls. For $p>28$ the [header progression search](ORDINARY_HEADER_COVER_758.md) proves that every eligible tail returns within 188 calls. Thus each unlisted tail has its last guard at depth at most $60+188=248$. For every listed tail, the [exact guard clearance](TARGET_BASIN_758.md) at $m\le60$ exceeds $F+2600$ all the way through the return. The longest such tail has 243 calls before the final guard. A bulk and ordinary reset finish either kind of tail. Counting from the original state gives at most $k+m+243+2\le553$ calls. The mass $W=a+2c$ strictly increases and gains at most nine per call. At return $W=2s+1$, so the reset seed satisfies $u<s\le u+\lfloor9\cdot553/2\rfloor=u+2488$. Both bounds place it in $[H-F,H-L]$, where it halts. [Dyadic tail exhaustion](DYADIC_SURVIVAL_758.md)
 
-For even $h$, the original state is $a=2h-1$, $c=u-h+1$, with odd $c$ exactly when $u$ is even. There are 26,731,957,368,413,958,154 allowed even masses and 18,745,516,261,674,067,500 allowed left coordinates independently.
+For even $h$, the original state is $a=2h-1$, $c=u-h+1$, with odd $c$ exactly when $u$ is even. There are 30,705,285,340,621,312,539 allowed even masses and 506,128,939,065,199,822,511 allowed left coordinates independently.
 
 ```sh
 python3 nonreset_entry_758.py
@@ -56,10 +56,12 @@ c++ -O3 -std=c++17 small_odd_entry_758.cpp -lgmpxx -lgmp -o /tmp/small-odd-758
 
 ## Testing a large left counter at the crossing
 
-This also applies to a left counter with up to 140 digits. At an odd/odd state set $h=3^j h_0$ with $3\nmid h_0$. If $h_0$ is even and $h_0\le37,491,032,523,348,135,000$, the state halts whenever
+This also applies to a left counter with up to 140 digits. At an odd/odd state set $h=3^j h_0$ with $3\nmid h_0$. If $h_0$ is even and $h_0\le1,012,257,878,130,399,645,022$, the state halts whenever
 
 $$
  H-F+584\le u\le H-L-2488.
 $$
 
 Indeed $h\le u<H<3^{293}$ gives $j\le292$. Each inverse jump changes $(h,u)$ to $(h/3,u-2)$ and is a legal predecessor: its forward guard is equivalent to $h\le u$ and its right counter is positive and odd. The inverse chain ends in the rectangular halting set above. The same argument works with odd $h_0\le14,365,290$ by the primitive-direction calculation (or a basin reset for $h_0=1$). At the central crossing this enlarges the previously available primitive-coordinate test for the even $h_0$ class. [Earlier inverse-jump test](AXES_758.md)
+
+The [odd primitive coordinate tests](ORDINARY_HEADER_COVER_758.md) cover coordinates through 211,637,975,937,205 with 263 possible exceptions and give a check across the full left-coordinate range.

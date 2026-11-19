@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Verify an absorbing rectangle of ordinary counter states near the target mass."""
 from check_bb33 import champion_step
+from even_header_entry_758 import verify as verify_high_pairs
+from halting_collar_758 import FAR
 from scale_clauses_758 import H
-from target_basin_758 import GATES_NEW, NEAR, least_tail_margin, read_tails
+from target_basin_758 import NEAR, least_tail_margin, read_tails
 from target_shadow_758 import C, D, POWER
 
-FAR = GATES_NEW[20][1]
-MIN_JUMPS = 251
+MIN_JUMPS = 248
 MAX_CUT = 307 - MIN_JUMPS + 1
 MAX_CALLS = 307 + 1 + 243 + 2
 MAX_GAIN = 9*MAX_CALLS//2
@@ -16,7 +17,7 @@ MAX_H = 2*(MIN_MASS//(2*3**MIN_JUMPS))
 
 
 def verify():
-    assert MAX_CUT//2 == 28
+    assert MAX_CUT == 60 and max(verify_high_pairs()) <= 188
     assert 0 < C < 594*D
     assert 3**MIN_JUMPS*MAX_H <= MIN_MASS
     assert 2*3**293 > MAX_MASS+2*293

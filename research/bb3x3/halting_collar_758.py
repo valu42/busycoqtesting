@@ -11,9 +11,9 @@ from target_basin_758 import GATES_NEW, NEAR, least_tail_margin, read_tails
 from target_shadow_758 import D, POWER, aligned, horizon
 
 HERE = Path(__file__).resolve().parent
-JUMPS = 3
+JUMPS = 2
 PREVIOUS = GATES_NEW[20][1]
-FAR = 56_130_184_040_571_332_163
+FAR = 61_410_570_681_246_030_619
 
 
 def first_unchecked(jumps):
@@ -45,13 +45,14 @@ def main():
         actual = subprocess.check_output([str(args.headers.resolve()), '63', '63', '29', '248', str(JUMPS)], text=True)
         assert actual == receipt
     rows = [list(map(int, row.split())) for row in receipt.splitlines()[1:]]
-    for p in (29, 30):
+    expected_pairs = {p for p in range(29,33) if 63-p-JUMPS >= p-1}
+    assert {row[1] for row in rows} == expected_pairs and len(rows) == len(expected_pairs)
+    for p in expected_pairs:
         hits = [row for row in rows if row[1] == p]
         assert len(hits) == 1
         r, _, guard, cells, probes, tests, exact, survivors = hits[0]
         assert (r, guard, survivors) == (63, 248, 0)
         assert cells == comb(63-p-JUMPS, p-1) and probes >= tests >= exact > 0
-    assert len(rows) in (2,3) and all(row[-1] == 0 for row in rows)
     absolute = (HERE/'high_pair_headers_758.tsv').read_text().splitlines()[1:]
     full = {row[1]:row for row in (list(map(int,r.split())) for r in absolute) if row[0]==63}
     assert all(full[p][2] == 248 and full[p][3] == comb(63-p, p-1) and full[p][-1] == 0 for p in (31,32))
