@@ -1,5 +1,7 @@
 # A raw-time lower bound from an attained #758 mass
 
+The later angular proofs sharpen the conditional halting bounds and time the connected blank checkpoint. [Current clock results](HALTING_TIME_758.md)
+
 Let W = a + 2c. If #758 reaches a mass of **6,670,872,679,866,767** from blank, it has run for at least **14,659,627,256,375,446,994,648,609,755,050,506,701,497,558 raw steps**. This is the mass at A(1,3,335,436,339,933,383). The implication needs only attainment of the mass. Connecting a particular checkpoint to blank requires the forward certificates. The two raw clocks differ by 50,707 steps after the proved join, so the same threshold implies more than 1.46 × 10⁴³ steps in each encoding. [Ranking and raw join](RANKINGS.md) · [Ten branch costs](timing_758.py)
 
 ## A costly transition in every sufficiently long block
