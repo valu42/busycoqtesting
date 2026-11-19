@@ -1,6 +1,6 @@
 # Direct terminal search with mixed jumps and bulk pairs
 
-From either of the resets $A(1,K)$ and $A(1,K+2)$ for $K=40{,}486{,}323{,}621{,}582{,}648$, the 69th map call halts at the input $A(26{,}990{,}882{,}414{,}388{,}552,26{,}990{,}882{,}414{,}388{,}551)$. The exhaustive inverse tree of that particular input has 585 states and greatest depth 92. Its only possible last resets are $K,K+2$, both at depth 68. **Every reset in the 633,739,014,317,117-seed interval from 39,752,584,607,270,532 through 40,386,323,621,587,648 bypasses this pair alive.** Every reset in the nearer interval from $K-100{,}000{,}000{,}000$ through $K-74$ also bypasses it. Blank entry into the two halting resets is a separate question.
+From either of the resets $A(1,K)$ and $A(1,K+2)$ for $K=40{,}486{,}323{,}621{,}582{,}648$, the 69th map call halts at the input $A(26{,}990{,}882{,}414{,}388{,}552,26{,}990{,}882{,}414{,}388{,}551)$. The exhaustive inverse tree of that particular input has 585 states and greatest depth 92. Its only possible last resets are $K,K+2$, both at depth 68. **Every reset in the 633,739,014,317,117-seed interval from 39,752,584,607,270,532 through 40,386,323,621,587,648 bypasses this pair alive.** Every reset in the nearer interval from $K-100{,}000{,}000{,}000$ through $K-74$ also bypasses it. The blank orbit was subsequently proved to bypass both roots. [Connected fifth crossing](FIFTH_BLANK_CROSSING_758.md)
 
 ## Searching without fixing the bulk residues
 

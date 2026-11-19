@@ -6,6 +6,7 @@
 |---|---:|---|
 | Reach the known blank reset $A(1,18{,}378{,}934{,}934{,}402{,}308)$ | $7.528\times10^{46}<T<1.119\times10^{47}$ from blank | Unconditional. Bounds time the same checkpoint on the actual orbit. [Checkpoint proof](CROSSING_CLOCK_758.md) |
 | Pass the fifth candidate pair and reach $A(1,40{,}486{,}323{,}621{,}582{,}766)$ | $7.80097\times10^{47}<T<1.08733\times10^{48}$ from blank | Unconditional. [Actual blank crossing](FIFTH_BLANK_CROSSING_758.md) · [Clock proof](FIFTH_BLANK_CLOCK_758.md) |
+| Reach the next power checkpoint $A(1,3^{35}+34{,}754)$ | $1.48278\times10^{48}<T<1.98846\times10^{48}$ from blank | Unconditional. [Power-35 crossing and clock](POWER35_BLANK_758.md) |
 | Halt after entering any of the covered intervals below $H$, or via either direct seed $H-2,H$ | $2.10448\times10^{414}<T<8.206\times10^{416}$ from blank | Rigorous conditional bounds. [Lower proof](LOWER_CLOCK_758.md) · [Upper proof](ANGULAR_CLOCK_758.md) · [Basin calculation](basin_clock_758.py) |
 | Halt via $H$ on the conjectured blank orbit | Approximately $2\times10^{415}$ from blank | Numerical forecast. Three runs at 16,384 strata gave $2.1377$ to $2.1457$, each times $10^{415}$. The variation measures sampling sensitivity. [Forecast and validation](RESET_CLOCK_ESTIMATE_758.md) |
 | Halt starting directly at $H-2$ or $H$ | $2.79255797419\ldots\times10^{279}$ **more** steps | Exact integer clocks for 307 accelerated calls. The two integers differ at lower digits. [Exact terminal clocks](TERMINAL_CLOCKS_758.md) |

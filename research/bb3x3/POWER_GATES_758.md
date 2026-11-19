@@ -1,6 +1,6 @@
 # A single reset checkpoint at each power of three and its double
 
-For every exponent **20 ≤ m ≤ 292**, deep reset entry just below either $3^m$ or $2\cdot3^m$ forces one exact later reset. For the **546** intervals, the [table](power_gates_758.tsv) gives the checkpoint as $A(1,b3^m+t)$, where $b$ is the multiple (1 or 2) and $t$ is the offset. The blank orbit visits the first 30 checkpoints, through $2\cdot3^{34}$. [Fifth crossing and latest power link](FIFTH_BLANK_CROSSING_758.md) [Proof of the three latest links](POWER_CROSSINGS_758.md) In particular all possible entries at $2\cdot3^{32}$ synchronize at $A(1,2\cdot3^{32}+41,023)$.
+For every exponent **20 ≤ m ≤ 292**, deep reset entry just below either $3^m$ or $2\cdot3^m$ forces one exact later reset. For the **546** intervals, the [table](power_gates_758.tsv) gives the checkpoint as $A(1,b3^m+t)$, where $b$ is the multiple (1 or 2) and $t$ is the offset. The blank orbit visits the first 31 checkpoints, through $3^{35}$. [Latest power link](POWER35_BLANK_758.md) · [Fifth crossing](FIFTH_BLANK_CROSSING_758.md) [Proof of the three latest links](POWER_CROSSINGS_758.md) In particular all possible entries at $2\cdot3^{32}$ synchronize at $A(1,2\cdot3^{32}+41,023)$.
 
 Put $P=3^m$ and $D=34(4m+40)$. The two deep entry intervals are inclusive.
 
