@@ -67,6 +67,10 @@ def save_table(rows, path):
 
 def checkpoint(rows, index, with_clock):
     assert 0 <= index < len(CUTS)-1 and all(i in rows for i in range(index+1))
+    if index == 1666:
+        from power35_inner_skip_758 import frozen_exit
+        frozen_exit(rows[index],with_clock)
+        return
     _,cut,low,high,_,_ = rows[index]
     seed,edges = coalesce(range(low,high+1),100_000)
     print(f'Row {index:,} forces reset {seed:,} after checking {edges:,} distinct first-return edges.')

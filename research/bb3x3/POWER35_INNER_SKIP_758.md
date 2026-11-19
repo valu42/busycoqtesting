@@ -23,6 +23,10 @@ The raw bounds combine the previous power-35 clock with bounds through the new s
 
 Further along, the actual orbit crosses $t=\lfloor H/3^{257}\rfloor=51{,}428{,}028{,}152{,}740{,}925$, at the same ratio to $3^{35}$ as the known halting target $H$ relative to $3^{292}$ up to rounding. A supplementary receipt forces the exact seed $t-99{,}916$. After 629 first returns the next two consecutive seeds are $t-136$ and $t+69$. This explicitly identifies the smaller-scale crossing. No relationship fixing the residue at scale 292 has been proved.
 
+The frozen archive contains 7,080 of 8,006 rows. Its first 1,667 consecutive rows put the blank orbit at one of 131 possible reset seeds, from 58,366,545,099,034,462 through 58,366,545,099,034,592. Odd entrances take one literal return to even. The closed even word `LLJJJLLLLLLLLJL` then applies up to the even seed 58,368,402,051,514,150. Its modulus is 4,096. The two resulting exits merge in 20 distinct first-return edges. From each of the 131 possibilities this takes between 15,414,156,334 and 15,414,156,336 first returns in total.
+
+The resulting **exact blank reset is 58,368,402,051,516,870**. The #758 clock there lies between **2,477,790,953,640,438,929,769,820,556,786,530,600,455,578,299,331** and **3,639,728,450,719,573,764,610,694,526,768,196,962,921,809,997,952** raw transitions. Run `python3 double35_frontier_758.py --checkpoint 1666 --clock` to reproduce the two exits, their merger, and the clock.
+
 ## Reproduce or extend the proof
 
 Run the following in `research/bb3x3` with Python 3.10+ and a C++17 compiler. The first Python command checks row structure and the downstream gate. The second replays both supplementary windows, the exact clocks and coalescence. The third independently re-executes all archived windows needed for both named checkpoints using the general first-return implementation.

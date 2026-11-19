@@ -89,6 +89,31 @@ def audit_cycle(low,end,rules):
     assert coalesce(exits,6_929) == (end+3_687_890,6_929)
 
 
+def check_onward(checkpoint):
+    from check_confluence import itinerary
+    from check_scale74_bridge_758 import formal_gain
+    from scale_clauses_758 import EVEN_WORD, check_word
+    # Every even seed through H returns in 615 seed units by endpoint order.
+    for s in (checkpoint+1,HALTING_TARGET-1):
+        assert s%2 == 0 and 0 < check_word(s,EVEN_WORD) <= 615
+    suffix = 'L'*8+'J'+'L'*742+'J'+'L'*4+'JL'
+    word = 'J'*292+suffix+'R'
+    assert certify_word(checkpoint-726,checkpoint+29_812,suffix) == 2**756
+    for s in (checkpoint-728,checkpoint+29_814):
+        assert 'J'+itinerary(s)[0] != word
+    assert word.count('L') == 755 and 2**756 > HALTING_TARGET
+    assert (formal_gain(checkpoint,word),formal_gain(checkpoint+2**755,word)) == (3216,3218)
+    s = checkpoint
+    for _ in range(10):
+        assert s <= checkpoint+29_812
+        s = first_return(s)
+    assert s == checkpoint+32_308 and first_return(s) == checkpoint+35_577
+    far = HALTING_TARGET-(153*10**10*3**264)//100
+    gap = far-checkpoint
+    assert 1118*10**133 < gap < 1119*10**133
+    print('From the last checkpoint to the published far edge of scale 264:',gap)
+
+
 def verify():
     cells = [(lo,hi,rules) for lo,hi,*rules in partition(POWER,8)
              if lo < HALTING_TARGET and None not in rules]
@@ -111,6 +136,8 @@ def verify():
         if i == 7:
             assert gain == 627
             audit_cycle(lo,hi,rules)
+        if i == 11:
+            check_onward(checkpoint)
         print(i,'end',hi,'checkpoint',checkpoint,flush=True)
     width = sum(hi-lo for lo,hi,_ in cells)
     assert 439_813_660*(HALTING_TARGET-POWER) < width*10**9 < 439_813_662*(HALTING_TARGET-POWER)

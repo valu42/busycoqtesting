@@ -9,7 +9,7 @@ from double35_frontier_758 import CUTS, TABLE, read_table
 from fifth_blank_clock_758 import timed_extension
 from next_gate_after_fifth_758 import GOAL
 from power_gates_758 import coalesce
-from target_clock_758 import first_pass, timed_return
+from target_clock_758 import first_pass, follow, timed_return
 
 APPROACH = (50_881_545_099_034_461, 50_885_978_668_475_620,
             50_885_978_668_475_621, 50_885_978_668_475_787, 266_889, 486_725_045)
@@ -63,6 +63,39 @@ def direct(seed, cut):
         clock += dt
         seed = nxt
     return seed,count,clock
+
+
+def frozen_exit(row, with_clock):
+    """Cross the closed even word immediately after row 1666 of the archive."""
+    _,cut,low,high,_,_ = row
+    assert (cut,low,high) == (58_366_545_099_034_461,58_366_545_099_034_462,58_366_545_099_034_592)
+    end = 58_368_402_051_514_152
+    target = end+2_718
+    starts = [timed_return(s) if s%2 else (s,0) for s in range(low,high+1)]
+    assert all(s%2 == 0 for s,_ in starts)
+    origin = min(s for s,_ in starts)
+    assert max(s for s,_ in starts) < end
+    modulus = certify_word(origin,end-2,'LLJJJLLLLLLLLJL')
+    assert modulus == 4096
+    tails = {target:(0,0)}
+    cases = []
+    for original,(s,head_cost) in zip(range(low,high+1),starts):
+        exit_seed,n,dt = first_pass(s,origin,end-2,modulus,200)
+        n_tail,cost_tail = follow(exit_seed,tails,target)
+        cases.append((exit_seed,n+n_tail+original%2,dt+head_cost+cost_tail))
+    exits = {s for s,_,_ in cases}
+    assert exits == {end+26,end+68} and coalesce(exits,20) == (target,20)
+    assert (min(n for _,n,_ in cases),max(n for _,n,_ in cases)) == (15_414_156_334,15_414_156_336)
+    print(f'Row 1,666 forces reset {target:,} after the closed even word and a 20-edge final merger.')
+    if with_clock:
+        lower,upper = timed_extension(DESTINATION,high,[(DESTINATION,cut,2*10**12)],DESTINATION_CLOCK)
+        bounds = lower+min(dt for _,_,dt in cases),upper+max(dt for _,_,dt in cases)
+        assert bounds == (
+            2_477_790_953_640_438_929_769_820_556_786_530_600_455_578_299_331,
+            3_639_728_450_719_573_764_610_694_526_768_196_962_921_809_997_952,
+        )
+        print(f'Raw #758 clock at {target:,} in [{bounds[0]:,}, {bounds[1]:,}].')
+        return bounds
 
 
 def verify_scaled_phase(rows, worker):
