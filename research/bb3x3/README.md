@@ -4,6 +4,12 @@
 
 The reduction uses A(a,c) for a tape configuration carrying two nonnegative integer counters. One map update represents a variable number of raw machine transitions. A reset here means any visit to a = 1. The map and the equivalence of the encodings have published formalizations. This directory contains integer verification programs and their mathematical arguments. [Formal machine specifications](https://github.com/google-deepmind/cryptids/blob/3647718b5df22e1a61462dec0376bd204526285a/BusyBeaver/BB33/README.md) · [Counter transitions, timings and published checkpoint](https://wiki.bbchallenge.org/wiki/1RB2LC1RC_2LC---2RB_2LA0LB0RA)
 
+## Continuing the blank proof
+
+* **Scale 74.** A sufficiently early reset in the gate determines the exact midpoint configuration $A(2\cdot3^{36}-1,T-3^{36}+1)$, where $T=H-5G/4$ and $G=10^{10}3^{74}$. More generally, membership in a checked set of 701 states at the first midpoint crossing is equivalent to an actual gate visit by then. Starting from the gate's unique exit, the proof traverses the first change of word and reconverges a trillion reset values farther on. The connection to scale 73 remains open. [Midpoint and ancestry](SCALE74_ANCESTRY.md) · [Exact continuation from the exit](SCALE74_BRIDGE_758.md)
+* **An alternative at the same crossing.** Missing the scale-74 gate altogether requires either a finite proof of infinite continuation or at least $10^{22}$ different length-401 fine words on the same crossing. The corresponding bound inside the joined halting interval is one million length-325 words. The argument uses collinearity of repeated words and applies even to aperiodic trajectories. [Word-count theorem](FACTOR_COMPLEXITY_758.md) · [Recovering the integer state from a two-sided word](SEPARATED_FACTORS_758.md) · [Why modular survival alone admits false states](MODULAR_GATE_LIMIT.md)
+* **Starting much closer to blank.** At 546 gates of the form $3^m$ or $2\cdot3^m$, every sufficiently deep entry leads to one specific checkpoint. This reduces the question of connecting successive gates to a particular orbit at each end. A separate study of the direct terminal at 17,430,344,744,167,562 identifies a large bypass interval. [Power-gate checkpoints](POWER_GATES_758.md) · [Fourth candidate](FOURTH_GATEWAY_758.md) · [Exceptional halting branches](EXCEPTION_TERMINALS_758.md)
+
 ## Where the two calculations stand
 
 Let $H=(3^{307}-8\,282\,708\,212)/13\,959\,275$. The following statements use inclusive endpoints.
