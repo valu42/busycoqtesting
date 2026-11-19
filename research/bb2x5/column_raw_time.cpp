@@ -2,6 +2,7 @@
 #include "column_calendar.hpp"
 #include <algorithm>
 #include <iostream>
+#include <limits>
 #include <stdexcept>
 #include <string>
 
@@ -78,13 +79,16 @@ std::vector<Block> weighted_blocks(unsigned maximum) {
     return table;
 }
 
-void endpoint(unsigned cut, Integer ticks) {
-    if (cut<3 || cut>18 || !ticks || ticks>54306954019ULL)
+void endpoint(unsigned cut, Integer ticks, Integer start=0, Integer physical_visits=0,
+              const std::string& digits={}) {
+    if (cut<3 || cut>18 || !ticks || ticks>2179060843052ULL || start>=ticks)
         throw std::invalid_argument("use cut 3..18 and a tick in the certified blank interval");
     auto low = low_prefix(cut,ticks);
     Integer period;
     const auto gaps = calendar(cut,period);
-    const unsigned blocks = (192-cut+3)/4;
+    // The verified records bound physical width on the certified interval.
+    const unsigned accounting_width = ticks<=54306954019ULL ? 192 : 212;
+    const unsigned blocks = (accounting_width-cut+3)/4;
     const unsigned length = cut+4*blocks;
     unsigned largest = low.tail;
     for (auto gap : gaps) largest = std::max(largest,gap.p);
@@ -93,6 +97,25 @@ void endpoint(unsigned cut, Integer ticks) {
     const auto table = weighted_blocks(maximum);
     std::vector<unsigned> states(blocks);
     Integer end_p=0;
+    if (start) {
+        const auto before=low_prefix(cut,start);
+        const auto phase=start%period;
+        const auto event=std::lower_bound(gaps.begin(),gaps.end(),phase,
+            [](Gap gap,Integer t) { return gap.tick<t; });
+        if ((phase && (event==gaps.end() || event->tick!=phase)) || before.tail ||
+            digits.size()<cut || digits.size()>=length ||
+            digits.find_first_not_of("0123")!=std::string::npos ||
+            digits.compare(0,cut,before.digits)!=0)
+            throw std::invalid_argument("unaligned checkpoint or invalid pair digits");
+        for (unsigned i=cut;i<digits.size();++i)
+            states[(i-cut)/4] |= (digits[i]-'0')<<(2*((i-cut)%4));
+        end_p=2*digits.size();
+        low.visits-=before.visits;
+        low.visits+=end_p*(length-digits.size());
+        if (physical_visits>std::numeric_limits<Integer>::max()-low.visits)
+            throw std::overflow_error("checkpoint visit total");
+        low.visits+=physical_visits;
+    }
     auto consume = [&](unsigned p, unsigned q) {
         for (auto& state : states) {
             if (!p && !q) return;
@@ -104,11 +127,14 @@ void endpoint(unsigned cut, Integer ticks) {
         if (q) throw std::runtime_error("selected accounting width was reached by Q");
         end_p += p;
     };
-    for (Integer i=0; i<ticks/period; ++i)
-        for (auto gap : gaps) consume(gap.p,1);
-    for (auto gap : gaps) {
-        if (gap.tick>ticks%period) break;
-        consume(gap.p,1);
+    for (Integer round=start/period;round<=ticks/period;++round) {
+        const Integer lower=round==start/period ? start%period : 0;
+        const Integer upper=round==ticks/period ? ticks%period : period;
+        if (upper==0) continue;
+        auto first=std::upper_bound(gaps.begin(),gaps.end(),lower,
+            [](Integer t,Gap gap) { return t<gap.tick; });
+        for (;first!=gaps.end() && first->tick<=upper;++first)
+            consume(first->p,1);
     }
     consume(low.tail,0);
     for (auto state : states)
@@ -121,6 +147,12 @@ void endpoint(unsigned cut, Integer ticks) {
 }
 
 int main(int argc,char** argv) {
+    if (argc==7 && std::string(argv[1])=="--resume") {
+        const auto start=std::stoull(argv[4]);
+        if (!start) throw std::invalid_argument("use the blank replay for tick zero");
+        endpoint(std::stoul(argv[2]),std::stoull(argv[3]),start,std::stoull(argv[5]),argv[6]);
+        return 0;
+    }
     if (argc!=3) return 2;
     endpoint(std::stoul(argv[1]),std::stoull(argv[2]));
 }

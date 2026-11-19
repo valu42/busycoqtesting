@@ -117,6 +117,19 @@ def generate():
         raise ValueError('line 4 return differs from its timed recurrence')
     consider(4, p['machine'], steps, path, 'Timed A(6,b) returns')
 
+    path = RUNS/'line26-record99.json'
+    doc = json.loads(path.read_text())
+    p = doc['payload']
+    if checksum(p) != doc['sha256']:
+        raise ValueError('line 26 checkpoint checksum mismatch')
+    t, w = p['ticks'], p['width']
+    clock = (192*t*t - 8*t + 3*p['physical_visit_sum'] + int(p['u'], 16).bit_count()
+             + 2*int(p['e'], 16).bit_count() + 7*w - 3*w*w + 5)
+    if clock != p['steps'] or p['head'] != -8*t-1 or p['safe_through_tick'] < t:
+        raise ValueError('line 26 checkpoint clock disagrees with its tape')
+    consider(26, p['machine'], clock, path, 'Timed pair checkpoint')
+    bound26 = 192*p['safe_through_tick']**2
+
     path = RUNS/'line5-timed.json'
     timed = line5_timed.load(path)
     consider(5, timed['machine'], int(timed['steps_hex'],16), path, 'Timed A/B returns')
@@ -155,15 +168,11 @@ def generate():
             raise ValueError('line 26 calendar clock disagrees with its tape')
         consider(26, '1RB2RB4LA2RA1LA_2LA4RA3LA---3RA', clock,
                  ROOT/'column-time.md', 'Timed pair checkpoint')
-    phases = (ROOT/'phase-verification.txt').read_text()
-    tick = int(re.search(r'^p\(84\) = 173, first Q at tick (\d+)$', phases, re.M).group(1))
-    epochs26 = 8*(tick-1)
-    bound26 = 5+2*epochs26*(epochs26+1)
     bounds = {3: f'[≥ 10^{len(str(b3))-1}](mixed-verification.txt)',
               4: '[> 10^1,719,137](line4-scalar.md)',
               5: f'[≥ 2^{exponent:,}](accelerator-results/arithmetic5-100k.json)',
               17: '[> 10^36](marked-register.md)',
-              26: f'[≥ {bound26:,}](column-phases.md#extension-through-cut-84)',
+              26: f'[≥ {bound26:,}](column-gap-paths.md#the-next-two-blank-records)',
               36: '[Unbounded (proved nonhalting)](line36-nonhalting.md)',
               37: '[≥ 39,999,600,001](line37-header.md)'}
     reports = {7: ('> 10^1,140,000,000', OCTOBER), 13: ('≈ 10^17.50888', COMMUNITY),

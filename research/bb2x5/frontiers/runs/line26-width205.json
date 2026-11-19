@@ -1,0 +1,17 @@
+{
+  "payload": {
+    "machine": "1RB2RB4LA2RA1LA_2LA4RA3LA---3RA",
+    "ticks": 1145205194028,
+    "record_depth": 96,
+    "last_stop": 75,
+    "width": 205,
+    "steps": 251807027794701522123671715,
+    "state": "A",
+    "head": -9161641552225,
+    "u": "0x8d896798dfeea47de7f546b0",
+    "e": "0x13378af1081480001a7100020",
+    "physical_visit_sum": 132843802436645,
+    "safe_through_tick": 1146515029924
+  },
+  "sha256": "2cb1e28fb4c3ac78e611e31d0dae67328d3531e9a222bf8fccacbfb57174cf77"
+}
