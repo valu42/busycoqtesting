@@ -56,6 +56,15 @@ c++ -O3 -std=c++17 replay.cpp -o /tmp/bb6-line024-replay
 /tmp/bb6-line024-replay
 ```
 
+### Explore later marker collisions
+
+The experimental Python search starts from blank and retains both entire tapes as runs. It accelerates a counter phase only while a bound on the cells it can read keeps the pending right exterior out of reach. At a close marker it shortens the phase or executes a literal move. Its default run reproduces the two certified restarts. The separate comparison script checks all seven operation types against literal execution on 20,000 short tapes, then checks both complete restart tapes including the distant suffix. Later search output is exploratory. [Search](explore.py) · [Cross-checks](explore_check.py)
+
+```sh
+python3 explore_check.py
+python3 explore.py --operations 320000
+```
+
 ### Prior decision search, November 19, 2026
 
 The repository register lists line 24 as open. I checked the claim board, the fork's branches and pull requests, upstream BusyCoq pull-request heads, DeepMind's Cryptids, Fractal Geometry Explorer, the community spreadsheet, indexed GitHub code and issues, and exact-table web and literature searches. The source scan of the four proof repositories included all state renamings fixing the initial state A, global tape reflection, and common halt spellings in encoded table strings and proof filenames. This covers public material that was accessible to the searches. Unpublished work and arbitrary semantic equivalences can escape such a search.
