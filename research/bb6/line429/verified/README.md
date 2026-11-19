@@ -2,6 +2,8 @@
 
 **Blank-tape decision open.** Line 429, ID 123915, executes at least **10^581 ordinary transitions** from state A on an all-zero tape. The proof evaluates 4,194,304 certified accelerated calls, proves the resulting tape contains at least 10^581 ones, and applies the fact that one instruction can create at most one new one. The theorem refers to the supplied machine `1RB0LC_1RC1RA_1RD0RF_0LE---_1LA1LE_0RA0RF`. [Elementary-transition theorem](Bound22.v) · [Proof of the tape count](Line429Score.v)
 
+A later proof characterizes halting at original F and by a pair of finite tests at sweep checkpoints. [Return criteria, counterexamples and search](Returns.md)
+
 The blank orbit also reaches **state B scanning `01110`**. The left and right exterior tapes can be arbitrary for the two local paths below. Here a move counts one defined instruction. [Reachable tape and both local paths](Line429Cut.v)
 
 | Machine at B scanning `01110` | Outcome |

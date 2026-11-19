@@ -9,7 +9,11 @@ make Makefile.coq
 make -j4 -f Makefile.coq Individual62.vo
 python3 "$here/make_engine.py" M_1RB1RD_1LC0RE_1LD1LC_1RA0LB_0RD0RF_0RDHHH.v Line429Engine.v
 coqc -Q . BusyCoq Line429Engine.v
-for unit in Line429Score Line429Sibling Line429Cut Line429Frontier Line429Progress Bound20 Bound22; do
+for unit in Line429Score Line429Sibling Line429Cut Line429Frontier Line429Progress \
+    Line429Reset Line429ResetPass Line429RightSweep Line429LeftLanguage Line429LeftDFA \
+    Line429Returns Line429Criterion Line429LeftOutput Line429Round Line429Gate \
+    Line429GateBlank Line429GateSplice Line429Splice Line429SpliceFamily Line429SweepSplice Line429Control \
+    Line429ShapePrefix Line429MatchingGates Line429Recovery Line429Escape Line429Watch Line429Prefix20 Bound20 Bound22; do
   cp "$here/$unit.v" .
   coqc -Q . BusyCoq "$unit.v"
 done

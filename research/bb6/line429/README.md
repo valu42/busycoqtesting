@@ -12,6 +12,8 @@ The first and second `00` are separated by a run of ones, a single zero and a si
 
 **Follow-up.** Rocq proves at least **10^581 elementary moves** from blank and exhibits a reachable tape at which the known line-279 halter stops while line 429 continues. [Theorems, stopping conditions and reproduction](verified/README.md)
 
+**Latest result.** Rocq proves an exact F-state halting word and an equivalent test on the two half-tapes at a sweep checkpoint. A halting hybrid of two genuine checkpoint halves shows which correlation an invariant must retain. [Proofs and replay](verified/Returns.md)
+
 ## An exact sweep of the original tape
 
 The following notation records actual configurations in state A. Words in each half-tape are read from the head outwards, with an infinite zero tail. A capital letter such as `U` denotes an unchanged suffix. Juxtaposition concatenates words. For example, `1^k` denotes k consecutive ones. Write `R(p,u,v)` when the cells strictly left of the head read `p u` outwards and the scanned cell and cells to its right read `v`. Write `L(u,v)` when the scanned cell and cells to its left read `u` outwards and the cells strictly to the right read `1 v`. Both descriptions use the machine's original orientation.
