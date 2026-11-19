@@ -17,6 +17,14 @@ Let $H=(3^{307}-8\,282\,708\,212)/13\,959\,275$. The following statements use in
 | A(1,c) with H − 12,000,000 ≤ c ≤ H − 3,403,055 | All 8,596,946 reach A(1,H), which halts on macro call 307. The next larger seed skips H. | [Basin and boundary check](RANKINGS.md) |
 | A(1,c) with H − 64,000,000 ≤ c ≤ H − 3,403,055 | All 60,596,946 halt. The extension also allows trajectories that halt on the way. | [Descending induction and resumable verifier](COVER_758.md) |
 
+## Following the actual blank trajectory
+
+The forward continuation from the published checkpoint passes the first smaller candidate pair and reaches its unique outgoing reset at **1,326,438,094,216,160**. The two candidate reset seeds lead to the same terminal, and neither can be revisited after this checkpoint. The certificate advances the orbit across intervals and traces individual transitions where an interval argument fails. The three candidate windows, reproduction command and proof are in [BLANK_CROSSINGS.md](BLANK_CROSSINGS.md). [Raw-time bound from a reached mass](MASS_CLOCK_758.md)
+
+At the central cut near H, a complete backward search excludes all five previously exhibited 98-copy paths from blank. More generally, the first 395 surviving blocks at the crossing cannot repeat a pattern of period at most 13. The verifier checks ancestry back to any possible reset, permitting earlier exceptional branches. Longer and nonperiodic words remain possible. [Inverse searches](CUT_ANCESTRY_758.md)
+
+A specified 397-block itinerary from a reset determines at most four candidate reset seeds once its parity and initial jump count are known. Even reset origins in a macroscopic interval below H return within 300 calls. The case of an old odd reset still requires a reachability argument. A concrete state visited on the earlier orbit also shows why exact mass, the indicated finite residues and 1,024 angular bins alone allow a false infinite continuation. [Reconstructing reset origins](RESET_WORDS_758.md) · [Blank-reachable counterexample to the finite description](ANGULAR_758.md)
+
 ## The obligation that would decide both machines
 
 A proof that the blank orbit reaches **any** state in the larger halting interval suffices. An earlier halt also settles both. One way to make the entry question precise uses the integer mass $W=a+2c$. It grows by at least 3 and at most 9 at each continuing map update. An infinite trajectory must therefore cross the middle of the halting interval in mass. The value of the first counter at that crossing matters.
