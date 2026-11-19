@@ -33,27 +33,27 @@ def verify_gate():
     assert coalesce(gate_exits(35,2),1893) == (2*p+155_534,1893)
 
 
-def validate(index, row):
+def validate(index, row, cuts=CUTS):
     a,b,low,high,blocks,calls = row
-    assert 0 <= index < len(CUTS)-1 and [a,b] == CUTS[index:index+2]
+    assert 0 <= index < len(cuts)-1 and [a,b] == cuts[index:index+2]
     assert b <= low <= high <= b+WIDTH and min(blocks,calls) >= 0
     return row
 
 
-def read_table(path):
+def read_table(path, cuts=CUTS):
     rows = {}
     with gzip.open(path,'rt') as file:
         assert next(file).strip() == HEADER
         for line in file:
             index,*row = map(int,line.split())
             assert index not in rows
-            rows[index] = validate(index,tuple(row))
+            rows[index] = validate(index,tuple(row),cuts)
     return rows
 
 
-def compute(worker, index):
-    output = subprocess.check_output([worker,str(CUTS[index]),str(CUTS[index+1])],text=True)
-    return validate(index,tuple(map(int,output.split())))
+def compute(worker, index, cuts=CUTS):
+    output = subprocess.check_output([worker,str(cuts[index]),str(cuts[index+1])],text=True)
+    return validate(index,tuple(map(int,output.split())),cuts)
 
 
 def save_table(rows, path):
@@ -82,35 +82,35 @@ def checkpoint(rows, index, with_clock):
         print(f'Raw #758 clock at {seed:,} in [{bounds[0]:,}, {bounds[1]:,}].')
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--table',type=Path,default=TABLE)
+def run_grid(cuts, table, gate, checkpoint_fn, completion, description):
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument('--table',type=Path,default=table)
     parser.add_argument('--worker',type=Path,help='replay rows using a compiled window worker')
     parser.add_argument('--fill',type=Path,metavar='DIR',help='compute missing rows and retain each success in DIR')
     parser.add_argument('--save',type=Path,help='write the combined archive when the selected range finishes')
     parser.add_argument('--jobs',type=int,default=1)
     parser.add_argument('--start',type=int,default=0,help='first index to replay or fill')
-    parser.add_argument('--stop',type=int,default=len(CUTS)-1,help='exclusive last index')
+    parser.add_argument('--stop',type=int,default=len(cuts)-1,help='exclusive last index')
     parser.add_argument('--checkpoint',type=int,metavar='INDEX',help='prove an exact merger of the row exits, up to 100,000 edges')
     parser.add_argument('--clock',action='store_true',help='also bound the clock at --checkpoint')
     parser.add_argument('--require-complete',action='store_true')
     args = parser.parse_args()
-    if not __debug__ or args.jobs < 1 or not 0 <= args.start <= args.stop < len(CUTS):
+    if not __debug__ or args.jobs < 1 or not 0 <= args.start <= args.stop < len(cuts):
         parser.error('enable assertions and supply a valid row range and worker count')
     if args.clock and args.checkpoint is None:
         parser.error('--clock requires --checkpoint')
-    rows = read_table(args.table)
-    verify_gate()
+    rows = read_table(args.table,cuts)
+    gate()
     if args.fill:
         args.fill.mkdir(parents=True,exist_ok=True)
         for path in args.fill.glob('*.txt'):
             i = int(path.stem)
-            row = validate(i,tuple(map(int,path.read_text().split())))
+            row = validate(i,tuple(map(int,path.read_text().split())),cuts)
             assert rows.setdefault(i,row) == row
     if args.worker:
         worker = args.worker.resolve()
         def replay(i):
-            row = compute(worker,i)
+            row = compute(worker,i,cuts)
             if args.fill:
                 with tempfile.NamedTemporaryFile(mode='w',dir=args.fill,delete=False) as tmp:
                     print(*row,file=tmp)
@@ -123,17 +123,22 @@ def main():
                 assert rows.setdefault(i,row) == row
     if args.save:
         save_table(rows,args.save)
-    end = len(CUTS)-1
+    end = len(cuts)-1
     frontier = next((i for i in range(end) if i not in rows),end)
-    print(f'{len(rows):,}/{end:,} windows, first {frontier:,} consecutive to {CUTS[frontier]:,}.')
+    print(f'{len(rows):,}/{end:,} windows, first {frontier:,} consecutive to {cuts[frontier]:,}.')
     if args.checkpoint is not None:
         if not 0 <= args.checkpoint < frontier:
             parser.error('checkpoint row must belong to the consecutive prefix')
-        checkpoint(rows,args.checkpoint,args.clock)
+        checkpoint_fn(rows,args.checkpoint,args.clock)
     if frontier == end:
-        print(f'The complete grid connects blank to {2*3**35+155_534:,}.')
+        print(completion)
     elif args.require_complete:
         raise SystemExit(f'Missing window {frontier}')
+
+
+def main():
+    run_grid(CUTS,TABLE,verify_gate,checkpoint,
+             f'The complete grid connects blank to {2*3**35+155_534:,}.',__doc__)
 
 
 if __name__ == '__main__':

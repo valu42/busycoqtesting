@@ -152,11 +152,13 @@ void prefixes(Wide a,unsigned m,unsigned p,Wide four) {
 int main(int argc,char **argv) {
     unsigned first=45,last=53;
     minimum_pairs=23;
-    if (argc==4 || argc==5) {
+    unsigned forced_jumps=0;
+    if (argc==4 || argc==5 || argc==6) {
         first=std::atoi(argv[1]); last=std::atoi(argv[2]); minimum_pairs=std::atoi(argv[3]);
-        if (argc==5) limit=std::atoi(argv[4]);
+        if (argc>=5) limit=std::atoi(argv[4]);
+        if (argc==6) forced_jumps=std::atoi(argv[5]);
     } else if (argc!=1) return 2;
-    if (first<2 || first>last || last>63 || limit<last+42 || limit>1000 || minimum_pairs<12 || minimum_pairs>32) return 2;
+    if (forced_jumps+2>first || first<2 || first>last || last>63 || limit<last+42 || limit>1000 || minimum_pairs<12 || minimum_pairs>32) return 2;
     powers[0]=1;
     for (size_t i=1; i<powers.size(); ++i) powers[i]=3*powers[i-1];
     make_residues();
@@ -170,7 +172,7 @@ int main(int argc,char **argv) {
     bool ok=true;
     for (cutoff=first; cutoff<=last; ++cutoff) {
         counts.fill({});
-        prefixes(5,2,1,4); // x>1/3, and only P can survive the first decision.
+        prefixes(5*powers[forced_jumps],2+forced_jumps,1,4); // P followed by any requested forced jumps.
         for (unsigned p=minimum_pairs; p<counts.size(); ++p) {
             const Counts &c=counts[p];
             if (!c.cells) continue;

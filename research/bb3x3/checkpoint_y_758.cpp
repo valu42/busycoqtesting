@@ -9,6 +9,7 @@
 #include <set>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 using Big = mpz_class;
 using Offset = unsigned long;
@@ -318,6 +319,70 @@ void follow_edge_bands() {
     if (count != 364) throw std::runtime_error("incomplete edge-band census");
 }
 
+constexpr Offset mixed_threshold = 30'000'000;
+struct MixedInterval { Offset lo, hi; unsigned bound; };
+
+void find_mixed_intervals(Offset lo, Offset hi, const Probe& left, const Probe& right,
+                          std::vector<MixedInterval>& pieces) {
+    if (left.word.ordinary && right.word.ordinary &&
+        left.word.opening_bulks == right.word.opening_bulks &&
+        left.word.suffix == right.word.suffix) {
+        const unsigned bound = std::max(615U, unsigned(left.bound));
+        if (!pieces.empty() && pieces.back().hi == lo) {
+            pieces.back().hi = hi;
+            pieces.back().bound = std::max(pieces.back().bound, bound);
+        } else {
+            pieces.push_back({lo, hi, bound});
+        }
+        return;
+    }
+    if (hi-lo < mixed_threshold) return;
+    const Offset mid = lo + 2*((hi-lo)/4);
+    find_mixed_intervals(lo, mid, left, Probe(mid-2), pieces);
+    find_mixed_intervals(mid, hi, Probe(mid), right, pieces);
+}
+
+void mixed_bridges() {
+    prepare();
+    // The previous connected table ends here after the k=717 gate.
+    Offset source = 158'145'479'878, low, high;
+    unsigned k;
+    for (unsigned expected = 715; std::cin >> k >> low >> high; expected -= 2) {
+        const Offset start = source + source%2;
+        if (k != expected || k < 7 || start+2 > low || low >= high ||
+            high > limit || (low | high) % 2 || high-low < 8192)
+            throw std::runtime_error("invalid mixed bridge");
+        check_gate(k, checkpoint+low, checkpoint+high);
+        std::vector<MixedInterval> pieces;
+        // Odd absolute seeds have even offsets from Y.
+        find_mixed_intervals(start, low, Probe(start), Probe(low-2), pieces);
+        Offset direct = 0, mergers = 0, saved = 0, visited = 0, seed = source;
+        for (const MixedInterval& p : pieces) {
+            if (p.hi <= seed || p.hi-p.lo < mixed_threshold) continue;
+            while (seed < p.lo) {
+                seed = next_reset(seed);
+                ++direct;
+            }
+            if (seed >= p.hi) continue;
+            const auto merged = merge_last(p.hi, p.bound, 400000);
+            visited += merged.edges + p.bound;
+            saved += p.hi-seed;
+            seed = merged.seed;
+            ++mergers;
+        }
+        while (seed < low) {
+            seed = next_reset(seed);
+            ++direct;
+        }
+        if (seed >= high) throw std::runtime_error("missed destination gate");
+        const auto terminal = merge_edge(k, high, 400000);
+        std::cout << k << ' ' << source << ' ' << low << ' ' << high << ' ' << seed
+                  << ' ' << terminal.seed << ' ' << direct << ' ' << mergers << ' '
+                  << visited << ' ' << saved << ' ' << pieces.size() << std::endl;
+        source = terminal.seed;
+    }
+}
+
 void trace_chain() {
     prepare();
     Offset seed = 0, lo, hi;
@@ -387,9 +452,10 @@ int main(int argc, char** argv) {
     else if (argc == 2 && std::string(argv[1]) == "--census") census();
     else if (argc == 2 && std::string(argv[1]) == "--follow-mergers") census(true);
     else if (argc == 2 && std::string(argv[1]) == "--edge-bands") follow_edge_bands();
+    else if (argc == 2 && std::string(argv[1]) == "--mixed") mixed_bridges();
     else if (argc == 2 && std::string(argv[1]) == "--cover") cover_gaps();
     else {
-        std::cerr << "Usage: checkpoint_y [--census | --follow-mergers | --edge-bands | --cover]\n";
+        std::cerr << "Usage: checkpoint_y [--census | --follow-mergers | --edge-bands | --mixed | --cover]\n";
         return 2;
     }
 }

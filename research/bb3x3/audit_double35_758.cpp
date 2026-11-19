@@ -20,7 +20,7 @@ static Num literal(Num seed) {
 
 
 int main() {
-    constexpr Num low = 50'031'545'099'034'461LL, high = 90'056'781'178'199'398LL;
+    constexpr Num low = grid_first, high = grid_last;
     constexpr Num width = 1 << 20;
     std::mt19937_64 random(758);
     ReturnPrefix prefix;

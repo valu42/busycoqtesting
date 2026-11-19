@@ -148,6 +148,10 @@ public:
     }
 };
 
+#ifndef BB758_MAX_WINDOW_CUT
+#define BB758_MAX_WINDOW_CUT 100000000000000000LL
+#endif
+
 int main(int argc, char** argv) {
     if (argc != 3) {
         std::cerr << "Usage: cross_758_fast start next_cut\n";
@@ -155,7 +159,7 @@ int main(int argc, char** argv) {
     }
     Num start = std::stoll(argv[1]);
     Num cut = std::stoll(argv[2]);
-    if (start < 3 || cut <= start || cut > 100000000000000000LL) return 2;
+    if (start < 3 || cut <= start || cut > BB758_MAX_WINDOW_CUT) return 2;
     try {
         Crossing check;
         check.check(start, cut);

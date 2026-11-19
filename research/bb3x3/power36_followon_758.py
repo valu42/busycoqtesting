@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check and extend the conditional doubled-35 to power-36 reset chain."""
+"""Verify the blank reset chain from twice 3^35 to 3^36."""
 import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import heapq
@@ -121,8 +121,32 @@ def verify_strip_mergers():
     print(f'{len(rows)} complete 5,001-seed strips merge through {max(e for _,_,e in rows):,} or fewer normalized edges each.')
 
 
+def checkpoint_clock():
+    """Extend the raw clock across the two certified intervals."""
+    from fifth_blank_clock_758 import timed_extension
+    from crossing_clock_758 import REACH
+
+    incoming = (
+        11_712_678_510_935_380_362_058_354_962_364_020_304_705_317_061_556,
+        15_174_090_093_546_359_518_174_460_234_028_779_946_439_652_299_731,
+    )
+    assert REACH == 100_000
+    gate_cut = 3**36-2*36-4
+    bounds = timed_extension(START, TARGET, [
+        (START, GATE, 2*10**12),
+        (GATE, gate_cut, 2*10**12),
+    ], incoming)
+    assert bounds == (
+        39_789_634_331_496_107_883_182_571_926_656_624_298_968_004_896_065,
+        51_085_765_306_603_626_485_072_481_483_925_891_912_873_045_730_911,
+    )
+    for machine, offset in ((758, 0), (153, 50_707)):
+        print(f'#{machine} blank clock in [{bounds[0]-offset:,}, {bounds[1]-offset:,}].')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--clock',action='store_true',help='check the blank clock after verifying all windows')
     parser.add_argument('--worker',type=Path,help='compiled exponent-35 even-power verifier')
     parser.add_argument('--replay',action='store_true',help='rerun every supplied receipt')
     parser.add_argument('--rows',type=Path,help='directory of additional numbered window receipts')
@@ -207,7 +231,7 @@ def main():
                 print(i,*row,file=tmp)
         Path(tmp.name).replace(args.export)
     frontier = next((i for i in range(len(CUTS)-1) if i not in certified),len(CUTS)-1)
-    print(f'Conditional on reset {START:,}, the chain reaches cut {CUTS[frontier]:,}.')
+    print(f'From the doubled power-35 blank reset {START:,}, the chain reaches cut {CUTS[frontier]:,}.')
     print(f'{len(certified):,} of {len(CUTS)-1:,} regular windows certified, {len(CUTS)-1-len(certified):,} open.')
     if args.checkpoints:
         reached = {row[1]:row[2:4] for row in initial if args.start == 0}
@@ -228,10 +252,12 @@ def main():
                 seed,edges = full_strip[cut]
                 print(f'After cut {cut:,}: full-strip merger at {seed:,} ({edges:,} normalized edges).')
     if frontier == len(CUTS)-1:
-        print(f'The completed conditional chain reaches the exact reset {TARGET:,}.')
+        print(f'Both blank runs reach the exact reset {TARGET:,}.')
+        if args.clock:
+            checkpoint_clock()
     if failures:
         raise SystemExit(f'Uncertified regular windows: {sorted(failures)}')
-    if args.require_complete and frontier != len(CUTS)-1:
+    if (args.require_complete or args.clock) and frontier != len(CUTS)-1:
         raise SystemExit(f'First missing regular window is {frontier}.')
 
 
