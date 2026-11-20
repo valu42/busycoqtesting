@@ -61,13 +61,15 @@ def main():
     for k in range(1, 11):
         tail = [0] * k
         seen = set()
+        traffic = 0
         for _ in range(1 << k):
             key = tuple(tail)
             assert key not in seen
             seen.add(key)
             for mode in section:
-                propagate(tail, mode)
+                traffic += propagate(tail, mode) != -1
         assert not any(tail)
+        assert traffic == (46 if k % 2 else 90) * 3 ** ((k - 1) // 2)
     print('Pass 64, 29 occupied suffix bits, first phase-aligned return after 1024 sweeps.')
     print(f'Tail return word: {section_word}')
     print('Odd swap parity at every depth; explicit orbit checks through ten bits.')

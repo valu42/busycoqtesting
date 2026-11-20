@@ -50,7 +50,10 @@ using $1+4+4^2+\cdots=-1/3$ in the binary integers. The lower decorations
 and leading 1 reconstruct $a$ exactly. Appending them as the low $\ell$ bits gives the full numerator
 $3z+2^\ell c$, where $0\le z<2^\ell$ and $c$ is the high numerator. Hence $M\ge1$
 forces $a<0$, and $M\le-2$ forces $a>0$. To decide forward sign it is
-enough to check the finitely many $m'<2^s$ starting above the initial $m$.
+enough to classify the two remaining high digits $M=-1,0$. The
+[exact sign intervals](WILY_PAIRING_ORDER.md) depend only on the last
+nonzero decoration and the track, so the checker computes both the first
+sign crossing and its coefficient directly.
 
 ## A return map on an entire congruence class
 

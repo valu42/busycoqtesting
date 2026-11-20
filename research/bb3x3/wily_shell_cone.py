@@ -1,7 +1,7 @@
 """Exact inverse Wily passage near the ordinary integer tail with numerator 3."""
 from functools import lru_cache
 
-from wily_integer_map import canonical_bucket, image, inverse
+from wily_integer_map import image, inverse
 
 
 @lru_cache(None)
@@ -76,34 +76,44 @@ def numerator(track, decorations):
     return 3+2*n
 
 
+def sign_profile(a):
+    """Track, essential decorations, and half-length of a finite sign excursion."""
+    track, decorations = coordinates(a)
+    length = len(decorations)
+    while length and decorations[length-1] == 0:
+        length -= 1
+    decorations = decorations[:length]
+    half = 1 << (length-1) if length and decorations[-1] <= 2 else 0
+    return track, decorations, half
+
+
 def forward_sign_escape(a):
     """First positive coefficient under H inverse, or None for perpetual negativity."""
     assert a < 0
-    track, decorations = coordinates(a)
-    first_permanent_negative = 1 << len(decorations)
-    for m in range(track+1, first_permanent_negative):
-        if numerator(m,decorations) > 0:
-            return m-track
+    track, _, half = sign_profile(a)
+    if track < half:
+        return half-track
     return None
 
 
 def positive_predecessor(a, j, orbit, contacts):
     """First positive inverse iterate of 3 + 2^j*a, for the full verified domain."""
     assert a < 0 and a % 2 and a % 3 and j >= 30
-    width = canonical_bucket(a).bit_length()-1
-    for k in range(1, 2**(width//2)+1):
-        a = inverse(a)+3
-        if a > 0:
-            cycles, slot = divmod(k-1,len(contacts))
-            time = cycles*8192 + contacts[slot]
-            return time, orbit[contacts[slot]] + (a << j)
-    raise AssertionError("H orbit did not leave its negative bucket")
+    track, decorations, half = sign_profile(a)
+    previous = 2*half-1 if half and track >= 2*half else -1
+    steps = track-previous
+    cycles, slot = divmod(steps-1,len(contacts))
+    time = cycles*8192 + contacts[slot]
+    positive = numerator(previous,decorations)
+    return time, orbit[contacts[slot]] + (positive << j)
 
 
 def main():
     if not __debug__:
         raise SystemExit("Run without -O to enable the checks.")
     orbit, contacts = reference_cycle()
+    assert [orbit[contacts[k-1]] for k in (1,2,4,8,16,32,64)] == [
+        18,318,2595,96462,20988222,90835491,25138494]
     # Test every phase with both signs and both unit residues.
     for t, b in enumerate(orbit[:-1]):
         nxt, singular = reference_step(b)
@@ -118,6 +128,15 @@ def main():
         assert numerator(track,decorations) == a
         assert numerator(track-1,decorations) == inverse(a)+3
         assert numerator(track+1,decorations) == image(a-3)
+        track, essential, half = sign_profile(a)
+        assert numerator(track,essential) == a
+        assert (a > 0) == (track < 0 or half <= track < 2*half)
+        if a < 0 and image(a-3) > 0:
+            assert half and track == half-1
+            low_width = 1+sum(2+d for d in essential[:-1])
+            positive = numerator(-1,essential)
+            assert positive-a == (9 + (1 << (essential[-1]+2))) << low_width
+            assert 7*positive > -18*a
     assert coordinates(-7)[0] == 1
     assert forward_sign_escape(-7) is None
     for a in range(-10_001,0,2):
