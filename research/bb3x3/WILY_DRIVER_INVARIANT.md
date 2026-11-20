@@ -36,7 +36,7 @@ Let D_h be the language of words surviving h complete P rounds. D_0 is all words
 | 20 | 86,084 |
 | 30 | 191,001 |
 
-These state counts concern these particular languages. A different choice of states can distinguish different histories even with far fewer states. Run `python3 wily_driver_invariant.py --horizons 30` to reproduce all 30 partitions. The default checks the first two.
+These state counts concern these particular languages. At each of the 30 tested horizons the closed safe union is empty. A different choice of states can distinguish different histories even with far fewer states. For comparison, the same checker certifies an infinite, growing run of the alternate mode-2 driver from an empty upper tape with just three states. Its transition rows are (0,1), (0,2), (1,0) and its accepting states are 0 and 2. That same driver halts from the one-bit tape 1. This control uses the [known four arrival periods](WILY_EDGE_STREAM.md). Run `python3 wily_driver_invariant.py --horizons 30` to reproduce all 30 partitions. The default checks the first two.
 
 ## Concrete distinguishable prefixes
 

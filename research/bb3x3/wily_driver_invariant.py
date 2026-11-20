@@ -251,6 +251,11 @@ def main():
         for word in product((0, 1), repeat=width):
             assert apply(machine, word) == literal(word)
     # Positive control: mode 3 alone always succeeds on every word.
+    # A genuine growing example, mode 2 from blank, has a three-state
+    # invariant; the same driver also has halting starts.
+    simple = [(0, 1), (0, 2), (1, 0)]
+    assert safe_classes(return_machine((2,)), simple) == {0, 2}
+    assert literal((1,), (2,)) is None
     # Negative control: the actual driver fails on the one-bit word 1.
     assert safe_classes(return_machine((3,)), [(0, 0)]) == {0}
     assert literal((1,)) is None and not safe_classes(machine, [(0, 0)])

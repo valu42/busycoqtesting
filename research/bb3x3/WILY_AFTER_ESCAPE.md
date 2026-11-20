@@ -2,6 +2,8 @@
 
 **If the blank-connected negative excursion of #531 and #532 ever reaches a first positive scalar state, both machines complete at least 120,075,937 more paired updates. The scalar stays positive throughout the first 98,303 of them.** Each paired update represents two completed original sweeps. The longer guarantee permits subsequent sign changes and uses the actual physical correction and allocation rules. The existence of that first escape and the ultimate blank outcomes remain open.
 
+As an unconditional corollary, the actual blanks complete at least **2^256 + 240,151,876 original sweeps**. Their scalar is negative at the previously verified 2^256-sweep checkpoint. Every step up to and including a first positive entrance is safe. Such an entrance can occur no sooner than the next paired update, and if it occurs both machines then complete the additional 120,075,937 pairs. If it never occurs, they run forever. This corollary uses the earlier checkpoint and the all-width argument below.
+
 The bound 120,075,937 is sharp for the prefix-cycle and invariant test below. There are arbitrarily large alternate negative-to-positive transitions that satisfy both blank labels, agree with the blank orbit to any prescribed finite precision, and halt on the next update after the bound.
 
 ## What the first positive word must look like
