@@ -4,6 +4,8 @@
 
 **The decision still needs a global closure or boundedness argument.** The connected blank trajectory and the remote halting basin are established separately. To join them, it suffices to prove a closed family of reset seeds containing the current blank checkpoint whose excursions terminate and cannot jump past the basin. A bounded invariant for the full counter dynamics would also suffice and would handle a potentially nonreturning excursion directly. No such invariant has been proved, and the finite counts below do not give a proof ETA or a percentage complete.
 
+**The induced-passage attempt now has uniform finite reductions at two boundaries.** For every $m\ge20$, the first cusp reaches a halt, the spanning even corridor, or its first unresolved post-bulk jump/restart within 229 classified attempts. The whole even exit strip then has a proved connection into three exact affine families; within $370m+770$ counter calls it halts or reaches a first unresolved reinjection. The reductions retain the shared carry information and never assume an unfinished excursion returns. A carry-spacing theorem and actual entrance families show why the proposed scalar carry ranks fail, and genuine first-cusp lifts require arbitrarily many reinjections as the exponent varies. A scale-dependent terminating reduction for those reinjections remains missing. There is no new blank checkpoint or decision. [Complete proofs, the precise residual families, and focused checks](REINJECTION_758.md)
+
 **A uniform passage family is now proved at the first parity change.** For every $m\ge20$ and $b\equiv3\pmod4$ with $b\ge3$ and $3^m/(3/2)^b\ge1000$, an explicit nonempty interval of reset seeds crosses the mixed word $J^mL^6JL^bR$ when odd, becomes even, and traverses the subsequent corridor to within $2m+20$ of its upper edge. All parameters and physical guards are covered algebraically. A separate incoming-phase corollary applies for every $m\ge2200$; coverage of every phase and a new blank checkpoint remain open. A complementary exact carry coordinate supplies finite rational certificates for bulk runs of arbitrary length, with an output parity independent of the unexamined carries. [Uniform passage and its remaining gap](UNIFORM_PARITY_PASSAGE_758.md) · [Carry coordinate and certificates](RETURN_PREFIX_758.md#a-bulk-coordinate-that-retains-the-carries)
 
 The research priority is to connect such passage families while retaining the correlation between the real direction, integer divisibility and physical guards. The strategy note gives the precise closing implication, the new family's role, and the complementary phases that still need a theorem. The existing joint real and binary-adic coding makes those arithmetic constraints explicit. Large enumerations should serve an explicit closing theorem. [Proof strategy and obligations](PROOF_STRATEGY_758.md) · [Exact ordinary-excursion coding](SEPARATED_FACTORS_758.md)
@@ -111,10 +113,18 @@ Use Python 3.10 or later, with assertions enabled, from this directory. The Pyth
 The focused checks for the current mathematical argument are:
 
 ```sh
+python3 reinjection_cusp_758.py
+python3 reinjection_second_758.py
+python3 carry_spacing_758.py
 python3 uniform_parity_passage_758.py
 python3 bulk_carry_758.py
 python3 decode_factors_758.py
 ```
+
+The first three audit the new finite cusp reductions, scalar stopping cases,
+exceptional third affine family, correlated carry formulas, and exact spacing
+bounds. The parameterized proofs are in [the reinjection note](REINJECTION_758.md);
+the examples do not prove the unresolved continuations terminate.
 
 These check exact rational constants and selected physical passages, finite carry enclosures, and the coding and strategy witnesses. The quantified family theorems are proved in the linked notes; the examples do not replace those proofs.
 

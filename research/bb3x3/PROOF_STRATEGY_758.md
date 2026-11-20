@@ -287,8 +287,11 @@ Two composition obligations remain even at this first seam:
    captured path on each residue cycle does not establish this for every
    integer lift or for the blank-selected lift.
 2. Continue every selected exit in the strip $[E_m,E_m+2m+20]$ into another
-   certified family. The existing finite mergers at that boundary do not
-   yet give this implication for every exponent.
+   family with a proved terminating continuation. The
+   [new finite entrance](REINJECTION_758.md) now takes this whole strip
+   through the next boundary into three exact ordinary-state families.
+   Its further finite reduction ends at a halt or an unresolved jump/restart;
+   proving the continuation from that input remains necessary.
 
 To apply the barrier principle, the complete collection of passage families
 must contain $S_0$ and preserve the upper bound $U$ from Section 1. The present
@@ -364,3 +367,60 @@ unknown. A positive small control produced an inductive model that was
 separately rechecked against every Horn clause; a negative control produced
 the expected crossing. These controls validate the encoding and certificate
 workflow. **No global model excluding `Bad` for $S_0$ has been obtained.**
+
+## 8. Outcome of the induced-passage attempt
+
+The [two-cusp reinjection analysis](REINJECTION_758.md) proves finite
+reductions for every $m\ge20$. These are family theorems with physical
+guards and finite outer ranks, not larger exponent counts.
+
+At the first cusp every admitted entrance reaches a halt, the spanning
+even corridor, or its first unresolved post-header jump/restart within
+229 classified attempts. The potentially unresolved header is constrained
+by 32 exact affine equations
+
+$$
+1995u+64h=2187\,3^m+\lambda,\qquad 1\le c<17000m,
+$$
+
+with the explicit carry-dependent constants in the note. A genuine sibling
+coalescence removes one of the six header carry bits.
+
+The entire even exit strip of the preceding passage now has a uniform
+connection through the next boundary. Within $11m+54$ counter calls it
+enters one of three exact affine families
+
+$$
+45u+4h=54\,3^m+\lambda,\qquad \lambda\in\{225,279,369\}.
+$$
+
+The third family is a necessary exceptional-restart case. After including
+all completed bulk-return branches, a halt or the first unresolved
+post-header jump/restart is reached within $370m+770$ calls. A wide
+even-bulk band forces the latter outcome if repeated completed returns
+have not already stopped.
+
+**These bounds end at an unresolved reinjection, not at the next reset.**
+The right-counter bounds apply at the header before the long bulk run.
+They cannot be substituted into the global reset-recurrence or target
+safety theorems as if they bounded a complete excursion.
+
+The attempt also tested two possible forms of rank. The exact spacing of
+the carry coordinate is governed by a binary valuation after identifying
+sibling inputs. Legal jumps from members of the admitted exit-strip family
+can change that valuation arbitrarily in either direction. Propagating the
+exact affine lines gives a decreasing real quantity whose total decrease
+can converge, so it is not a well-founded rank. Separately, a genuine
+first-cusp entrance family needs arbitrarily many reinjections as the
+exponent grows, even on fixed exponent progressions. This excludes a
+uniformly bounded suffix catalogue; it leaves scale-dependent ranks and
+parametric accelerations open.
+
+The remaining local task is now an exact one: give the emitted reinjections
+a finite-time continuation to a later certified section, with the ancestry
+correlation and appropriate bounds preserved. Neither that continuation nor
+global closure has been established. The finite all-phase handoff for
+$20\le m\le292$ remains stronger at the first boundary on complementary
+phases. At $m=292$ the second boundary is above the selected halting target,
+so this component is not a final-scale connection to its basin. There is
+no new blank checkpoint or halting/nonhalting decision.

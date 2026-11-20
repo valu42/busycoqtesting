@@ -339,6 +339,14 @@ phase reaches such a band, or to classify the complementary phases by other
 composable rules. The terminal strip (2) also has a further word change;
 the old finite mergers there do not yet give an all-exponent merger theorem.
 
+The subsequent [reinjection reduction](REINJECTION_758.md) now proves that
+the entire even exit strip enters three exact ordinary-state families
+within $11m+54$ counter calls. Completed bulk-return branches are controlled;
+a halt or the first unresolved post-header jump/restart is reached within
+$370m+770$ calls from that strip. This supplies a uniform connection through
+the next change of word, while leaving the reinjected continuation and
+global reset-family closure open.
+
 Run the [small verifier](uniform_parity_passage_758.py) beside the original
 counter rules:
 
