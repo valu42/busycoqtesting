@@ -71,6 +71,7 @@ The current results have different roles:
 | Connected blank certificates | The starting member $S_0$ | A closed family of selected later checkpoints |
 | Contiguous halting basin | The terminal interval $[B,U]$ | Prevention of a jump or nonreturning excursion past it |
 | Ordinary excursion formulas | Exact geometric and divisibility constraints | A bound or exclusion for the selected difficult excursions |
+| Uniform parity-passage bands | A proved mixed-word passage and subsequent corridor for every admitted exponent and run length | Coverage of the complementary phases and closure at the next boundary |
 | Exclusion of periodic rule tails | A genuine unbounded obstruction to nonhalting | Aperiodic infinite behavior |
 
 ## 2. A useful sufficient escape condition
@@ -224,7 +225,78 @@ $4/9$. The ordinary coding formulas also do not settle the exceptional
 restart: a full excursion invariant must handle
 every restart or prove it cannot occur on the relevant stretch.
 
-## 5. Research priority and acceptance criteria
+## 5. A proved uniform passage, and its precise remaining gap
+
+The [uniform parity-passage theorem](UNIFORM_PARITY_PASSAGE_758.md) now gives
+a positive family result at the first change of active parity. Put
+$P=3^m$, $r=(3/2)^b$, and require
+$$
+m\ge20,\qquad b\ge3,\qquad b\equiv3\pmod4,\qquad P/r\ge1000.
+$$
+For every such pair, an explicit source interval of width at least
+$21P/(2000r)-7\ge7/2$ is proved to reach an even reset in
+$$
+[E_m,E_m+2m+20],\qquad
+E_m=\lfloor54P/49\rfloor-2m-504.
+$$
+Odd sources execute $J^mL^6JL^bR$. Both source parities then use the
+even-preserving word $IJ^{m-1}L^2JLR$ until this exit strip is reached.
+The proof retains the common six carry bits in the mass and right counter,
+bounds the later bulk run uniformly, proves all physical guards and excludes
+an intermediate reset. Positive bounded gains prove termination across the
+remaining corridor. This is a passage through arbitrarily long words and
+arbitrarily many intermediate returns, not an exponent census.
+
+There is also an algebraic entrance result. For every $m\ge2200$, the
+source bands capture a lifted path from each directed residue cycle of the
+preceding odd corridor. The entrance can be chosen in
+$[\lfloor24P/23\rfloor,\lfloor24P/23\rfloor+2m+34]$. This does not say
+that every lift is captured. The threshold 2200 is beyond the scale of the
+fixed target $H$; this corollary establishes a uniform mechanism, not an
+additional entrance along the present blank-to-$H$ route. At the smaller
+exponents used in the existing blank research, selected examples of the
+admitted bands intersect the old finite
+phase enclosures; those enclosing receipts do not identify the actual blank
+phase. No new blank checkpoint follows from this theorem.
+
+The [exact carry coordinate](RETURN_PREFIX_758.md#a-bulk-coordinate-that-retains-the-carries)
+supplies a reusable way to attempt further cases. With $E=(c+7)/2$ and
+$T(E)=3\lceil E/2\rceil$, it has
+$$
+\Psi(T(E))=\frac32\Psi(E),\qquad 0<\Psi(E)-E<3.
+$$
+After $t$ carry evaluations, a rational enclosure has width $3(2/3)^t$.
+A proved phase inequality then certifies a whole $L^bR$ passage, its output
+parity and an output interval of width at most $2b$. At fixed relative
+distance from the phase boundaries, the necessary number of evaluated
+carries is independent of $b$. Exact arithmetic still uses numbers whose
+size grows with the parameters. The certificate is sufficient: failure
+means inconclusive, not a nonreturning orbit.
+
+This representation also makes a limitation precise. In a fixed residue
+class modulo $M$, the closure of the possible corrections $\Psi(E)-E$ has
+width exactly $3(2/3)^{\nu_2(M)}$, even on arbitrarily large inputs.
+A fixed congruence lookup cannot give the exact normalization. Correlated
+intervals, adaptive precision and aggregate carry information remain
+available; the new passage proof is a positive use of those options.
+
+Two composition obligations remain even at this first seam:
+
+1. Prove that the selected entering phase belongs to an admitted band, or
+   give terminating passage rules for its complementary phases. Having a
+   captured path on each residue cycle does not establish this for every
+   integer lift or for the blank-selected lift.
+2. Continue every selected exit in the strip $[E_m,E_m+2m+20]$ into another
+   certified family. The existing finite mergers at that boundary do not
+   yet give this implication for every exponent.
+
+To apply the barrier principle, the complete collection of passage families
+must contain $S_0$ and preserve the upper bound $U$ from Section 1. The present
+result supplies one local component; its proof does not yet establish that
+closed collection. Resolving this first seam alone would not connect the
+whole remaining route to the basin.
+
+## 6. Research priority and acceptance criteria
 
 The next mathematical objective is a **uniform family argument** supplying
 properties 2 and 3 of the barrier principle. A candidate representation should
@@ -234,13 +306,14 @@ It may use a finite set of symbolic cases or a well-founded induction whose
 parameters and bounds are proved. A list with one new case for every observed
 return word does not supply this closure.
 
-The first meaningful milestone is a proved family lemma that contains a
+The useful standard for further progress is a proved family lemma that contains a
 relevant entering reset or exit class, covers all its admitted parameters,
 and leads to a specified subsequent family or to the halting basin. It may
 skip many intermediate resets. Its termination argument must cover a passage
-that might otherwise never finish. The exact coding supplies a language for
-attempting this; writing
-down that language does not yet supply the milestone. A successful argument
+that might otherwise never finish. The parity-passage theorem supplies this
+kind of component for the admitted bands; it still needs the composition
+obligations above. The exact coding supplies a language for attempting more
+components, while a successful argument
 must explain why the retained constraints exclude the forbidden exits,
 rather than merely restate those exits in different coordinates.
 
@@ -252,7 +325,9 @@ should have an explicit place in a closing theorem before they are run.
 Run `python3 decode_factors_758.py` in this directory to audit the displayed
 escape constants, reset-order counterexample, interior family examples and
 finite coding formulas. The parameterized arguments above are algebraic;
-these checks do not replace their proofs.
+these checks do not replace their proofs. The new passage and carry arguments
+have focused checkers in `uniform_parity_passage_758.py` and
+`bulk_carry_758.py` respectively.
 
 Future progress reports should state the exact missing implication, what was
 proved about it, the range of parameters covered, and any remaining
