@@ -1,5 +1,7 @@
 # A threefold enlargement of the ordinary-state halting criterion
 
+**The complete rectangle now extends to even $h\le3,036,773,634,391,198,935,066$, with the same mass band and 553-call bound.** The [later proof](wider_even_entry_758.md) builds on this exponent-57 result and covers every additional prefix through exponent 60. This page preserves the threefold extension and its independent lattice certificate.
+
 Put $D=13,959,275$, $H=(3^{307}-8,282,708,212)/D$,
 $F=53,463,914,736,831,321,850$ and $L=3,403,055$.
 Every odd/odd state with

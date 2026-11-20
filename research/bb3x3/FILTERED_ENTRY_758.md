@@ -1,5 +1,7 @@
 # A short membership test across a wider ordinary-state band
 
+**All 465 prefix cylinders left inconclusive by this test have now been settled.** The [complete rectangle](wider_even_entry_758.md) also covers the next exponent, reaching even $h\le3,036,773,634,391,198,935,066$ with the same 553-call bound. A [later filtered test](entry_transport_758.md) reaches $h\approx6.95\times10^{34}$ using at most 89 elementary angular updates. The original criterion and its proof remain below.
+
 There is a deterministic sufficient halting test for odd/odd states with
 
 $$

@@ -1,6 +1,6 @@
 # From the doubled power-35 checkpoint toward power 36
 
-**The connected blank prefix now reaches the exact reset 100,583,090,198,237,340.** Seven [additional window receipts](blank_bridge_758.md) extend the chain through grid cut 52. Together with the existing certificates, 4,129 of 4,831 windows are certified and 702 remain open. Run `python3 blank_bridge_758.py` to check this extension; the earlier standalone checker below reads only its original receipt archive.
+**This bridge is now complete.** Every one of the 4,831 regular windows is certified, and both blank runs reach the exact power-36 reset **150,094,635,297,111,153**. Run `python3 power36_final_758.py` for the [complete chain and gate proof](power36_final_758.md), or `python3 power36_clock_758.py` for the [new raw-clock bounds](power36_clock_758.md). The original standalone checker below reads only its historical receipt archive.
 
 ## Initial continuation and original grid
 
