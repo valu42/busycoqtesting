@@ -1,5 +1,12 @@
 # BB(3,3) holdouts and the #758 blank-tape proof
 
+The [Wily Coyote #531/#532 structural investigation](wily/README.md) proves
+complete decisions for isolated auxiliary modes, a regular invariant for a
+different family of seeds, parameterized arithmetic returns, and rigorous
+obstructions to several proposed blank-orbit invariants. The Wily blank-tape
+pair remains undecided; the proofs and executable certificates state that
+remaining obligation explicitly.
+
 ## Proof status and mathematical priority
 
 **The decision still needs a global closure or boundedness argument.** The connected blank trajectory and the remote halting basin are established separately. To join them, it suffices to prove a closed family of reset seeds containing the current blank checkpoint whose excursions terminate and cannot jump past the basin. A bounded invariant for the full counter dynamics would also suffice and would handle a potentially nonreturning excursion directly. No such invariant has been proved, and the finite counts below do not give a proof ETA or a percentage complete.

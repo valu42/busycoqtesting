@@ -1,0 +1,221 @@
+Source check: all pass tables agree with the pre-existing WILY model.
+Small-word implementation checks: {"bit_flip_certificates_checked": 1538, "words_checked": 8191}
+Unbounded c-invariant certificate: [(0, 2, 0), (1, 1, 1), (2, 0, 0), (3, 0, 2), (4, 0, 0), (4, 1, 1), (4, 2, 2)]
+Independent b/c clock and identity checks: all 32,767 words of length <=14
+Nonhalting counts by length: [1, 1, 3, 5, 11, 21, 43, 85, 171, 341, 683, 1365, 2731, 5461, 10923]
+The blank F-orbit remains undecided by this theorem.
+Prefix-section implementation checked independently through depth 9.
+{
+  "arbitrary_tail_arithmetic_families": 16,
+  "arithmetic_return_certificates": [
+    {
+      "increment": 3,
+      "output_residue": 0,
+      "residue": 1,
+      "short_base_checked": true,
+      "steps": 2,
+      "tail_b_power": 2,
+      "width": 1
+    },
+    {
+      "increment": 21,
+      "output_residue": 9,
+      "residue": 4,
+      "short_base_checked": true,
+      "steps": 6,
+      "tail_b_power": 1,
+      "width": 4
+    },
+    {
+      "increment": 69,
+      "output_residue": 13,
+      "residue": 8,
+      "short_base_checked": true,
+      "steps": 14,
+      "tail_b_power": 2,
+      "width": 5
+    },
+    {
+      "increment": 429,
+      "output_residue": 47,
+      "residue": 2,
+      "short_base_checked": true,
+      "steps": 62,
+      "tail_b_power": 6,
+      "width": 6
+    },
+    {
+      "increment": 69,
+      "output_residue": 21,
+      "residue": 16,
+      "short_base_checked": true,
+      "steps": 14,
+      "tail_b_power": 1,
+      "width": 6
+    },
+    {
+      "increment": 69,
+      "output_residue": 29,
+      "residue": 24,
+      "short_base_checked": true,
+      "steps": 14,
+      "tail_b_power": 1,
+      "width": 6
+    },
+    {
+      "increment": 1053,
+      "output_residue": 43,
+      "residue": 14,
+      "short_base_checked": true,
+      "steps": 126,
+      "tail_b_power": 8,
+      "width": 7
+    },
+    {
+      "increment": 429,
+      "output_residue": 79,
+      "residue": 34,
+      "short_base_checked": true,
+      "steps": 62,
+      "tail_b_power": 3,
+      "width": 7
+    },
+    {
+      "increment": 165,
+      "output_residue": 81,
+      "residue": 44,
+      "short_base_checked": true,
+      "steps": 22,
+      "tail_b_power": 1,
+      "width": 7
+    },
+    {
+      "increment": 141,
+      "output_residue": 61,
+      "residue": 48,
+      "short_base_checked": true,
+      "steps": 30,
+      "tail_b_power": 1,
+      "width": 7
+    },
+    {
+      "increment": 1221,
+      "output_residue": 59,
+      "residue": 118,
+      "short_base_checked": true,
+      "steps": 94,
+      "tail_b_power": 10,
+      "width": 7
+    },
+    {
+      "increment": 741,
+      "output_residue": 37,
+      "residue": 64,
+      "short_base_checked": true,
+      "steps": 78,
+      "tail_b_power": 3,
+      "width": 8
+    },
+    {
+      "increment": 549,
+      "output_residue": 113,
+      "residue": 76,
+      "short_base_checked": true,
+      "steps": 54,
+      "tail_b_power": 2,
+      "width": 8
+    },
+    {
+      "increment": 1053,
+      "output_residue": 107,
+      "residue": 78,
+      "short_base_checked": true,
+      "steps": 126,
+      "tail_b_power": 4,
+      "width": 8
+    },
+    {
+      "increment": 573,
+      "output_residue": 181,
+      "residue": 120,
+      "short_base_checked": true,
+      "steps": 126,
+      "tail_b_power": 2,
+      "width": 8
+    },
+    {
+      "increment": 1245,
+      "output_residue": 139,
+      "residue": 174,
+      "short_base_checked": true,
+      "steps": 126,
+      "tail_b_power": 5,
+      "width": 8
+    }
+  ],
+  "blank_tape_decision": "UNRESOLVED",
+  "failed_mod24_conjecture": {
+    "halt_call": 135,
+    "seed_integer": 146
+  },
+  "feature_obstruction": {
+    "exact_abstract_graph": {
+      "abstract_path": [
+        [
+          13,
+          "000010",
+          8
+        ],
+        [
+          8,
+          "010",
+          null
+        ]
+      ],
+      "complete": true,
+      "feature_states": 87,
+      "safe": false,
+      "triples": 309
+    },
+    "halting_counterexample": [
+      "001010",
+      "110010",
+      "011110",
+      null
+    ],
+    "joint_signatures": 87
+  },
+  "proof_scope": "See README.md; no finite survival horizon is a nonhalting proof.",
+  "regular_certificates": {
+    "failed_candidates": {
+      "ends_00": {
+        "closure_counterexample": "000",
+        "closure_image": "0111",
+        "closure_product_states": 10,
+        "contains_start": true,
+        "safety_product_states": 9,
+        "unsafe_word": null,
+        "valid": false
+      },
+      "next_sweep_safe": {
+        "closure_counterexample": "000",
+        "closure_image": "0111",
+        "closure_product_states": 9,
+        "contains_start": true,
+        "safety_product_states": 4,
+        "unsafe_word": null,
+        "valid": false
+      }
+    },
+    "nonblank_regular_family": {
+      "closure_counterexample": null,
+      "closure_image": null,
+      "closure_product_states": 37,
+      "contains_start": true,
+      "safety_product_states": 32,
+      "unsafe_word": null,
+      "valid": true
+    }
+  },
+  "status": "all stated certificates and regression checks passed"
+}
