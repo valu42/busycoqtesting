@@ -40,6 +40,50 @@ $$
 
 The P offsets bᵢ are 20,35,26,29 in input-residue order. Inverting n steps gives d₀=αₙu₀+βₙ+Rₙdₙ for the corresponding partial sums. The remainder tends to zero in the reals because dₙ grows at most linearly. It tends to zero 2-adically because an infinite physical word must contain infinitely many pairs (an eventual run of Js alone triples a+1). The two series converge in both spaces. For an odd reset, u₀=s and d₀=(s−1)/2, so s=(1+2β)/(1−2α) must evaluate to the same positive integer in both places. At an even seed apply the initial (i) rule: u₀=s+4 and d₀=(u₀−2)/2, so replace the numerator 1+2β by 2+2β and subtract four to recover s. The real denominator is positive because there is a P and the real inverse slope maps preserve [0,1/2]; the 2-adic denominator is odd. This is a necessary compatibility condition for an infinite physical itinerary.
 
+## Finite reset residues and the limit of a congruence sieve
+
+The inverse condition has an exact finite version. Fix **any formal fine word**, without assuming its physical guards, and put h₀=b, where b=1 for an odd reset and b=2 immediately after an even reset's initial (i) rule. Thus d₀=(u₀−b)/2. In the affine notation above, its endpoint is
+
+$$
+ d_n=\frac{(Q+2A)u_0-bQ+2C}{2M},\qquad
+ Q=3^m,\quad M=4^p.
+$$
+
+Because Q+2A is odd, the endpoint is integral exactly when
+
+$$
+ \boxed{\quad u_0\equiv(bQ-2C)(Q+2A)^{-1}
+       \pmod{2\cdot4^p}.\quad}
+$$
+
+The inverse in this formula is modular. Equivalently, since αₙ=−A/Q and βₙ=−C/Q, the residue is (b+2βₙ)/(1−2αₙ) modulo 2^(2p+1). All denominators in that rational residue are odd. The extra factor of two includes the starting parity u₀≡b modulo two.
+
+Integrality of the endpoint is equivalent to integrality at **every** preceding block boundary. Formal forward evaluation introduces only powers of two in the denominators. Inverting J or P divides only by 3 or 9, respectively; starting with an integral endpoint, a preceding coordinate can therefore have a denominator that is both a power of two and odd, so it is integral. At a pair, integrality also forces its prescribed label: 9d+bᵣ is divisible by four exactly when d≡r modulo four, since bᵣ≡−r modulo four. This argument imposes no positivity or branch guard.
+
+Now fix only a **coarse** finite J/P word with p pairs. Its 4^p fine labelings give exactly the 4^p residue classes of parity b modulo 2·4^p. To prove this, start from any integer u₀ of parity b and evaluate the coarse word formally. At each P there is exactly one label r=d modulo four making the next coordinate integral; J preserves integrality. Thus every parity-compatible u₀ belongs to one fine lift, and two distinct lifts cannot accept it. Together with the single-class formula, this proves that the classes partition the entire parity class. Appending a J adds no mass bits; appending a specified P selects one of four lifts to the next modulus, fixing two more bits.
+
+The same conclusion holds at infinite depth. Fix a coarse infinite word containing infinitely many pairs. The nested residues for a fine labeling determine exactly one 2-adic mass U₂ of parity b, and conversely every such 2-adic mass determines exactly one fine labeling. The sums α₂,β₂ converge because the 2-adic norm of Rᵢ is 4^(−pᵢ), and gᵢ is an integer. Consequently
+
+$$
+ U_2=\frac{b+2\beta_2}{1-2\alpha_2}\in b+2\mathbb Z_2.
+$$
+
+The denominator is an odd unit. **Existence of a fine lift alone therefore excludes no coarse word for a specified integer reset seed.** Allowing all fine lifts without any additional linked restriction imposes only parity. A useful sieve must preserve the relation to the same lift's real constraint and physical guards. It may do this through a compressed relation or aggregate information; the fine labels need not be enumerated individually.
+
+In the reals the same rational partial sums have limits αℝ,βℝ, with 0≤αℝ≤1/2 and −7≤βℝ≤0. If the first P follows k Js, then
+
+$$
+ \frac{5}{9\cdot3^k}\le1-2\alpha_{\mathbb R}\le3^{-k},
+ \qquad
+ U_{\mathbb R}=\frac{b+2\beta_{\mathbb R}}{1-2\alpha_{\mathbb R}}.
+$$
+
+This is a unique real candidate; it need not be positive or integral. The coefficient α is fixed by the coarse word, while β retains the fine labels and mass increments. The [reset-word bounds](RESET_WORDS_758.md) already localize the real candidates tightly after a specified launch. The real and 2-adic limits are values in different completions and are not to be identified with each other. Compatibility means that one prescribed ordinary integer u₀ separately equals Uℝ in the reals and U₂ in the 2-adics.
+
+Even both equalities do not by themselves certify a physical excursion. For a positive initial integer mass u₀, they force integral formal states in the strip −7≤dᵢ≤uᵢ/2, which still includes negative right-counter values and reset boundaries. For a strictly ordinary reset-free continuation, require dᵢ≥0 and hᵢ=uᵢ−2dᵢ>1 at every positive-time block boundary, starting with a physical state having h₀=b. The original J guard is exactly d_next=3d−u+1≥0. For P, put q=⌊(c+1)/4⌋: each individual bulk requires a≥4q+3 and sends (a,c) to (a−4q−3,6q+5). A positive pair endpoint and the forced residue ensure both bulk guards; its even-left midpoint is larger than its positive odd-left endpoint, so it cannot be an unnoticed reset. In particular a pair landing at h=1 is a return and is excluded by hᵢ>1. The next section treats the separate virtual extension through certain negative d values.
+
+This is a finite coding lemma and a clarification of the existing inverse condition, not a termination or decidability result. It handles the possibility of a nonreturning excursion without assuming a first return exists. Excluding all infinite ordinary codes would still leave the separate task of controlling finite excursions and exceptional restarts sufficiently to force the actual blank trajectory into a certified halting basin.
+
 ## The only possible simultaneous code from an integer origin
 
 Here “mixed” means infinitely many Js and Ps. Assume the two inverse expressions hold for integer u₀,d₀ with u₀≥8. Formal forward evaluation of their word gives dᵢ rational with denominator a power of two. The 2-adic suffix formula at each phase writes the same dᵢ as a 2-adic integer, so each is actually an ordinary integer and the chosen P symbol is forced by dᵢ modulo four. Let αᵢ,βᵢ be the real series for the suffix, resetting g to zero at the start of that suffix. Its normalized angle satisfies 0<αᵢ<1/2. The intercept satisfies −7≤βᵢ≤0: the inverse deviation maps for d−αu preserve [−7,0] exactly as in the [affine period proof](EXCURSION_POWERS_758.md). Iteration to infinity gives the same bound without a periodicity assumption. As dᵢ=αᵢuᵢ+βᵢ, one always has dᵢ≥−7 and aᵢ=2uᵢ−4dᵢ−1≥1.
@@ -62,7 +106,7 @@ For an upper mass-coordinate bound U put L equal to the smallest positive intege
 
 In total the mixed case allows at most 28+22+2+(D−1)+2+(L−1) calls, also bounding the pure and transient-only cases. At U=H one may use (L,D)=(792,816), giving 1,660 calls. At U=3,706,040,379,353,000 use (89,113), giving 254. The statement counts only complete ordinary blocks.
 
-Run `python3 decode_factors_758.py` alongside [check_bb33.py](check_bb33.py) and [excursion_power_758.py](excursion_power_758.py). To verify the finite direction and deviation bounds, run
+Run `python3 decode_factors_758.py` alongside [check_bb33.py](check_bb33.py) and [excursion_power_758.py](excursion_power_758.py). It also checks the finite reset residue formula, prefix integrality equivalence, and the partition by fine lifts for all words of up to four blocks. These finite checks illustrate the algebraic proofs above; they do not evaluate the infinite limits. To verify the finite direction and deviation bounds, run
 
 ```sh
 c++ -O3 -std=c++17 separated_factors_758.cpp -o /tmp/separated_factors_758
