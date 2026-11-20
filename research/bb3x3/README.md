@@ -2,9 +2,11 @@
 
 ## Proof status and mathematical priority
 
-**The decision is still missing a uniform excursion or transport theorem.** The connected blank trajectory and the remote halting basin are established separately. To join them, it suffices to prove a closed family of reset seeds containing the current blank checkpoint whose excursions terminate and cannot jump past the basin. No such invariant has been proved, and the finite counts below do not give a proof ETA or a percentage complete.
+**The decision still needs a closed family of certified reset passages.** The connected blank trajectory and the remote halting basin are established separately. To join them, it suffices to prove a closed family of reset seeds containing the current blank checkpoint whose excursions terminate and cannot jump past the basin. No such invariant has been proved, and the finite counts below do not give a proof ETA or a percentage complete.
 
-The research priority is a mathematical argument retaining the correlation between the real direction, integer divisibility and physical guards. The existing joint real and binary-adic formulation now has an explicit finite-prefix version, including the unique compatible reset residue selected by each fine prefix. It is a formulation of the obstruction, not a decision. The strategy note gives the precise closing implication, an interior counterexample to a universal angular-separation shortcut, and criteria for the next family lemma. Large enumerations should serve an explicit closing theorem. [Proof strategy and obligations](PROOF_STRATEGY_758.md) · [Exact ordinary-excursion coding](SEPARATED_FACTORS_758.md)
+**A uniform passage family is now proved at the first parity change.** For every $m\ge20$ and $b\equiv3\pmod4$ with $b\ge3$ and $3^m/(3/2)^b\ge1000$, an explicit nonempty interval of reset seeds crosses the mixed word $J^mL^6JL^bR$ when odd, becomes even, and traverses the subsequent corridor to within $2m+20$ of its upper edge. All parameters and physical guards are covered algebraically. A separate incoming-phase corollary applies for every $m\ge2200$; coverage of every phase and a new blank checkpoint remain open. A complementary exact carry coordinate supplies finite rational certificates for bulk runs of arbitrary length, with an output parity independent of the unexamined carries. [Uniform passage and its remaining gap](UNIFORM_PARITY_PASSAGE_758.md) · [Carry coordinate and certificates](RETURN_PREFIX_758.md#a-bulk-coordinate-that-retains-the-carries)
+
+The research priority is to connect such passage families while retaining the correlation between the real direction, integer divisibility and physical guards. The strategy note gives the precise closing implication, the new family's role, and the complementary phases that still need a theorem. The existing joint real and binary-adic coding makes those arithmetic constraints explicit. Large enumerations should serve an explicit closing theorem. [Proof strategy and obligations](PROOF_STRATEGY_758.md) · [Exact ordinary-excursion coding](SEPARATED_FACTORS_758.md)
 
 ## Established finite and structural results
 
@@ -24,7 +26,7 @@ The reduction uses A(a,c) for a tape configuration carrying two nonnegative inte
 
 The 8,006-window blank crossing ends with a 128,286,013,074,958-return flight. At the remote target scale, every reset in one interval of about $2.3997\times10^{136}$ seeds reaches the same specified checkpoint $Y+158{,}145{,}479{,}878$. The path from that checkpoint to the halting basin remains open. [Exact blank flight](DOUBLED_POWER35_758.md) · [Target-side common checkpoint](CHECKPOINT_Y_758.md) · [Return words actually taken from blank](BLANK_WORD_SPECTRUM_758.md)
 
-One change of return word can be crossed uniformly for all 273 tested powers, from $3^{20}$ to $3^{292}$. The interval at exponent 35 is on the blank orbit. [Parity transfer across a word change](POWER_PARITY_TRANSPORT_758.md) · [Completed power-36 crossing](power36_final_758.md)
+The earlier finite handoff covers every incoming phase for all 273 tested powers, from $3^{20}$ to $3^{292}$. The interval at exponent 35 is on the blank orbit. The new algebraic passage covers explicit phase families for every $m\ge20$; it does not yet replace the finite handoff for all phases. [Finite parity transfer](POWER_PARITY_TRANSPORT_758.md) · [Uniform passage family](UNIFORM_PARITY_PASSAGE_758.md) · [Completed power-36 crossing](power36_final_758.md)
 
 ## Current proof and replay
 
@@ -104,7 +106,17 @@ For the latest basin set $B=H-160,391,744,210,493,965,542$ and $U=H-3,403,055$. 
 
 Use Python 3.10 or later, with assertions enabled, from this directory. The Python scripts use only the standard library. The forward window check uses C++17. The verifier for the large halting intervals also uses GMP.
 
-The latest proof checks are:
+The focused checks for the current mathematical argument are:
+
+```sh
+python3 uniform_parity_passage_758.py
+python3 bulk_carry_758.py
+python3 decode_factors_758.py
+```
+
+These check exact rational constants and selected physical passages, finite carry enclosures, and the coding and strategy witnesses. The quantified family theorems are proved in the linked notes; the examples do not replace those proofs.
+
+The earlier crossing and entry checks are:
 
 ```sh
 python3 power36_final_758.py
