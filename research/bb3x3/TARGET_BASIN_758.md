@@ -1,5 +1,10 @@
 # One contiguous halting interval below the 140-digit target
 
+The [scale-21 extension](TARGET_GAP_21_758.md) now enlarges this interval
+to 160,391,744,210,490,562,488 consecutive reset seeds and raises the
+sufficient recent-reset bound to 35,642,609,824,553,458,330 counter calls.
+The scale-20 proof and its archived dependencies are retained below.
+
 Every one of **53,463,914,736,827,918,796 consecutive reset seeds** in the interval
 $$
  H-53,463,914,736,831,321,850 \;\le s\le\; H-3,403,055

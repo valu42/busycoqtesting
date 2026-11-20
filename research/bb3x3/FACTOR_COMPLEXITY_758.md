@@ -35,9 +35,16 @@ For scale 74 let $G=10^{10}3^{74}$, $B=H-3G/2$ and $U_0=H-G-39{,}000{,}000$. A r
 | [Enlarged joined interval](LOWER_SCALE_GATES_758.md) | 321 | $1{,}900{,}000^2$ | 1,900,000 |
 | [Scale-19 joined basin](TARGET_BASIN_758.md) | 333 | $1{,}407{,}176{,}247^2$ | 1,407,176,247 |
 | [Scale-20 joined basin](TARGET_BASIN_758.md) | 334 | $2{,}437{,}300{,}755^2$ | 2,437,300,755 |
+| [Scale-21 joined basin](TARGET_GAP_21_758.md) | 335 | $4{,}221{,}528{,}741^2$ | 4,221,528,741 |
 | [Scale-10 halting corridor](LOWER_SCALE_GATES_758.md) | 323 | $6{,}300{,}000^2$ | 6,300,000 |
 
 The verifier checks $3^n>9TH$ in every row, and that the mass gain across the trimmed interval supplies at least $T+n$ complete blocks. A sufficiently low upper bound on the number of words on the actual crossing would force entry into the relevant interval. Entry at scale 74 fixes one exact subsequent trajectory; its continuation to a halt remains open.
+
+For the scale-21 basin, the trimmed passage supplies at least
+17,821,304,912,276,728,861 complete ordinary blocks. Thus avoiding that
+basin requires at least **4,221,528,741 distinct length-336 fine words**
+on the one actual passage. This remains a necessary condition for a
+bypass, not an established upper bound for the blank trajectory.
 
 The same argument can single out the actual midpoint state. Set $T_0=H-5G/4$. A reset between $B$ and $T_0-39{,}004{,}000$ forces the first mass crossing of $2T_0+1$ to be exactly $A(2\cdot3^{36}-1,T_0-3^{36}+1)$. If the blank reaches the midpoint in a different state, apply the proof to this shorter interval with $(7\cdot10^{21})^2$ starting positions and $n=400$. There must then be at least **$7\cdot10^{21}$ distinct length-401 words** within the passage. [Exact midpoint and inverse proof](SCALE74_ANCESTRY.md)
 
