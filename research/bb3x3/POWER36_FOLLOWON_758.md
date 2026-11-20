@@ -1,5 +1,9 @@
 # From the doubled power-35 checkpoint toward power 36
 
+**The connected blank prefix now reaches the exact reset 100,583,090,198,237,340.** Seven [additional window receipts](blank_bridge_758.md) extend the chain through grid cut 52. Together with the existing certificates, 4,129 of 4,831 windows are certified and 702 remain open. Run `python3 blank_bridge_758.py` to check this extension; the earlier standalone checker below reads only its original receipt archive.
+
+## Initial continuation and original grid
+
 Starting at the doubled-gate reset $A(1,100{,}063{,}090{,}198{,}154{,}948)$, machines #758 and #153 both reach the exact reset **100,073,090,198,235,044**. The [complete doubled-35 crossing](DOUBLED_POWER35_758.md) establishes this starting configuration on both blank orbits.
 
 The next gate begins at seed **148,364,731,025,779,389**. Reaching its 5,001-seed entry strip would force the exact reset **150,094,635,297,111,153** by the power-36 gate merger. The regular grid from the doubled checkpoint to that strip has 4,831 windows of width $10^{13}$, with the final window shortened. Identical guarded words at the two even endpoints certify 4,095 of these windows. Six computed crossings certify the first regular window as well. This reduces the original computation to **735 further windows** requiring individual return evaluations. The regular receipt table stores completed windows from this set, and the checker reports the connected prefix and remaining count. [Checker](power36_followon_758.py) · [Initial receipts](power36_initial_758.tsv) · [Regular receipts](power36_regular_758.tsv)

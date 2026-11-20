@@ -1,5 +1,9 @@
 # A sufficient condition for entry from an ordinary counter state
 
+**The even-coordinate bound below has been enlarged to 112,473,097,570,044,405,002, with the same 553-call return bound and mass interval.** The [extension](TARGET_BRIDGE_EVEN_758.md) exhausts the sole additional high-pair cylinder. It also raises the even primitive-coordinate cutoff in the final section to the new value. This page retains the original rectangle and its proof.
+
+The [filtered criterion](FILTERED_ENTRY_758.md) tests even coordinates up to 1,012,257,878,130,399,645,022, leaving a precisely bounded set inconclusive.
+
 An actual #758 or #153 trajectory halts if it visits any odd/odd counter state $A(a,c)$ satisfying
 
 $$
