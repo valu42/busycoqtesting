@@ -1,5 +1,7 @@
 # A further connected blank checkpoint for #758 and #153
 
+**The full power-36 bridge has since been completed.** Both blank runs reach the exact reset 150,094,635,297,111,153; see the [complete proof](power36_final_758.md). This page preserves the earlier connected-prefix milestone and its independently replayable receipts.
+
 Both blank runs reach
 
 \[
