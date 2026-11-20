@@ -334,3 +334,33 @@ proved about it, the range of parameters covered, and any remaining
 assumption. A larger checkpoint or basin should be reported as finite
 certificate progress. There is currently no defensible proof ETA or
 percentage complete.
+
+## 7. An exact target for a full boundedness certificate
+
+The [global safety formulation](GLOBAL_SAFETY_758.md) provides another way
+to state the complete closing obligation. It retains every physical live
+continuation as one- or two-call macros, with separate predicates for reset
+seeds and ordinary odd/odd states. Its source is the known blank reset
+$S_0$; resets in $[B,U]$ are successful stops by the existing basin theorem.
+The predicate `Bad` records a live macro endpoint with mass coordinate
+greater than $U$. No crossing destination is discarded.
+
+A proposed inductive model must contain the source, preserve all live
+successors outside the certified stops, and exclude `Bad`. Since every
+macro strictly increases the integer mass coordinate, a checked model
+would force a terminal halt or basin entry. It would also exclude an
+infinite excursion with no further reset. Terminal two-call halts are
+successful stops even if their final intermediate scalar state exceeds
+the cap; the stated safety property concerns live macro endpoints.
+
+The optional strengthening adds a proved provenance predicate correlating
+the ternary residues of the two coordinates, and sufficient carry-based
+passages whose entire output interval lies inside the basin. These rules
+do not impose a guessed execution cutoff. They are mathematical inputs to
+the certificate search, not an invariant bounding the mass by themselves.
+
+The current full-target attempts, with and without those additions, returned
+unknown. A positive small control produced an inductive model that was
+separately rechecked against every Horn clause; a negative control produced
+the expected crossing. These controls validate the encoding and certificate
+workflow. **No global model excluding `Bad` for $S_0$ has been obtained.**
