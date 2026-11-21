@@ -2,7 +2,8 @@
 
 The [Wily Coyote #531/#532 structural investigation](wily/README.md) proves
 complete decisions for isolated auxiliary modes, a regular invariant for a
-different family of seeds, parameterized arithmetic returns, and rigorous
+different family of seeds, parameterized arithmetic returns, an exact
+record-boundary reduction and clipped linear inverse, and rigorous
 obstructions to several proposed blank-orbit invariants. The Wily blank-tape
 pair remains undecided; the proofs and executable certificates state that
 remaining obligation explicitly.

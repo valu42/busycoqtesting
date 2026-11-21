@@ -10,6 +10,15 @@ raw-machine simulation. Both machines have the same accelerated orbit. The
 repository's previous `2^96`-sweep checkpoint is finite evidence; this work
 does not claim a longer checkpoint or infer a decision from that checkpoint.
 
+## Continued investigation
+
+The [continuation report](CONTINUATION.md) adds an exact running-record
+boundary reduction, a clipped linear cellular-automaton inverse, a constructive
+obstruction to every fixed polynomial truncation, stronger contextual-clock
+counterexamples, and two further nonblank nonhalting certificates. It identifies
+the actual first repair as the Fibonacci code of `5^8` and proves why the
+obvious power-family extrapolations fail. The blank decision remains open.
+
 ## Sources and conventions
 
 * [Shared Lean reduction](https://github.com/google-deepmind/cryptids/blob/0661f4e9b011de8d92d30f44dc6c2a5532656f72/BusyBeaver/BB33/WilyCoyote.lean).
@@ -315,7 +324,14 @@ boundary halts even though its infinite-word image exists. Therefore an
 infinite-tree automorphism argument alone does not decide the machine. It
 must control these exceptional finite boundary events.
 
-The most justified next target is an inductively closed recursive class of
+The continuation exposes a second precise target: a recursive family of
+no-`11` reset words whose virtual excursions always repair at a length record
+before reaching the halting subshift. Its inverse map is linear up to an
+explicit stopping position; controlling the ensuing suffix corrections is
+still unproved. See [CONTINUATION.md](CONTINUATION.md) for the exact formulas,
+all-parameter obstructions, and the actual first-reset return system.
+
+A related target is an inductively closed recursive class of
 the actual mixed return sections, together with their finite suffix states,
 that reduces their safety obligations to the decided `b` and `c` components.
 A theorem that every return section generated from `001100` stays in such
@@ -341,7 +357,11 @@ repository's pre-existing `WILY` table; the exact auxiliary-language product
 certificate; the 19-state nonblank invariant; all sixteen arbitrary-tail
 return certificates; and the reported counterexamples. Exhaustive small-word
 checks are kept separate from the finite certificates proving unbounded
-closure. The runner prints the unresolved status explicitly.
+closure. The continuation checks are included: the record-width and inverse formulas,
+the exact five-state subshift graph, all-depth polynomial witness construction,
+contextual-clock collision, nonblank Fibonacci return certificates, and return
+section/permutation certificates. The runner prints the unresolved status
+explicitly. Run `python verify_continuation.py` for only the new checks.
 
 `preimages.py` also provides exact transducer preimages and DFA minimization.
 Its optional horizon exploration is not a proof of an inductive invariant,

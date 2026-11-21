@@ -5,6 +5,15 @@ Independent b/c clock and identity checks: all 32,767 words of length <=14
 Nonhalting counts by length: [1, 1, 3, 5, 11, 21, 43, 85, 171, 341, 683, 1365, 2731, 5461, 10923]
 The blank F-orbit remains undecided by this theorem.
 Prefix-section implementation checked independently through depth 9.
+All parameterized-identity implementation checks passed: 2047 short words
+First blank-core repair: (582, '0101111010101101111101011011', '10100101010100010010101000100')
+The all-depth competition between record-a repairs and b halts is unproved.
+Clipped inverse and boundary formulas checked on 32767 words.
+Exact single-bit / P^2 repair identities checked at 610 repairs.
+Double-Fibonacci invariant graph verified: 5 productive states.
+Depth-three cycle obstruction verified: a=[8], unclipped CA=[4,4].
+One-sweep failure of the P^2 congruence quotient verified.
+These theorems do not decide the blank orbit.
 {
   "arbitrary_tail_arithmetic_families": 16,
   "arithmetic_return_certificates": [
@@ -154,6 +163,179 @@ Prefix-section implementation checked independently through depth 9.
     }
   ],
   "blank_tape_decision": "UNRESOLVED",
+  "continuation": {
+    "all_depth_polynomial_obstruction": {
+      "example_k1": "10000000000000001111",
+      "example_k2": "10000011100001110000001111",
+      "finite_regression_cases": 72,
+      "reachable_target_index": 90,
+      "reachable_target_word": "01101011100010010111",
+      "scope": "Every k>=1 and length modulus M>=1; constructive proof in P_ADIC_OBSTRUCTION.md"
+    },
+    "blank_tape_decision": "UNRESOLVED",
+    "contextual_clock_obstruction": {
+      "actual_index": 7,
+      "actual_word": "1010010100001100",
+      "bad_halts_on_call": 20,
+      "bad_trace": [
+        "1010000101011000",
+        "0011100101011000",
+        "1101100101011000",
+        "0110100101011000",
+        "1000111101011000",
+        "0000100110011000",
+        "1110100110011000",
+        "0101011010011000",
+        "1010100011111000",
+        "0011000011111000",
+        "1101000011111000",
+        "0110000011111000",
+        "1000000010010111",
+        "0000000011110111",
+        "1110000011110111",
+        "0101110011110111",
+        "1010011111110111",
+        "0011111111110111",
+        "1101111111110111",
+        "0110111111110111"
+      ],
+      "bad_word": "1010000101011000",
+      "initial_trace": [
+        "001100",
+        "110100",
+        "011000",
+        "1000001100",
+        "000000101100",
+        "111000101100",
+        "010111101100",
+        "1010010100001100"
+      ],
+      "same_features": {
+        "clock_transformation": [
+          [
+            0,
+            6,
+            47
+          ],
+          [
+            0,
+            7,
+            92
+          ],
+          [
+            0,
+            6,
+            46
+          ]
+        ],
+        "halting_dfa_transformation": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "length": 16,
+        "ones": 6,
+        "suffix_2": "00",
+        "zeros": 10
+      },
+      "scope": "obstruction, not a blank-orbit decision",
+      "status": "verified"
+    },
+    "exact_return_classifier_states": 517,
+    "fibonacci_reset_certificates": {
+      "first_repair": {
+        "fibonacci_value": 390625,
+        "index_after_passes": 583,
+        "word": "10100101010100010010101000100"
+      },
+      "halting_power_seeds": [
+        {
+          "exponent": 2,
+          "halts_on_call": 7,
+          "last_word": "111010111",
+          "start": "101000100"
+        },
+        {
+          "exponent": 5,
+          "halts_on_call": 4528,
+          "last_word": "11101101111110001101011110101101111",
+          "start": "0101010000101000100"
+        }
+      ],
+      "literal_power_recurrence_obstruction": {
+        "conclusion": "No a-iterate of R(5^8) can start with R(5^5)",
+        "cycle_period": 2048,
+        "target_prefix_length": 19
+      },
+      "mixed_section_certificate": {
+        "c_after_b_depth5_cycle_profile": {
+          "4": 4,
+          "16": 1
+        },
+        "first_cycle_tail": "00011010001100",
+        "mixed_depth5_cycle_profile": {
+          "4": 2,
+          "8": 3
+        },
+        "period": 8192,
+        "prefix": "10100101010100010010101000100",
+        "temporal_section": "cccacbbbbabbcabcbabc"
+      },
+      "nonhalting_power_seeds": [
+        {
+          "conclusion": "nonhalting for this seed; not the blank seed",
+          "exponent": 11,
+          "first_cycle_tail": "110100",
+          "period": 8192,
+          "prefix": "001000000001010100101010101000000100100",
+          "section": "ccc",
+          "tail_is_nonempty_and_c_safe": true
+        },
+        {
+          "conclusion": "nonhalting for this seed; not the blank seed",
+          "exponent": 14,
+          "first_cycle_tail": "110100",
+          "period": 65536,
+          "prefix": "0001010010000010000100100010100100101010000100100",
+          "section": "ccc",
+          "tail_is_nonempty_and_c_safe": true
+        }
+      ],
+      "status": "verified; blank orbit still undecided"
+    },
+    "proof_scope": "General proofs are separate from short-word implementation checks. No blank invariant is claimed.",
+    "return_section_certificates": {
+      "a_b_c_orders_on_seven_bits": [
+        32,
+        16,
+        8
+      ],
+      "group_recursion": {
+        "b_squared_sections": "c,dcd",
+        "c_sections": "c,b",
+        "d_squared": "identity"
+      },
+      "natural_prefix_period": 128,
+      "return_cycle_type_on_seven_bits": [
+        [
+          4,
+          4
+        ],
+        [
+          8,
+          6
+        ],
+        [
+          16,
+          4
+        ]
+      ],
+      "suffix_table_checks": 75
+    },
+    "source_tables": "all independent implementations equal the pre-existing WILY table",
+    "status": "all continuation certificates and regression checks passed"
+  },
   "failed_mod24_conjecture": {
     "halt_call": 135,
     "seed_integer": 146

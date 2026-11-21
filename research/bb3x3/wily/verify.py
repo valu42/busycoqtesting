@@ -20,6 +20,7 @@ from check_bb33 import WILY
 import arithmetic_certificates as arithmetic
 import c_safety
 import certificates
+import verify_continuation
 from dfa import BAD, ENDS_00, SAFE, reduced_invariant_dfa, verify_invariant
 from feature_analysis import abstraction, monoid_dfa
 from regular_family import PREFIXES, family_dfa
@@ -105,6 +106,7 @@ def main():
     arithmetic.check_auxiliary_algebra()
     returns = [certificate.verify() for certificate in arithmetic.CERTIFICATES]
     arithmetic.check_failed_conjectures()
+    continuation = verify_continuation.checks()
     result = {
         'status': 'all stated certificates and regression checks passed',
         'blank_tape_decision': 'UNRESOLVED',
@@ -112,6 +114,7 @@ def main():
         'feature_obstruction': features,
         'arbitrary_tail_arithmetic_families': len(returns),
         'arithmetic_return_certificates': returns,
+        'continuation': continuation,
         'failed_mod24_conjecture': {'seed_integer': 146, 'halt_call': 135},
         'proof_scope': 'See README.md; no finite survival horizon is a nonhalting proof.',
     }
